@@ -480,12 +480,34 @@ export class ClipEditorInterface {
 
         this.canvas.addEventListener("wheel", event => {
             this.session.clipEditor.verticalScroll += event.deltaY;
+            this.session.scrolledPixels += event.deltaX;
+            if (this.session.scrolledPixels < 0) this.session.scrolledPixels = 0;
+            this.ui.canvasRenderUpdate();
+        });
+
+        this.canvas.addEventListener("mousemove", event => {
+            this.mouse.x = event.offsetX;
+            this.mouse.y = event.offsetY;
+            this.ui.canvasRenderUpdate();
+        });
+        this.canvas.addEventListener("mousedown", event => {
+            this.mouse.down = true;
+            this.ui.canvasRenderUpdate();
+        });
+        this.canvas.addEventListener("mouseup", event => {
+            this.mouse.down = false;
             this.ui.canvasRenderUpdate();
         });
 
         updateCanvasSize(this.canvas);
         this.render();
     }
+
+    mouse = {
+        x: -1,
+        y: -1,
+        down: false
+    };
 
     render() {
         if (this.session.clipEditor.verticalScroll < 0) this.session.clipEditor.verticalScroll = 0;
@@ -505,9 +527,7 @@ export class ClipEditorInterface {
         }
 
         let selectedClip = this.session.playlist.selectedClip;
-        if (selectedClip instanceof MIDIClip) this.renderMIDIClip();
 
-        // And now we'll render resizer thing
         const resizerBeginX = ClipEditorInterface.SIDEBAR_WIDTH + ((selectedClip.offset - this.session.scrolledBeats) * this.session.pxPerBeat);
         const resizerEndX = resizerBeginX + (selectedClip.length * this.session.pxPerBeat);
         ctx.strokeStyle = selectedClip.bgcolor;
@@ -522,9 +542,18 @@ export class ClipEditorInterface {
         }
         drawLine(resizerBeginX, 0, resizerBeginX, this.canvas.height);
         drawLine(resizerEndX, 0, resizerEndX, this.canvas.height);
+
+        //ctx.strokeStyle = "";
+        if (this.session.playing) {
+            const seekPxPlaying = (this.session.seeker + msToBeats(this.session.playedLength, this.session.bpm)) * this.session.pxPerBeat + ClipEditorInterface.SIDEBAR_WIDTH;
+            ctx.strokeStyle = "rgb(252, 186, 3)";
+            drawLine(seekPxPlaying, 0, seekPxPlaying, this.canvas.height);
+        }
+
+        if (selectedClip instanceof MIDIClip) this.renderMIDIClip(selectedClip);
     }
 
-    renderMIDIClip() {
+    renderMIDIClip(clip: MIDIClip) {
         const allNotesHeight = this.session.clipEditor.verticalZoom * (NotesConfiguration.NOTE_TO - NotesConfiguration.NOTE_FROM + 1) - this.canvas.height;
         if (this.session.clipEditor.verticalScroll > allNotesHeight) this.session.clipEditor.verticalScroll = allNotesHeight;
 
@@ -532,23 +561,56 @@ export class ClipEditorInterface {
         let scroll = this.session.clipEditor.verticalScroll;
         let zoom = this.session.clipEditor.verticalZoom;
 
+        const hoveringNote = NotesConfiguration.NOTE_TO - Math.floor((this.mouse.y + scroll) / zoom);
+
         // MIDI Sidebar
         ctx.fillStyle = "white";
         ctx.fillRect(0, 0, ClipEditorInterface.SIDEBAR_WIDTH, this.canvas.height);
+        const halfSidebarWidth = ClipEditorInterface.SIDEBAR_WIDTH / 2;
 
         for (let i = NotesConfiguration.NOTE_TO; i >= NotesConfiguration.NOTE_FROM; i--) {
             const drawY = (NotesConfiguration.NOTE_TO - i) * zoom - scroll;
             if (drawY + zoom < 0 || drawY > this.canvas.height) continue;
-            const noteName = notesName[i];
+            const noteName = notesName[i] + " (" + i + ")";
 
             if (noteName.includes("#")) {
-                ctx.fillStyle = "black";
-                ctx.fillRect(0, drawY, ClipEditorInterface.SIDEBAR_WIDTH / 2, zoom);
+                if (hoveringNote === i) {
+                    ctx.fillStyle = "#2c2c2c";
+                    ctx.fillRect(0, drawY, halfSidebarWidth, zoom);
+                    ctx.fillStyle = "#cecece";
+                    ctx.fillRect(halfSidebarWidth, drawY, halfSidebarWidth, zoom);
+                } else {
+                    ctx.fillStyle = "black";
+                    ctx.fillRect(0, drawY, halfSidebarWidth, zoom);
+                }
+            } else if (hoveringNote === i) {
+                ctx.fillStyle = "#cecece";
+                ctx.fillRect(0, drawY, ClipEditorInterface.SIDEBAR_WIDTH, zoom);
             }
 
             ctx.fillStyle = noteName.includes("#")? "white" : "black";
             ctx.fillText(noteName, 5, drawY + 16);
+
+            if (hoveringNote === i) {
+                ctx.fillStyle = "#cecece10";
+                ctx.fillRect(ClipEditorInterface.SIDEBAR_WIDTH, drawY, this.canvas.width - ClipEditorInterface.SIDEBAR_WIDTH, zoom);
+            }
         }
+
+        // Render notes
+        clip.notes.forEach(note => {
+            const drawX = (clip.offset + note.start - this.session.scrolledBeats) * this.session.pxPerBeat + ClipEditorInterface.SIDEBAR_WIDTH;
+            const drawY = (NotesConfiguration.NOTE_TO - note.note) * zoom - scroll;
+            const drawW = note.duration * this.session.pxPerBeat;
+            
+            if (drawX + drawW - ClipEditorInterface.SIDEBAR_WIDTH < 0) return;
+
+            ctx.fillStyle = clip.bgcolor;
+            ctx.fillRect(drawX, drawY, drawW, zoom);
+
+            ctx.fillStyle = clip.fgcolor;
+            ctx.fillText(notesName[note.note], drawX + 5, drawY + 16);
+        });
     }
 }
 
