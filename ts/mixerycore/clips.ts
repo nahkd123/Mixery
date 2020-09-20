@@ -22,16 +22,5 @@ export class MIDIClip extends Clip {
         const color = ThemeColors.randomClipColor();
         this.bgcolor = color[0];
         this.fgcolor = color[1];
-
-        // Will remove soon!
-        this.notes.push(
-            {note: 60, sensitivity: 0.75, start: 0.00, duration: 0.25},
-            {note: 64, sensitivity: 0.75, start: 0.00, duration: 0.25},
-            {note: 67, sensitivity: 0.75, start: 0.00, duration: 0.25},
-            
-            {note: 60, sensitivity: 0.75, start: 0.50, duration: 0.25},
-            {note: 64, sensitivity: 0.75, start: 0.50, duration: 0.25},
-            {note: 67, sensitivity: 0.75, start: 0.50, duration: 0.25}
-        );
     }
 }
