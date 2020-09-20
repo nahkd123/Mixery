@@ -494,13 +494,16 @@ export class ClipEditorInterface {
             this.ui.canvasRenderUpdate();
         });
 
+        this.canvas.addEventListener("mousedown", event => {
+            this.mouse.down = true;
+            this.ui.canvasRenderUpdate();
+        });
         this.canvas.addEventListener("mousemove", event => {
             this.mouse.x = event.offsetX;
             this.mouse.y = event.offsetY;
-            this.ui.canvasRenderUpdate();
-        });
-        this.canvas.addEventListener("mousedown", event => {
-            this.mouse.down = true;
+
+            if (this.mouse.down) {}
+
             this.ui.canvasRenderUpdate();
         });
         this.canvas.addEventListener("mouseup", event => {
@@ -554,7 +557,7 @@ export class ClipEditorInterface {
 
         //ctx.strokeStyle = "";
         if (this.session.playing) {
-            const seekPxPlaying = (this.session.seeker + msToBeats(this.session.playedLength, this.session.bpm)) * this.session.pxPerBeat + ClipEditorInterface.SIDEBAR_WIDTH;
+            const seekPxPlaying = (this.session.seeker - this.session.scrolledBeats + msToBeats(this.session.playedLength, this.session.bpm)) * this.session.pxPerBeat + ClipEditorInterface.SIDEBAR_WIDTH;
             ctx.strokeStyle = "rgb(252, 186, 3)";
             drawLine(seekPxPlaying, 0, seekPxPlaying, this.canvas.height);
         }
