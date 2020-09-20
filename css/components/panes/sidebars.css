@@ -1,0 +1,7 @@
+div.sidebar {
+    width: 200px;
+    display: inline-block;
+    padding: 10px 20px;
+    background: rgb(33, 27, 55);
+    border-right: 2px solid rgb(50, 44, 69);
+}

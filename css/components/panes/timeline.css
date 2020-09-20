@@ -1,0 +1,43 @@
+div.timeline {
+    background: rgb(33, 27, 55);
+}
+div.timeline > * {
+    vertical-align: top;
+}
+div.timeline > div.sidebar {
+    background: rgb(29, 23, 48);
+    color: rgb(148, 146, 157);
+}
+div.timeline > canvas.seekbar {
+    border-top: 2px solid rgb(86, 227, 198);
+    width: calc(100% - 242px);
+    display: inline-block;
+    height: 37px;
+    position: relative;
+
+    overflow: hidden;
+}
+canvas.seekbar > div.seeker {
+    position: absolute;
+    top: 0;
+    left: var(--seekpos);
+
+    width: 10px;
+    height: 12px;
+
+    background: rgb(86, 227, 198);
+    transform: translateX(-50%);
+
+    cursor: grab;
+}
+div.seeker:before {
+    content: '';
+    position: absolute;
+    top: 12px;
+    
+    width: 0;
+    height: 0;
+    border-left: 5px solid transparent;
+    border-right: 5px solid transparent;
+    border-top: 5px solid rgb(86, 227, 198);
+}

@@ -1,0 +1,16 @@
+div.playbackbutton.play {
+    -webkit-mask-image: url("../../../assets/ionicons/play-sharp.svg");
+    mask-image: url("../../../assets/ionicons/play-sharp.svg");
+}
+div.playbackbutton.seekback {
+    -webkit-mask-image: url("../../../assets/ionicons/play-back-sharp.svg");
+    mask-image: url("../../../assets/ionicons/play-back-sharp.svg");
+}
+div.playbackbutton.seekforw {
+    -webkit-mask-image: url("../../../assets/ionicons/play-forward-sharp.svg");
+    mask-image: url("../../../assets/ionicons/play-forward-sharp.svg");
+}
+div.playbackbutton.seekstart {
+    -webkit-mask-image: url("../../../assets/ionicons/play-skip-back-sharp.svg");
+    mask-image: url("../../../assets/ionicons/play-skip-back-sharp.svg");
+}

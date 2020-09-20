@@ -1,0 +1,21 @@
+div.notification {
+    position: absolute;
+    bottom: 0;
+    right: 0;
+    margin: 20px;
+    width: 250px;
+    height: 80px;
+    padding: 10px 20px;
+    background: rgb(0, 0, 0);
+    color: rgb(255, 255, 255);
+    box-shadow: 0 0 7px rgb(0, 0, 0);
+    border-radius: 3px;
+
+    z-index: 1;
+
+    transition: right 0.45s cubic-bezier(0,.04,.04,.98);
+}
+
+div.notification.closing, div.notification.opening {
+    right: -310px;
+}

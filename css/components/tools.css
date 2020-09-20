@@ -1,0 +1,28 @@
+div.tools {
+    display: inline-block;
+
+    -webkit-mask-size: cover;
+    -webkit-mask-position: center;
+    -webkit-mask-repeat: none;
+    mask-size: cover;
+    mask-position: center;
+    mask-repeat: none;
+
+    background: rgb(120, 120, 120);
+}
+div.tools.selected {
+    background: rgb(255, 255, 255);
+}
+
+div.tools.nothing {
+    -webkit-mask-image: url("../../assets/ionicons/ellipse-outline.svg");
+    mask-image: url("../../assets/ionicons/ellipse-outline.svg");
+}
+div.tools.pencil {
+    -webkit-mask-image: url("../../assets/ionicons/pencil-outline.svg");
+    mask-image: url("../../assets/ionicons/pencil-outline.svg");
+}
+div.tools.move {
+    -webkit-mask-image: url("../../assets/ionicons/move-outline.svg");
+    mask-image: url("../../assets/ionicons/move-outline.svg");
+}

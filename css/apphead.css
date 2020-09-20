@@ -1,0 +1,20 @@
+html, body {
+    margin: 0;
+    width: 100vw;
+    height: 100vh;
+    overflow: hidden;
+
+    overscroll-behavior-x: none; /* Prevent swipe to go back */
+
+    font-family: 'Nunito Sans', 'Noto Sans', 'Ubuntu', Calibri, sans-serif;
+    font-size: 14px;
+    letter-spacing: 0.5px;
+
+    user-select: none;
+    cursor: url("../assets/cursor.cur"), auto;
+}
+
+body {
+    background: rgb(23, 19, 45);
+    color: white;
+}

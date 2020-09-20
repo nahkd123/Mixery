@@ -1,0 +1,43 @@
+div.pane.plugins {
+    position: absolute;
+    top: 0;
+    left: 302px;
+    width: calc(100% - 302px);
+    height: 248px;
+    border-bottom: 2px solid rgb(50, 44, 69);
+
+    margin-top: -250px;
+    transition: margin-top 0.25s cubic-bezier(0.55, 0.14, 0.13, 1);
+}
+
+div.app.pluginsopen > div.pane.plugins {
+    margin-top: 0;
+}
+
+div.sidebar.pluginslisting {
+    padding: 0;
+    width: 240px;
+    height: 100%;
+
+    overflow: scroll;
+}
+div.sidebar.pluginslisting::-webkit-scrollbar {
+    display: none;
+}
+
+div.pluginadd {
+    padding: 10px 20px;
+}
+div.pluginadd > * {
+    vertical-align: top;
+}
+div.pluginadd > div.label {
+    display: inline-block;
+}
+
+div.pluginlistingentry {
+    padding: 10px 20px;
+}
+div.pluginlistingentry.selected {
+    background: rgb(23, 19, 45);
+}

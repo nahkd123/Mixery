@@ -1,0 +1,12 @@
+div.appwrapper {
+    position: absolute;
+    top: 41px;
+    left: 0;
+    width: 100vw;
+    height: calc(100vh - 41px);
+}
+div.appwrapper > div.app {
+    position: relative;
+    width: 100%;
+    height: 100%;
+}

@@ -1,0 +1,457 @@
+{
+  "program": {
+    "fileInfos": {
+      "c:/users/nahkd/appdata/roaming/npm/node_modules/typescript/lib/lib.es5.d.ts": {
+        "version": "70ae6416528e68c2ee7b62892200d2ca631759943d4429f8b779b947ff1e124d",
+        "signature": "70ae6416528e68c2ee7b62892200d2ca631759943d4429f8b779b947ff1e124d",
+        "affectsGlobalScope": true
+      },
+      "c:/users/nahkd/appdata/roaming/npm/node_modules/typescript/lib/lib.es2015.d.ts": {
+        "version": "dc47c4fa66b9b9890cf076304de2a9c5201e94b740cffdf09f87296d877d71f6",
+        "signature": "dc47c4fa66b9b9890cf076304de2a9c5201e94b740cffdf09f87296d877d71f6",
+        "affectsGlobalScope": false
+      },
+      "c:/users/nahkd/appdata/roaming/npm/node_modules/typescript/lib/lib.es2016.d.ts": {
+        "version": "7a387c58583dfca701b6c85e0adaf43fb17d590fb16d5b2dc0a2fbd89f35c467",
+        "signature": "7a387c58583dfca701b6c85e0adaf43fb17d590fb16d5b2dc0a2fbd89f35c467",
+        "affectsGlobalScope": false
+      },
+      "c:/users/nahkd/appdata/roaming/npm/node_modules/typescript/lib/lib.es2017.d.ts": {
+        "version": "8a12173c586e95f4433e0c6dc446bc88346be73ffe9ca6eec7aa63c8f3dca7f9",
+        "signature": "8a12173c586e95f4433e0c6dc446bc88346be73ffe9ca6eec7aa63c8f3dca7f9",
+        "affectsGlobalScope": false
+      },
+      "c:/users/nahkd/appdata/roaming/npm/node_modules/typescript/lib/lib.es2018.d.ts": {
+        "version": "5f4e733ced4e129482ae2186aae29fde948ab7182844c3a5a51dd346182c7b06",
+        "signature": "5f4e733ced4e129482ae2186aae29fde948ab7182844c3a5a51dd346182c7b06",
+        "affectsGlobalScope": false
+      },
+      "c:/users/nahkd/appdata/roaming/npm/node_modules/typescript/lib/lib.es2019.d.ts": {
+        "version": "e6b724280c694a9f588847f754198fb96c43d805f065c3a5b28bbc9594541c84",
+        "signature": "e6b724280c694a9f588847f754198fb96c43d805f065c3a5b28bbc9594541c84",
+        "affectsGlobalScope": false
+      },
+      "c:/users/nahkd/appdata/roaming/npm/node_modules/typescript/lib/lib.es2020.d.ts": {
+        "version": "94b4108552f078722078d7c4a010ca4851063882f6c0c51a1468aa7a39aed4b3",
+        "signature": "94b4108552f078722078d7c4a010ca4851063882f6c0c51a1468aa7a39aed4b3",
+        "affectsGlobalScope": false
+      },
+      "c:/users/nahkd/appdata/roaming/npm/node_modules/typescript/lib/lib.dom.d.ts": {
+        "version": "9affb0a2ddc57df5b8174c0af96c288d697a262e5bc9ca1f544c999dc64a91e6",
+        "signature": "9affb0a2ddc57df5b8174c0af96c288d697a262e5bc9ca1f544c999dc64a91e6",
+        "affectsGlobalScope": true
+      },
+      "c:/users/nahkd/appdata/roaming/npm/node_modules/typescript/lib/lib.es2015.core.d.ts": {
+        "version": "63e0cc12d0f77394094bd19e84464f9840af0071e5b9358ced30511efef1d8d2",
+        "signature": "63e0cc12d0f77394094bd19e84464f9840af0071e5b9358ced30511efef1d8d2",
+        "affectsGlobalScope": true
+      },
+      "c:/users/nahkd/appdata/roaming/npm/node_modules/typescript/lib/lib.es2015.collection.d.ts": {
+        "version": "43fb1d932e4966a39a41b464a12a81899d9ae5f2c829063f5571b6b87e6d2f9c",
+        "signature": "43fb1d932e4966a39a41b464a12a81899d9ae5f2c829063f5571b6b87e6d2f9c",
+        "affectsGlobalScope": true
+      },
+      "c:/users/nahkd/appdata/roaming/npm/node_modules/typescript/lib/lib.es2015.generator.d.ts": {
+        "version": "cdccba9a388c2ee3fd6ad4018c640a471a6c060e96f1232062223063b0a5ac6a",
+        "signature": "cdccba9a388c2ee3fd6ad4018c640a471a6c060e96f1232062223063b0a5ac6a",
+        "affectsGlobalScope": true
+      },
+      "c:/users/nahkd/appdata/roaming/npm/node_modules/typescript/lib/lib.es2015.iterable.d.ts": {
+        "version": "42f5e41e5893da663dbf0394268f54f1da4b43dc0ddd2ea4bf471fe5361d6faf",
+        "signature": "42f5e41e5893da663dbf0394268f54f1da4b43dc0ddd2ea4bf471fe5361d6faf",
+        "affectsGlobalScope": true
+      },
+      "c:/users/nahkd/appdata/roaming/npm/node_modules/typescript/lib/lib.es2015.promise.d.ts": {
+        "version": "0b7a905675e6cb4211c128f0a3aa47d414b275180a299a9aad5d3ec298abbfc4",
+        "signature": "0b7a905675e6cb4211c128f0a3aa47d414b275180a299a9aad5d3ec298abbfc4",
+        "affectsGlobalScope": true
+      },
+      "c:/users/nahkd/appdata/roaming/npm/node_modules/typescript/lib/lib.es2015.proxy.d.ts": {
+        "version": "dfff68b3c34338f6b307a25d4566de15eed7973b0dc5d69f9fde2bcac1c25315",
+        "signature": "dfff68b3c34338f6b307a25d4566de15eed7973b0dc5d69f9fde2bcac1c25315",
+        "affectsGlobalScope": true
+      },
+      "c:/users/nahkd/appdata/roaming/npm/node_modules/typescript/lib/lib.es2015.reflect.d.ts": {
+        "version": "cb609802a8698aa28b9c56331d4b53f590ca3c1c3a255350304ae3d06017779d",
+        "signature": "cb609802a8698aa28b9c56331d4b53f590ca3c1c3a255350304ae3d06017779d",
+        "affectsGlobalScope": true
+      },
+      "c:/users/nahkd/appdata/roaming/npm/node_modules/typescript/lib/lib.es2015.symbol.d.ts": {
+        "version": "3013574108c36fd3aaca79764002b3717da09725a36a6fc02eac386593110f93",
+        "signature": "3013574108c36fd3aaca79764002b3717da09725a36a6fc02eac386593110f93",
+        "affectsGlobalScope": true
+      },
+      "c:/users/nahkd/appdata/roaming/npm/node_modules/typescript/lib/lib.es2015.symbol.wellknown.d.ts": {
+        "version": "4670208dd7da9d6c774ab1b75c1527a810388c7989c4905de6aaea8561cb9dce",
+        "signature": "4670208dd7da9d6c774ab1b75c1527a810388c7989c4905de6aaea8561cb9dce",
+        "affectsGlobalScope": true
+      },
+      "c:/users/nahkd/appdata/roaming/npm/node_modules/typescript/lib/lib.es2016.array.include.d.ts": {
+        "version": "3be5a1453daa63e031d266bf342f3943603873d890ab8b9ada95e22389389006",
+        "signature": "3be5a1453daa63e031d266bf342f3943603873d890ab8b9ada95e22389389006",
+        "affectsGlobalScope": true
+      },
+      "c:/users/nahkd/appdata/roaming/npm/node_modules/typescript/lib/lib.es2017.object.d.ts": {
+        "version": "17bb1fc99591b00515502d264fa55dc8370c45c5298f4a5c2083557dccba5a2a",
+        "signature": "17bb1fc99591b00515502d264fa55dc8370c45c5298f4a5c2083557dccba5a2a",
+        "affectsGlobalScope": true
+      },
+      "c:/users/nahkd/appdata/roaming/npm/node_modules/typescript/lib/lib.es2017.sharedmemory.d.ts": {
+        "version": "d0db416bccdb33975548baf09a42ee8c47eace1aac7907351a000f1e568e7232",
+        "signature": "d0db416bccdb33975548baf09a42ee8c47eace1aac7907351a000f1e568e7232",
+        "affectsGlobalScope": true
+      },
+      "c:/users/nahkd/appdata/roaming/npm/node_modules/typescript/lib/lib.es2017.string.d.ts": {
+        "version": "6a6b173e739a6a99629a8594bfb294cc7329bfb7b227f12e1f7c11bc163b8577",
+        "signature": "6a6b173e739a6a99629a8594bfb294cc7329bfb7b227f12e1f7c11bc163b8577",
+        "affectsGlobalScope": true
+      },
+      "c:/users/nahkd/appdata/roaming/npm/node_modules/typescript/lib/lib.es2017.intl.d.ts": {
+        "version": "12a310447c5d23c7d0d5ca2af606e3bd08afda69100166730ab92c62999ebb9d",
+        "signature": "12a310447c5d23c7d0d5ca2af606e3bd08afda69100166730ab92c62999ebb9d",
+        "affectsGlobalScope": true
+      },
+      "c:/users/nahkd/appdata/roaming/npm/node_modules/typescript/lib/lib.es2017.typedarrays.d.ts": {
+        "version": "b0124885ef82641903d232172577f2ceb5d3e60aed4da1153bab4221e1f6dd4e",
+        "signature": "b0124885ef82641903d232172577f2ceb5d3e60aed4da1153bab4221e1f6dd4e",
+        "affectsGlobalScope": true
+      },
+      "c:/users/nahkd/appdata/roaming/npm/node_modules/typescript/lib/lib.es2018.asyncgenerator.d.ts": {
+        "version": "0eb85d6c590b0d577919a79e0084fa1744c1beba6fd0d4e951432fa1ede5510a",
+        "signature": "0eb85d6c590b0d577919a79e0084fa1744c1beba6fd0d4e951432fa1ede5510a",
+        "affectsGlobalScope": true
+      },
+      "c:/users/nahkd/appdata/roaming/npm/node_modules/typescript/lib/lib.es2018.asynciterable.d.ts": {
+        "version": "a40c4d82bf13fcded295ac29f354eb7d40249613c15e07b53f2fc75e45e16359",
+        "signature": "a40c4d82bf13fcded295ac29f354eb7d40249613c15e07b53f2fc75e45e16359",
+        "affectsGlobalScope": true
+      },
+      "c:/users/nahkd/appdata/roaming/npm/node_modules/typescript/lib/lib.es2018.intl.d.ts": {
+        "version": "df9c8a72ca8b0ed62f5470b41208a0587f0f73f0a7db28e5a1272cf92537518e",
+        "signature": "df9c8a72ca8b0ed62f5470b41208a0587f0f73f0a7db28e5a1272cf92537518e",
+        "affectsGlobalScope": true
+      },
+      "c:/users/nahkd/appdata/roaming/npm/node_modules/typescript/lib/lib.es2018.promise.d.ts": {
+        "version": "bb2d3fb05a1d2ffbca947cc7cbc95d23e1d053d6595391bd325deb265a18d36c",
+        "signature": "bb2d3fb05a1d2ffbca947cc7cbc95d23e1d053d6595391bd325deb265a18d36c",
+        "affectsGlobalScope": true
+      },
+      "c:/users/nahkd/appdata/roaming/npm/node_modules/typescript/lib/lib.es2018.regexp.d.ts": {
+        "version": "c80df75850fea5caa2afe43b9949338ce4e2de086f91713e9af1a06f973872b8",
+        "signature": "c80df75850fea5caa2afe43b9949338ce4e2de086f91713e9af1a06f973872b8",
+        "affectsGlobalScope": true
+      },
+      "c:/users/nahkd/appdata/roaming/npm/node_modules/typescript/lib/lib.es2019.array.d.ts": {
+        "version": "9d57b2b5d15838ed094aa9ff1299eecef40b190722eb619bac4616657a05f951",
+        "signature": "9d57b2b5d15838ed094aa9ff1299eecef40b190722eb619bac4616657a05f951",
+        "affectsGlobalScope": true
+      },
+      "c:/users/nahkd/appdata/roaming/npm/node_modules/typescript/lib/lib.es2019.object.d.ts": {
+        "version": "6c51b5dd26a2c31dbf37f00cfc32b2aa6a92e19c995aefb5b97a3a64f1ac99de",
+        "signature": "6c51b5dd26a2c31dbf37f00cfc32b2aa6a92e19c995aefb5b97a3a64f1ac99de",
+        "affectsGlobalScope": true
+      },
+      "c:/users/nahkd/appdata/roaming/npm/node_modules/typescript/lib/lib.es2019.string.d.ts": {
+        "version": "93544ca2f26a48716c1b6c5091842cad63129daac422dfa4bc52460465f22bb1",
+        "signature": "93544ca2f26a48716c1b6c5091842cad63129daac422dfa4bc52460465f22bb1",
+        "affectsGlobalScope": true
+      },
+      "c:/users/nahkd/appdata/roaming/npm/node_modules/typescript/lib/lib.es2019.symbol.d.ts": {
+        "version": "2ad234885a4240522efccd77de6c7d99eecf9b4de0914adb9a35c0c22433f993",
+        "signature": "2ad234885a4240522efccd77de6c7d99eecf9b4de0914adb9a35c0c22433f993",
+        "affectsGlobalScope": true
+      },
+      "c:/users/nahkd/appdata/roaming/npm/node_modules/typescript/lib/lib.es2020.bigint.d.ts": {
+        "version": "4f435f794b7853c55e2ae7cff6206025802aa79232d2867544178f2ca8ff5eaa",
+        "signature": "4f435f794b7853c55e2ae7cff6206025802aa79232d2867544178f2ca8ff5eaa",
+        "affectsGlobalScope": true
+      },
+      "c:/users/nahkd/appdata/roaming/npm/node_modules/typescript/lib/lib.es2020.promise.d.ts": {
+        "version": "7435b75fdf3509622e79622dbe5091cf4b09688410ee2034e4fc17d0c99d0862",
+        "signature": "7435b75fdf3509622e79622dbe5091cf4b09688410ee2034e4fc17d0c99d0862",
+        "affectsGlobalScope": true
+      },
+      "c:/users/nahkd/appdata/roaming/npm/node_modules/typescript/lib/lib.es2020.string.d.ts": {
+        "version": "faf0221ae0465363c842ce6aa8a0cbda5d9296940a8e26c86e04cc4081eea21e",
+        "signature": "faf0221ae0465363c842ce6aa8a0cbda5d9296940a8e26c86e04cc4081eea21e",
+        "affectsGlobalScope": true
+      },
+      "c:/users/nahkd/appdata/roaming/npm/node_modules/typescript/lib/lib.es2020.symbol.wellknown.d.ts": {
+        "version": "936d7d2e8851af9ccfa5333b15e877a824417d352b1d7fd06388639dc69ef80a",
+        "signature": "936d7d2e8851af9ccfa5333b15e877a824417d352b1d7fd06388639dc69ef80a",
+        "affectsGlobalScope": true
+      },
+      "../ts/mixerycore/midi.ts": {
+        "version": "a5f997a37e34f33fbd0c4c8e08184a79f028c1dce3a7b4ec59570b74f95983a0",
+        "signature": "2ef5aa441cad2c0cdbf842cb7734aa8c11274e3f7590106c06be2daeba9a9d2a",
+        "affectsGlobalScope": false
+      },
+      "../ts/utils/msbeats.ts": {
+        "version": "f49a410c5dca6dd547e34f13608697e6a631e8e0b8c87174048a435997f6a37e",
+        "signature": "f8c6d718221f819fcea7a57c395d19b38a4d35f90e9617945f45fbe8f367ecad",
+        "affectsGlobalScope": false
+      },
+      "../ts/mixerycore/generator.ts": {
+        "version": "1111467a72e75b1095f569ec2b0df188d6daa4f31e112bd75f54819cafb3944a",
+        "signature": "5a7558c91a25f78a24a34148fb2a5978489a5b5f5e4b5c048fea3faffc4b9e0a",
+        "affectsGlobalScope": false
+      },
+      "../ts/utils/themecolors.ts": {
+        "version": "3d3d385f1ffd55d14228d2fcbcced785fcbe6b354214fe5ad893b554c0b71c58",
+        "signature": "cf505e10bda8c7d87721579f0be72dd6d72ecd50d68912e9bd5bd435d641d03f",
+        "affectsGlobalScope": false
+      },
+      "../ts/mixerycore/clips.ts": {
+        "version": "caf3034fd25ebc8d331aa448dd02939514bb87c1553ed50872ca64370627a46c",
+        "signature": "12164ed81323f8785ae15d4dc614e8a724a316fd3048baa9936f51d76c7bd7bd",
+        "affectsGlobalScope": false
+      },
+      "../ts/utils/trimtext.ts": {
+        "version": "3186b27d25644e8fda070e2f44dd0e73b94a12d763bb19a2e15e65704d4305df",
+        "signature": "6794c12359d35867a5f296d4a57358048eadc7545ef47aa0b18238011bf22640",
+        "affectsGlobalScope": false
+      },
+      "../ts/mixerycore/tools.ts": {
+        "version": "d3e42c45bcb3675840fb607433189bb48ac2373d10a4112735e3ff6c99ef3a4b",
+        "signature": "a078cd241a2f48d08d6f1f1d60e1a31ee818b5417a818eb3951c92be8eb3531d",
+        "affectsGlobalScope": false
+      },
+      "../ts/mixerycore/playlist.ts": {
+        "version": "6d4dce430ba9000382e571859cda48f363f0cd1de0116989e0cd849824869953",
+        "signature": "f87ceeb9571393bff920e48031b81bf1be9f9659e8f0cfa79948ba1914b6f812",
+        "affectsGlobalScope": false
+      },
+      "../ts/mixerycore/plugins.ts": {
+        "version": "02c120a91dc0648915c690d16ef2025c0f7e863bf3d74e796b1e78e5ffbe9c84",
+        "signature": "e1d0925589f90a3fa9ee3211233890fd6ed2dc0ca082335715410fadb2f049d5",
+        "affectsGlobalScope": false
+      },
+      "../ts/notifications/notification.ts": {
+        "version": "ee518005d038eecc66c8360501cf769448ab27e4b750b289786e42d827915bc9",
+        "signature": "725b9a603973a8272382e23fd3098252b70ff31c8fc9c44d42723be8536048bc",
+        "affectsGlobalScope": false
+      },
+      "../ts/notifications/notificationsmgr.ts": {
+        "version": "3fafe6cbf4ca11c672c243e41a30aa1da235f2659964ea9420c1c489a2e8048a",
+        "signature": "8cf8a53068d05dab662628441b2f57f670c4e42762bf1a96f76d22295e6f6f62",
+        "affectsGlobalScope": false
+      },
+      "../ts/mixerycore/session.ts": {
+        "version": "4c997cf188acfae134bdc018127ba666a744fc3b1ba68e7ac37b06ce9896e4d4",
+        "signature": "3d090ca8e77df7b6b279d00729acd2fe228429b9a427df23ac8b2740d535d5b8",
+        "affectsGlobalScope": false
+      },
+      "../ts/utils/snapper.ts": {
+        "version": "24b8a7d522db2e3d4e3bf63e514be85ab9219ce2716c99e7a5b20823dee44702",
+        "signature": "71bc12d7afa6481077e9190f9ddb061d094e4098523bd2d521f3c8919e0a0e22",
+        "affectsGlobalScope": false
+      },
+      "../ts/utils/numberround.ts": {
+        "version": "8ce6620208c51931599103a87bf10cca58cda01bdf09b6e7b24a131b18376309",
+        "signature": "02874cacff0bb6721a003f023d6db6d3912733b9c3f2a0f3300ccdda5ac415b0",
+        "affectsGlobalScope": false
+      },
+      "../ts/mixeryui/explorer.ts": {
+        "version": "770a2ad2e9c06aad1903b2daa1c722063a3b0d94eda78c6ef6bb334f88c70a16",
+        "signature": "6f5f59463528f2fe8e67f7ca1e3182010b72e161d2c845a0c0021e6e96ee28d3",
+        "affectsGlobalScope": false
+      },
+      "../ts/mixerycore/notes.ts": {
+        "version": "2cb9904b675d4249976be10d530b7390dfda300969f5c014737644b82cfd6fce",
+        "signature": "1f1afecebe7fda30f769146da328ba89fb2065cfce4e97968f776397b7256f70",
+        "affectsGlobalScope": false
+      },
+      "../ts/mixeryui/ui.ts": {
+        "version": "f665dfd46b6ce07e6208901d4e5ba6d907bdef5257a9c1722fdfde607c7b029d",
+        "signature": "376e3cca3cbf374c1b2471dfcedc42047d65558b0fcf62096e9c999dfcea6b66",
+        "affectsGlobalScope": false
+      },
+      "../ts/app/plugins.ts": {
+        "version": "c03ce6d24ac207aa54640cd6d85304a77e8b5ed4be7d716d1e5057726e7c1d19",
+        "signature": "fb6e67ff7911743eb986c551a47671e9825c35a644a5c2a250dcb8b888621d68",
+        "affectsGlobalScope": false
+      },
+      "../ts/app/index.ts": {
+        "version": "d9e8ee29cf93354c161d4b061b66d3cb577f7f582e843385b2de82e85ea5821b",
+        "signature": "f761c91419d0a89422a0004ef1a92929dd4d2d5e5c16758654d8b0467d1998c6",
+        "affectsGlobalScope": false
+      }
+    },
+    "options": {
+      "module": 6,
+      "target": 7,
+      "lib": [
+        "lib.es2020.d.ts",
+        "lib.dom.d.ts"
+      ],
+      "incremental": true,
+      "tsBuildInfoFile": "./tsbuild.json",
+      "outDir": "../bin",
+      "sourceMap": true,
+      "watch": true,
+      "configFilePath": "../tsconfig.json"
+    },
+    "referencedMap": {
+      "../ts/app/index.ts": [
+        "../ts/app/plugins.ts",
+        "../ts/mixerycore/generator.ts",
+        "../ts/mixerycore/notes.ts",
+        "../ts/mixerycore/session.ts",
+        "../ts/mixeryui/ui.ts"
+      ],
+      "../ts/app/plugins.ts": [
+        "../ts/mixerycore/generator.ts",
+        "../ts/mixerycore/plugins.ts",
+        "../ts/mixeryui/explorer.ts"
+      ],
+      "../ts/mixerycore/clips.ts": [
+        "../ts/mixerycore/generator.ts",
+        "../ts/mixerycore/midi.ts",
+        "../ts/utils/themecolors.ts"
+      ],
+      "../ts/mixerycore/generator.ts": [
+        "../ts/mixerycore/clips.ts",
+        "../ts/mixerycore/session.ts",
+        "../ts/utils/msbeats.ts"
+      ],
+      "../ts/mixerycore/playlist.ts": [
+        "../ts/mixerycore/clips.ts",
+        "../ts/mixerycore/session.ts",
+        "../ts/mixerycore/tools.ts",
+        "../ts/utils/trimtext.ts"
+      ],
+      "../ts/mixerycore/plugins.ts": [
+        "../ts/mixerycore/generator.ts",
+        "../ts/mixerycore/session.ts"
+      ],
+      "../ts/mixerycore/session.ts": [
+        "../ts/mixerycore/clips.ts",
+        "../ts/mixerycore/playlist.ts",
+        "../ts/mixerycore/plugins.ts",
+        "../ts/notifications/notificationsmgr.ts",
+        "../ts/utils/msbeats.ts"
+      ],
+      "../ts/mixeryui/explorer.ts": [
+        "../ts/mixerycore/generator.ts",
+        "../ts/mixerycore/midi.ts",
+        "../ts/mixerycore/plugins.ts",
+        "../ts/mixeryui/ui.ts"
+      ],
+      "../ts/mixeryui/ui.ts": [
+        "../ts/mixerycore/clips.ts",
+        "../ts/mixerycore/generator.ts",
+        "../ts/mixerycore/notes.ts",
+        "../ts/mixerycore/session.ts",
+        "../ts/mixerycore/tools.ts",
+        "../ts/mixeryui/explorer.ts",
+        "../ts/utils/msbeats.ts",
+        "../ts/utils/numberround.ts",
+        "../ts/utils/snapper.ts"
+      ],
+      "../ts/notifications/notificationsmgr.ts": [
+        "../ts/notifications/notification.ts"
+      ]
+    },
+    "exportedModulesMap": {
+      "../ts/app/plugins.ts": [
+        "../ts/mixerycore/generator.ts",
+        "../ts/mixerycore/plugins.ts",
+        "../ts/mixeryui/explorer.ts"
+      ],
+      "../ts/mixerycore/clips.ts": [
+        "../ts/mixerycore/generator.ts",
+        "../ts/mixerycore/midi.ts"
+      ],
+      "../ts/mixerycore/generator.ts": [
+        "../ts/mixerycore/clips.ts",
+        "../ts/mixerycore/session.ts"
+      ],
+      "../ts/mixerycore/playlist.ts": [
+        "../ts/mixerycore/clips.ts",
+        "../ts/mixerycore/session.ts",
+        "../ts/mixerycore/tools.ts"
+      ],
+      "../ts/mixerycore/plugins.ts": [
+        "../ts/mixerycore/generator.ts",
+        "../ts/mixerycore/session.ts"
+      ],
+      "../ts/mixerycore/session.ts": [
+        "../ts/mixerycore/playlist.ts",
+        "../ts/mixerycore/plugins.ts",
+        "../ts/notifications/notificationsmgr.ts"
+      ],
+      "../ts/mixeryui/explorer.ts": [
+        "../ts/mixerycore/generator.ts",
+        "../ts/mixerycore/midi.ts",
+        "../ts/mixerycore/plugins.ts",
+        "../ts/mixeryui/ui.ts"
+      ],
+      "../ts/mixeryui/ui.ts": [
+        "../ts/mixerycore/generator.ts",
+        "../ts/mixerycore/session.ts",
+        "../ts/mixeryui/explorer.ts"
+      ],
+      "../ts/notifications/notificationsmgr.ts": [
+        "../ts/notifications/notification.ts"
+      ]
+    },
+    "semanticDiagnosticsPerFile": [
+      "c:/users/nahkd/appdata/roaming/npm/node_modules/typescript/lib/lib.dom.d.ts",
+      "c:/users/nahkd/appdata/roaming/npm/node_modules/typescript/lib/lib.es2015.collection.d.ts",
+      "c:/users/nahkd/appdata/roaming/npm/node_modules/typescript/lib/lib.es2015.core.d.ts",
+      "c:/users/nahkd/appdata/roaming/npm/node_modules/typescript/lib/lib.es2015.d.ts",
+      "c:/users/nahkd/appdata/roaming/npm/node_modules/typescript/lib/lib.es2015.generator.d.ts",
+      "c:/users/nahkd/appdata/roaming/npm/node_modules/typescript/lib/lib.es2015.iterable.d.ts",
+      "c:/users/nahkd/appdata/roaming/npm/node_modules/typescript/lib/lib.es2015.promise.d.ts",
+      "c:/users/nahkd/appdata/roaming/npm/node_modules/typescript/lib/lib.es2015.proxy.d.ts",
+      "c:/users/nahkd/appdata/roaming/npm/node_modules/typescript/lib/lib.es2015.reflect.d.ts",
+      "c:/users/nahkd/appdata/roaming/npm/node_modules/typescript/lib/lib.es2015.symbol.d.ts",
+      "c:/users/nahkd/appdata/roaming/npm/node_modules/typescript/lib/lib.es2015.symbol.wellknown.d.ts",
+      "c:/users/nahkd/appdata/roaming/npm/node_modules/typescript/lib/lib.es2016.array.include.d.ts",
+      "c:/users/nahkd/appdata/roaming/npm/node_modules/typescript/lib/lib.es2016.d.ts",
+      "c:/users/nahkd/appdata/roaming/npm/node_modules/typescript/lib/lib.es2017.d.ts",
+      "c:/users/nahkd/appdata/roaming/npm/node_modules/typescript/lib/lib.es2017.intl.d.ts",
+      "c:/users/nahkd/appdata/roaming/npm/node_modules/typescript/lib/lib.es2017.object.d.ts",
+      "c:/users/nahkd/appdata/roaming/npm/node_modules/typescript/lib/lib.es2017.sharedmemory.d.ts",
+      "c:/users/nahkd/appdata/roaming/npm/node_modules/typescript/lib/lib.es2017.string.d.ts",
+      "c:/users/nahkd/appdata/roaming/npm/node_modules/typescript/lib/lib.es2017.typedarrays.d.ts",
+      "c:/users/nahkd/appdata/roaming/npm/node_modules/typescript/lib/lib.es2018.asyncgenerator.d.ts",
+      "c:/users/nahkd/appdata/roaming/npm/node_modules/typescript/lib/lib.es2018.asynciterable.d.ts",
+      "c:/users/nahkd/appdata/roaming/npm/node_modules/typescript/lib/lib.es2018.d.ts",
+      "c:/users/nahkd/appdata/roaming/npm/node_modules/typescript/lib/lib.es2018.intl.d.ts",
+      "c:/users/nahkd/appdata/roaming/npm/node_modules/typescript/lib/lib.es2018.promise.d.ts",
+      "c:/users/nahkd/appdata/roaming/npm/node_modules/typescript/lib/lib.es2018.regexp.d.ts",
+      "c:/users/nahkd/appdata/roaming/npm/node_modules/typescript/lib/lib.es2019.array.d.ts",
+      "c:/users/nahkd/appdata/roaming/npm/node_modules/typescript/lib/lib.es2019.d.ts",
+      "c:/users/nahkd/appdata/roaming/npm/node_modules/typescript/lib/lib.es2019.object.d.ts",
+      "c:/users/nahkd/appdata/roaming/npm/node_modules/typescript/lib/lib.es2019.string.d.ts",
+      "c:/users/nahkd/appdata/roaming/npm/node_modules/typescript/lib/lib.es2019.symbol.d.ts",
+      "c:/users/nahkd/appdata/roaming/npm/node_modules/typescript/lib/lib.es2020.bigint.d.ts",
+      "c:/users/nahkd/appdata/roaming/npm/node_modules/typescript/lib/lib.es2020.d.ts",
+      "c:/users/nahkd/appdata/roaming/npm/node_modules/typescript/lib/lib.es2020.promise.d.ts",
+      "c:/users/nahkd/appdata/roaming/npm/node_modules/typescript/lib/lib.es2020.string.d.ts",
+      "c:/users/nahkd/appdata/roaming/npm/node_modules/typescript/lib/lib.es2020.symbol.wellknown.d.ts",
+      "c:/users/nahkd/appdata/roaming/npm/node_modules/typescript/lib/lib.es5.d.ts",
+      "../ts/app/index.ts",
+      "../ts/app/plugins.ts",
+      "../ts/mixerycore/clips.ts",
+      "../ts/mixerycore/generator.ts",
+      "../ts/mixerycore/midi.ts",
+      "../ts/mixerycore/notes.ts",
+      "../ts/mixerycore/playlist.ts",
+      "../ts/mixerycore/plugins.ts",
+      "../ts/mixerycore/session.ts",
+      "../ts/mixerycore/tools.ts",
+      "../ts/mixeryui/explorer.ts",
+      "../ts/mixeryui/ui.ts",
+      "../ts/notifications/notification.ts",
+      "../ts/notifications/notificationsmgr.ts",
+      "../ts/utils/msbeats.ts",
+      "../ts/utils/numberround.ts",
+      "../ts/utils/snapper.ts",
+      "../ts/utils/themecolors.ts",
+      "../ts/utils/trimtext.ts"
+    ]
+  },
+  "version": "3.9.7"
+}
