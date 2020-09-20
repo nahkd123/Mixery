@@ -68,6 +68,7 @@ export class Session {
                 if (shortcut.code === keyStr) shortcut.action();
             });
 
+            if ((event.target as HTMLDivElement).isContentEditable) return;
             switch (keyStr) {
                 case "Ctrl + KeyR": this.notifications.push({
                     title: "a",
