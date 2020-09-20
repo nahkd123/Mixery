@@ -479,7 +479,16 @@ export class ClipEditorInterface {
         this.ctx = this.canvas.getContext("2d");
 
         this.canvas.addEventListener("wheel", event => {
-            this.session.clipEditor.verticalScroll += event.deltaY;
+            if (event.ctrlKey) {
+                const oldMouseNote = (this.session.clipEditor.verticalScroll + this.mouse.y) / this.session.clipEditor.verticalZoom;
+
+                this.session.clipEditor.verticalZoom -= event.deltaY / 25;
+                this.session.clipEditor.verticalScroll = (oldMouseNote * this.session.clipEditor.verticalZoom) - this.mouse.y;
+                if (this.session.clipEditor.verticalZoom < 5) this.session.clipEditor.verticalZoom = 5;
+                if (this.session.clipEditor.verticalZoom > 350) this.session.clipEditor.verticalZoom = 350;
+                
+                event.preventDefault();
+            } else this.session.clipEditor.verticalScroll += event.deltaY;
             this.session.scrolledPixels += event.deltaX;
             if (this.session.scrolledPixels < 0) this.session.scrolledPixels = 0;
             this.ui.canvasRenderUpdate();
@@ -518,7 +527,7 @@ export class ClipEditorInterface {
 
         let ctx = this.ctx;
         ctx.clearRect(0, 0, this.canvas.width, this.canvas.height);
-        ctx.font = "14px 'Nunito Sans', 'Noto Sans', 'Ubuntu', Calibri, sans-serif";
+        ctx.font = "12px 'Nunito Sans', 'Noto Sans', 'Ubuntu', Calibri, sans-serif";
 
         if (this.session.playlist.selectedClip === undefined) {
             ctx.fillStyle = "white";
