@@ -114,8 +114,20 @@ export class PlaylistInterface {
                 tool = this.session.playlist.selectedTool;
                 // console.log(clickedBeat);
                 if (tool === Tools.NOTHING) {
-                    this.session.seeker = beginBeat;
-                    this.ui.canvasRenderUpdate();
+                    if (event.button === 2) {
+                        globalCanvasMouseDown = false;
+                        for (let i = 0; i < track.clips.length; i++) {
+                            const clip = track.clips[i];
+                            if (beginBeat >= clip.offset && clip.offset <= clip.offset + clip.length) {
+                                track.clips.splice(i, 1);
+                                if (this.session.playlist.selectedClip === clip) this.session.playlist.selectedClip = undefined;
+                                return;
+                            }
+                        }
+                    } else {
+                        this.session.seeker = beginBeat;
+                        this.ui.canvasRenderUpdate();
+                    }
                 } else if (tool === Tools.PENCIL) {
                 } else if (tool === Tools.MOVE) {
                     this.session.scrollFriction = Math.round(this.session.scrollFriction * 0.2);
@@ -140,6 +152,10 @@ export class PlaylistInterface {
             });
 
             let buildupFriction = false;
+            canvas.addEventListener("contextmenu", event => {
+                event.preventDefault();
+                this.ui.canvasRenderUpdate();
+            });
             canvas.addEventListener("mousemove", event => {
                 if (buildupFriction) this.session.scrollFriction -= event.movementX;
                 if (!globalCanvasMouseDown) return;
@@ -196,7 +212,7 @@ export class PlaylistInterface {
                     buildupFriction = true;
                     setTimeout(() => {
                         buildupFriction = false;
-                    }, 50);
+                    }, 30);
                 }
             });
 
@@ -514,7 +530,6 @@ export class ClipEditorInterface {
             if (selectedClip instanceof MIDIClip) {
                 const clickedNote = NotesConfiguration.NOTE_TO - Math.floor((this.mouse.y + this.session.clipEditor.verticalScroll) / this.session.clipEditor.verticalZoom);
                 const selectedTool = this.session.playlist.selectedTool;
-                console.log(clickedNote, clickedBeat);
 
                 if (selectedTool === Tools.NOTHING) {
                     if (event.button === 2) {
