@@ -217,7 +217,7 @@
         "affectsGlobalScope": false
       },
       "../ts/mixerycore/playlist.ts": {
-        "version": "6d4dce430ba9000382e571859cda48f363f0cd1de0116989e0cd849824869953",
+        "version": "e0374a7e616bea2b57a36f97d33e890931acf77b9661d57ec469896ebd1e19dd",
         "signature": "f87ceeb9571393bff920e48031b81bf1be9f9659e8f0cfa79948ba1914b6f812",
         "affectsGlobalScope": false
       },
@@ -262,7 +262,7 @@
         "affectsGlobalScope": false
       },
       "../ts/mixeryui/ui.ts": {
-        "version": "2ed062b2d055b43d7a781b10e34fdb06e29905f875c90a233b04e8229328525a",
+        "version": "5892d6afb08f6767690e8305334851ad3564c25b07bb7e59402ad27c4384f753",
         "signature": "e9d8cb4c08b650165badbcfa5ea86c7e71b998bc95c15e886dd8c17d71853387",
         "affectsGlobalScope": false
       },

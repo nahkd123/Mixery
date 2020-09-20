@@ -113,22 +113,30 @@ export class PlaylistInterface {
                 beginBeat = snap(event.offsetX / this.session.pxPerBeat + this.session.scrolledBeats, ...BeatSnapPreset);
                 tool = this.session.playlist.selectedTool;
                 // console.log(clickedBeat);
+
+                function deleteClipAtCursor() {
+                    globalCanvasMouseDown = false;
+                    for (let i = 0; i < track.clips.length; i++) {
+                        const clip = track.clips[i];
+                        if (beginBeat >= clip.offset && clip.offset <= clip.offset + clip.length) {
+                            track.clips.splice(i, 1);
+                            if (this.session.playlist.selectedClip === clip) this.session.playlist.selectedClip = undefined;
+                            return;
+                        }
+                    }
+                }
+
                 if (tool === Tools.NOTHING) {
                     if (event.button === 2) {
-                        globalCanvasMouseDown = false;
-                        for (let i = 0; i < track.clips.length; i++) {
-                            const clip = track.clips[i];
-                            if (beginBeat >= clip.offset && clip.offset <= clip.offset + clip.length) {
-                                track.clips.splice(i, 1);
-                                if (this.session.playlist.selectedClip === clip) this.session.playlist.selectedClip = undefined;
-                                return;
-                            }
-                        }
+                        deleteClipAtCursor();
                     } else {
                         this.session.seeker = beginBeat;
                         this.ui.canvasRenderUpdate();
                     }
                 } else if (tool === Tools.PENCIL) {
+                    if (event.button === 2) {
+                        deleteClipAtCursor();
+                    } 
                 } else if (tool === Tools.MOVE) {
                     this.session.scrollFriction = Math.round(this.session.scrollFriction * 0.2);
                     this.session.playlist.selectedClip = undefined;
@@ -182,26 +190,31 @@ export class PlaylistInterface {
                 globalCanvasMouseDown = false;
                 const cursorBeat = snap(event.offsetX / this.session.pxPerBeat + this.session.scrolledBeats, ...BeatSnapPreset);
                 if (tool === Tools.PENCIL) {
-                    if (this.session.plugins.selected === undefined) {
-                        if (this.session.notifications.hasTag("selectplugin")) return;
-                        this.session.notifications.push({
-                            desc: "You need to select a plugin to continue",
-                            tags: ["selectplugin"],
-                            duration: 3000
-                        });
-                        return;
+                    if (event.button === 2) {}
+                    else {
+                        if (this.session.plugins.selected === undefined) {
+                            if (this.session.notifications.hasTag("selectplugin")) return;
+                            this.session.notifications.push({
+                                desc: "You need to select a plugin to continue",
+                                tags: ["selectplugin"],
+                                duration: 3000
+                            });
+                            return;
+                        }
+                        let targetPlugin = this.session.plugins.selected;
+    
+                        let clipLength = cursorBeat - beginBeat || 1;
+                        if (clipLength <= 0) return;
+
+                        let clip = new MIDIClip(targetPlugin.generator);
+                        clip.name = targetPlugin.name;
+                        clip.offset = beginBeat;
+                        clip.length = clipLength;
+                        track.clips.push(clip);
+    
+                        this.session.playlist.selectedClip = clip;
+                        this.ui.canvasRenderUpdate();
                     }
-                    let targetPlugin = this.session.plugins.selected;
-
-                    let clipLength = cursorBeat - beginBeat || 1;
-                    let clip = new MIDIClip(targetPlugin.generator);
-                    clip.name = targetPlugin.name;
-                    clip.offset = beginBeat;
-                    clip.length = clipLength;
-                    track.clips.push(clip);
-
-                    this.session.playlist.selectedClip = clip;
-                    this.ui.canvasRenderUpdate();
                 } else if (tool === Tools.MOVE) {
                     if (movingClip) {
                         movingClip = false;
@@ -580,6 +593,8 @@ export class ClipEditorInterface {
 
                 if (selectedClip instanceof MIDIClip) {
                     if (selectedTool === Tools.NOTHING) {
+                        if (clickedBeat - this.midiDrawInfo.noteStart <= 0) return;
+                        
                         selectedClip.notes.push({
                             note: this.midiDrawInfo.noteIndex,
                             sensitivity: 0.75,
