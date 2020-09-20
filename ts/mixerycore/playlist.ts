@@ -40,16 +40,16 @@ export class PlaylistTrack {
                 this.ctx.lineTo(seekerDraw, 39);
                 this.ctx.stroke();
                 this.ctx.closePath();
+            }
 
-                const seekerPlayingDraw = seekerDraw + this.session.playedBeats * this.session.pxPerBeat;
-                if (this.session.playing && seekerPlayingDraw >= 0 && seekerPlayingDraw <= this.viewCanvas.width) {
-                    this.ctx.strokeStyle = "rgb(252, 186, 3)";
-                    this.ctx.beginPath();
-                    this.ctx.moveTo(seekerPlayingDraw, 0);
-                    this.ctx.lineTo(seekerPlayingDraw, 39);
-                    this.ctx.stroke();
-                    this.ctx.closePath();
-                }
+            const seekerPlayingDraw = seekerDraw + this.session.playedBeats * this.session.pxPerBeat;
+            if (this.session.playing && seekerPlayingDraw >= 0 && seekerPlayingDraw <= this.viewCanvas.width) {
+                this.ctx.strokeStyle = "rgb(252, 186, 3)";
+                this.ctx.beginPath();
+                this.ctx.moveTo(seekerPlayingDraw, 0);
+                this.ctx.lineTo(seekerPlayingDraw, 39);
+                this.ctx.stroke();
+                this.ctx.closePath();
             }
 
             this.clips.forEach(clip => {
