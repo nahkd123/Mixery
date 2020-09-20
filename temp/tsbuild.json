@@ -202,7 +202,7 @@
         "affectsGlobalScope": false
       },
       "../ts/mixerycore/clips.ts": {
-        "version": "b812d1fece7c6179aa2135d5a569e8ef9cfec80452bc831b3f6349ac2df14658",
+        "version": "8ea5eed62f8c18938e662b5b0ceb8e95731e8130aa2f12653e421286a663dd08",
         "signature": "12164ed81323f8785ae15d4dc614e8a724a316fd3048baa9936f51d76c7bd7bd",
         "affectsGlobalScope": false
       },
@@ -237,7 +237,7 @@
         "affectsGlobalScope": false
       },
       "../ts/mixerycore/session.ts": {
-        "version": "4c997cf188acfae134bdc018127ba666a744fc3b1ba68e7ac37b06ce9896e4d4",
+        "version": "83022718089bd84c2e4446c28d0c5c9554f0952a9604f90aca1b9b1673f80c44",
         "signature": "3d090ca8e77df7b6b279d00729acd2fe228429b9a427df23ac8b2740d535d5b8",
         "affectsGlobalScope": false
       },
@@ -262,8 +262,8 @@
         "affectsGlobalScope": false
       },
       "../ts/mixeryui/ui.ts": {
-        "version": "e085f5d1082ab34fd0dc6e7de132d10c01afdcd0010bb2a62a8ea498b44ab322",
-        "signature": "b8cd5f62b1ab5224b4013e79471e6607e6613d526e18b0ca441cb4b751806c47",
+        "version": "2ed062b2d055b43d7a781b10e34fdb06e29905f875c90a233b04e8229328525a",
+        "signature": "e9d8cb4c08b650165badbcfa5ea86c7e71b998bc95c15e886dd8c17d71853387",
         "affectsGlobalScope": false
       },
       "../ts/app/plugins.ts": {

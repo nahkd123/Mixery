@@ -494,19 +494,89 @@ export class ClipEditorInterface {
             this.ui.canvasRenderUpdate();
         });
 
+        let clickDisabled = false;
+        this.canvas.addEventListener("contextmenu", event => {
+            event.preventDefault();
+            this.ui.canvasRenderUpdate();
+        });
+        
         this.canvas.addEventListener("mousedown", event => {
+            if (clickDisabled) return;
+            
             this.mouse.down = true;
+            this.mouse.x = event.offsetX;
+            this.mouse.y = event.offsetY;
+
+            if (this.mouse.x <= ClipEditorInterface.SIDEBAR_WIDTH) return;
+            let selectedClip = this.session.playlist.selectedClip;
+            const clickedBeat = snap((this.mouse.x - ClipEditorInterface.SIDEBAR_WIDTH + this.session.scrolledPixels) / this.session.pxPerBeat, ...this.session.clipEditor.availableLengths);
+
+            if (selectedClip instanceof MIDIClip) {
+                const clickedNote = NotesConfiguration.NOTE_TO - Math.floor((this.mouse.y + this.session.clipEditor.verticalScroll) / this.session.clipEditor.verticalZoom);
+                const selectedTool = this.session.playlist.selectedTool;
+                console.log(clickedNote, clickedBeat);
+
+                if (selectedTool === Tools.NOTHING) {
+                    if (event.button === 2) {
+                        // Normal deleting
+                        this.mouse.down = false;
+                        for (let i = 0; i < selectedClip.notes.length; i++) {
+                            const note = selectedClip.notes[i];
+                            if (note.note === clickedNote && clickedBeat >= selectedClip.offset + note.start && clickedBeat <= selectedClip.offset + note.start + note.duration) {
+                                selectedClip.notes.splice(i, 1);
+                                break;
+                            }
+                        }
+                    } else {
+                        // Normal placing
+                        this.midiDrawInfo.noteIndex = clickedNote;
+                        this.midiDrawInfo.noteStart = clickedBeat;
+                        this.midiDrawInfo.noteEnd = clickedBeat;
+                    }
+                } else if (selectedTool === Tools.PENCIL) {
+                    // Freedraw
+                }
+            }
+
             this.ui.canvasRenderUpdate();
         });
         this.canvas.addEventListener("mousemove", event => {
             this.mouse.x = event.offsetX;
             this.mouse.y = event.offsetY;
 
-            if (this.mouse.down) {}
+            if (this.mouse.down) {
+                const selectedTool = this.session.playlist.selectedTool;
+                const clickedBeat = snap((this.mouse.x - ClipEditorInterface.SIDEBAR_WIDTH + this.session.scrolledPixels) / this.session.pxPerBeat, ...this.session.clipEditor.availableLengths);
+
+                if (selectedTool === Tools.NOTHING) {
+                    this.midiDrawInfo.noteEnd = clickedBeat;
+                }
+            }
 
             this.ui.canvasRenderUpdate();
         });
         this.canvas.addEventListener("mouseup", event => {
+            if (clickDisabled) return;
+
+            if (this.mouse.down) {
+                let selectedClip = this.session.playlist.selectedClip;
+                const selectedTool = this.session.playlist.selectedTool;
+                const clickedBeat = snap((this.mouse.x - ClipEditorInterface.SIDEBAR_WIDTH + this.session.scrolledPixels) / this.session.pxPerBeat, ...this.session.clipEditor.availableLengths);
+
+                if (selectedClip instanceof MIDIClip) {
+                    if (selectedTool === Tools.NOTHING) {
+                        selectedClip.notes.push({
+                            note: this.midiDrawInfo.noteIndex,
+                            sensitivity: 0.75,
+                            start: this.midiDrawInfo.noteStart - selectedClip.offset,
+                            duration: clickedBeat - this.midiDrawInfo.noteStart
+                        });
+                        // console.log(selectedClip.notes);
+                        selectedClip.notes.sort((a, b) => (a.start - b.start))
+                    }
+                }
+            }
+
             this.mouse.down = false;
             this.ui.canvasRenderUpdate();
         });
@@ -519,6 +589,11 @@ export class ClipEditorInterface {
         x: -1,
         y: -1,
         down: false
+    };
+    midiDrawInfo = {
+        noteIndex: 0,
+        noteStart: 0,
+        noteEnd: 0
     };
 
     render() {
@@ -574,6 +649,7 @@ export class ClipEditorInterface {
         let zoom = this.session.clipEditor.verticalZoom;
 
         const hoveringNote = NotesConfiguration.NOTE_TO - Math.floor((this.mouse.y + scroll) / zoom);
+        const hoveringBeat = snap((this.mouse.x - ClipEditorInterface.SIDEBAR_WIDTH + this.session.scrolledPixels) / this.session.pxPerBeat, ...this.session.clipEditor.availableLengths);
 
         // MIDI Sidebar
         ctx.fillStyle = "white";
@@ -607,6 +683,35 @@ export class ClipEditorInterface {
                 ctx.fillStyle = "#cecece10";
                 ctx.fillRect(ClipEditorInterface.SIDEBAR_WIDTH, drawY, this.canvas.width - ClipEditorInterface.SIDEBAR_WIDTH, zoom);
             }
+        }
+
+        // Render hovering beat thing
+        ctx.strokeStyle = "#cecece10";
+        ctx.beginPath();
+        ctx.moveTo(hoveringBeat * this.session.pxPerBeat + ClipEditorInterface.SIDEBAR_WIDTH - this.session.scrolledPixels, 0);
+        ctx.lineTo(hoveringBeat * this.session.pxPerBeat + ClipEditorInterface.SIDEBAR_WIDTH - this.session.scrolledPixels, this.canvas.height);
+        ctx.stroke();
+        ctx.closePath();
+        if (this.session.playlist.selectedTool === Tools.NOTHING && this.mouse.down) {
+            ctx.globalAlpha = 0.25;
+            ctx.fillStyle = clip.bgcolor;
+            ctx.fillRect(
+                this.midiDrawInfo.noteStart * this.session.pxPerBeat + ClipEditorInterface.SIDEBAR_WIDTH - this.session.scrolledPixels,
+                (NotesConfiguration.NOTE_TO - this.midiDrawInfo.noteIndex) * zoom - scroll,
+                (this.midiDrawInfo.noteEnd - this.midiDrawInfo.noteStart) * this.session.pxPerBeat,
+                zoom
+            );
+            ctx.globalAlpha = 1;
+        } else if (this.session.playlist.selectedTool === Tools.PENCIL) {
+            ctx.globalAlpha = 0.25;
+            ctx.fillStyle = clip.bgcolor;
+            ctx.fillRect(
+                hoveringBeat * this.session.pxPerBeat + ClipEditorInterface.SIDEBAR_WIDTH - this.session.scrolledPixels,
+                (NotesConfiguration.NOTE_TO - hoveringNote) * zoom - scroll,
+                this.session.clipEditor.noteLength * this.session.pxPerBeat,
+                zoom
+            );
+            ctx.globalAlpha = 1;
         }
 
         // Render notes
