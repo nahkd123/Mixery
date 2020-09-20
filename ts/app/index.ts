@@ -103,3 +103,11 @@ function renderLoop(timestamp: number) {
     window.requestAnimationFrame(renderLoop);
 }
 window.requestAnimationFrame(renderLoop);
+
+const capTimestamp = Date.now();
+const maxTimeout = 7000;
+globalThis.toggleElectronJS = function toggleElectronJS() {
+    if (Date.now() < capTimestamp + maxTimeout) {
+        session.electronAppEnabled();
+    } else console.warn("Unable to toggle Mixery Electron features");
+};

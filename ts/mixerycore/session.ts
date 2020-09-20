@@ -56,6 +56,9 @@ export class Session {
         action: () => void
     }[] = [];
 
+    // Extras
+    isElectron: boolean = false;
+
     constructor() {
         this.playlist = new Playlist(this);
         this.plugins = new Plugins(this);
@@ -110,5 +113,9 @@ export class Session {
     playToggle() {
         if (this.playing) this.stop();
         else this.play();
+    }
+
+    electronAppEnabled() {
+        console.log("electron");
     }
 }
