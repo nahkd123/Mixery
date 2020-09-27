@@ -1,3 +1,9 @@
+let currentMenu: {
+    element: HTMLDivElement,
+    close(),
+    linkedMenu: ContextMenu
+} = undefined;
+
 export class ContextMenuEntry {
     name: string;
     onclick: (event: MouseEvent) => void;
@@ -16,7 +22,10 @@ export class ContextMenuEntry {
         if (this.extendMenu) out.classList.add("extendable");
         out.textContent = this.name;
         out.addEventListener("click", (event) => {
-            if (this.closeMenuOnClick && menuElement) menuElement.remove();
+            if (this.closeMenuOnClick && menuElement) {
+                menuElement.remove();
+                currentMenu = undefined;
+            }
             this.onclick(event);
         });
         return out;
@@ -26,6 +35,12 @@ export default class ContextMenu {
     entries: ContextMenuEntry[] = [];
 
     openMenu(x: number = 0, y: number = 0) {
+        if (currentMenu) {
+            let temp = currentMenu;
+            currentMenu.close();
+            if (temp.linkedMenu === this) return;
+        }
+
         let menu = document.createElement("div");
         menu.className = "contextmenu";
         menu.style.top = y + "px"; menu.style.left = x + "px";
@@ -34,6 +49,13 @@ export default class ContextMenu {
         });
 
         document.body.appendChild(menu);
-        return menu;
+        return currentMenu = {
+            element: menu,
+            close() {
+                menu.remove();
+                currentMenu = undefined;
+            },
+            linkedMenu: this
+        };
     }
 }
