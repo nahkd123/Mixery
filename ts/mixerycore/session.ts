@@ -3,9 +3,11 @@ import { Plugins } from "./plugins.js";
 import { NotificationsManager } from "../notifications/notificationsmgr.js";
 import { msToBeats } from "../utils/msbeats.js";
 import { MIDIClip } from "./clips.js";
+import ContextMenu, { ContextMenuEntry } from "../contextmenus/menu.js";
 
 export class Session {
     appControls = new SessionControls();
+    menus = new SessionMenus();
 
     playlist: Playlist;
     plugins: Plugins;
@@ -117,7 +119,25 @@ export class Session {
         else this.play();
     }
 
+    processTopbar(ele: HTMLDivElement) {
+        function linkMenu(div: HTMLDivElement, menu: ContextMenu) {
+            div.addEventListener("click", event => {
+                menu.openMenu(div.offsetLeft, ele.offsetHeight);
+            });
+        }
+
+        linkMenu(ele.querySelector("div#file.topbarbutton"), this.menus.file);
+        linkMenu(ele.querySelector("div#help.topbarbutton"), this.menus.help);
+    }
+
     electronAppEnabled() {
+        this.menus.file.entries.push(new ContextMenuEntry("Close", () => {
+            this.appControls.close();
+        }));
+        this.menus.help.entries.push(new ContextMenuEntry("Mixery Electron Source Code", () => {
+            window.open("https://github.com/nahkd123/Mixery-Electron");
+        }));
+
         console.log("Electron features enabled. It might cause some problem if you're trying to use Electron-only features.");
     }
 }
@@ -129,5 +149,25 @@ export class SessionControls {
     close() {
         // TODO we should ask for discarding any changes in here
         close();
+    }
+}
+
+export class SessionMenus {
+    file: ContextMenu = new ContextMenu();
+    help: ContextMenu = new ContextMenu();
+
+    constructor() {
+        this.file.entries.push(new ContextMenuEntry("Open", () => {}));
+        
+        this.help.entries.push(new ContextMenuEntry("Documentation", () => {
+            window.open("https://github.com/nahkd123/Mixery/wiki");
+        }));
+        this.help.entries.push(new ContextMenuEntry("About", () => {}));
+        this.help.entries.push(new ContextMenuEntry("License info (GPL v3.0)", () => {
+            window.open("https://www.gnu.org/licenses/gpl-3.0.html");
+        }));
+        this.help.entries.push(new ContextMenuEntry("Source Code!", () => {
+            window.open("https://github.com/nahkd123/Mixery");
+        }));
     }
 }

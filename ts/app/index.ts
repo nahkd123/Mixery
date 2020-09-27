@@ -6,6 +6,7 @@ import { MixeryGenerators } from "./plugins.js";
 
 // Setting up session
 let session = new Session();
+session.processTopbar(document.querySelector("div.topbar"));
 
 // Setting up UI
 let ui = new UserInterface(session);
