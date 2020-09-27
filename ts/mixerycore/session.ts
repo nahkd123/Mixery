@@ -116,6 +116,6 @@ export class Session {
     }
 
     electronAppEnabled() {
-        console.log("electron");
+        console.log("Electron features enabled. It might cause some problem if you're trying to use Electron-only features.");
     }
 }
