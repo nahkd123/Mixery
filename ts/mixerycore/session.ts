@@ -5,6 +5,8 @@ import { msToBeats } from "../utils/msbeats.js";
 import { MIDIClip } from "./clips.js";
 
 export class Session {
+    appControls = new SessionControls();
+
     playlist: Playlist;
     plugins: Plugins;
     notifications: NotificationsManager;
@@ -117,5 +119,15 @@ export class Session {
 
     electronAppEnabled() {
         console.log("Electron features enabled. It might cause some problem if you're trying to use Electron-only features.");
+    }
+}
+
+export class SessionControls {
+    /**
+     * Close current app. Only works in Electron BrowserWindow
+     */
+    close() {
+        // TODO we should ask for discarding any changes in here
+        close();
     }
 }
