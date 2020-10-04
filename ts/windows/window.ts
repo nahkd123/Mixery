@@ -25,6 +25,7 @@ export default class MoveableWindow {
     outerElement: HTMLDivElement;
     title: HTMLDivElement;
     innerElement: HTMLDivElement;
+    menu: ContextMenu;
 
     get x() {return this.outerElement.offsetLeft;}
     get y() {return this.outerElement.offsetTop;}
@@ -61,6 +62,9 @@ export default class MoveableWindow {
         document.body.appendChild(this.outerElement);
 
         if (hideOnOpen) this.outerElement.classList.add("hidden");
+        
+        this.menu = new ContextMenu();
+        this.menu.entries.push(new ContextMenuEntry("Close", () => {this.close()}));
 
         // Mouse events
         let self = this;
@@ -79,9 +83,7 @@ export default class MoveableWindow {
         });
         this.title.addEventListener("contextmenu", event => {
             event.preventDefault();
-            let menu = new ContextMenu();
-            menu.entries.push(new ContextMenuEntry("Close", () => {this.close()}));
-            menu.openMenu(event.pageX, event.pageY);
+            this.menu.openMenu(event.pageX, event.pageY);
         });
     }
 
