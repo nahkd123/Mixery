@@ -5,5 +5,57 @@ div.oscnodesparent {
 
 div.oscnodesparent > div.toolsbar {
     background-color: #363636;
+    height: 35px;
+}
+div.oscnodesparent > div.toolsbar > div,
+div.oscnodesparent > div.osclisting > div.oscentry > div.toolsbar > div {
+    display: inline-block;
+    width: 32px;
     height: 32px;
+    padding-top: 3px;
+    background-color: #c4c4c4;
+    margin-left: 5px;
+
+    -webkit-mask-size: cover;
+    -webkit-mask-position: center;
+    -webkit-mask-repeat: none;
+    mask-size: cover;
+    mask-position: center;
+    mask-repeat: none;
+}
+div.oscnodesparent > div.osclisting > div.oscentry > div.toolsbar > div {
+    background-color: #8a8a8a;
+    margin-left: 0;
+    margin-right: 5px;
+}
+
+div.oscnodesparent > div.toolsbar > div:hover,
+div.oscnodesparent > div.osclisting > div.oscentry > div.toolsbar > div.on {
+    background-color: white;
+}
+
+div.oscnodesparent > div.osclisting {
+    width: 100%;
+    height: calc(100% - 35px);
+    overflow-y: scroll;
+}
+div.oscnodesparent > div.osclisting::-webkit-scrollbar {
+    display: none;
+}
+
+div.oscnodesparent > div.osclisting > div.oscentry {
+    margin: 10px;
+    padding: 5px 12px;
+    box-shadow: 0 0 5px black;
+}
+div.oscnodesparent > div.osclisting > div.oscentry > div.label {}
+div.oscnodesparent > div.osclisting > div.oscentry > div.toolsbar {
+    height: 35px;
+}
+
+/* Icons part */
+div.oscnodesparent > div.osclisting > div.oscentry > div.toolsbar > div.remove {
+    -webkit-mask-image: url("../../../assets/icons/close-or-remove.svg");
+    mask-image: url("../../../assets/icons/close-or-remove.svg");
+    background-color: #ff5b5b;
 }
