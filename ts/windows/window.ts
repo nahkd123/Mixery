@@ -61,7 +61,7 @@ export default class MoveableWindow {
         this.outerElement.append(this.title, this.innerElement);
         document.body.appendChild(this.outerElement);
 
-        if (hideOnOpen) this.outerElement.classList.add("hidden");
+        if (hideOnOpen) this.hide();
         
         this.menu = new ContextMenu();
         this.menu.entries.push(new ContextMenuEntry("Close", () => {this.close()}));
