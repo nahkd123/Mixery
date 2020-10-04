@@ -1,16 +1,18 @@
 import { Playlist } from "./playlist.js";
-import { Plugins } from "./plugins.js";
+import { GeneratorsPlugins } from "./plugins.js";
 import { NotificationsManager } from "../notifications/notificationsmgr.js";
 import { msToBeats } from "../utils/msbeats.js";
 import { MIDIClip } from "./clips.js";
 import ContextMenu, { ContextMenuEntry } from "../contextmenus/menu.js";
+import MoveableWindow from "../windows/window.js";
+import { MixeryHTMLDocuments } from "../mixeryui/htmldocuments.js";
 
 export class Session {
     appControls = new SessionControls();
     menus = new SessionMenus();
 
     playlist: Playlist;
-    plugins: Plugins;
+    plugins: GeneratorsPlugins;
     notifications: NotificationsManager;
 
     // General
@@ -47,10 +49,14 @@ export class Session {
 
     // Settings
     settings = {
-        title: "Settings",
+        _title: "Settings",
 
+        accessibility: {
+            _title: "Accessibility",
+            doubleClickSpeed: 350
+        },
         rendering: {
-            title: "Rendering settings",
+            _title: "Rendering settings",
             renderNotes: true
         }
     };
@@ -62,10 +68,11 @@ export class Session {
 
     // Extras
     isElectron: boolean = false;
+    documents: MixeryHTMLDocuments;
 
     constructor() {
         this.playlist = new Playlist(this);
-        this.plugins = new Plugins(this);
+        this.plugins = new GeneratorsPlugins(this);
         this.notifications = new NotificationsManager();
 
         // Also add keyboard events
@@ -89,6 +96,8 @@ export class Session {
                 default: event.preventDefault(); break;
             }
         });
+
+        this.documents = new MixeryHTMLDocuments();
     }
 
     play() {
@@ -156,8 +165,19 @@ export class SessionMenus {
     file: ContextMenu = new ContextMenu();
     help: ContextMenu = new ContextMenu();
 
+    windows = {
+        file: {
+            export: new MoveableWindow("Export", 0, 0)
+        }
+    };
+
     constructor() {
+        // this.windows.file.export;
         this.file.entries.push(new ContextMenuEntry("Open", () => {}));
+        this.file.entries.push(new ContextMenuEntry("Import", () => {}));
+        this.file.entries.push(new ContextMenuEntry("Export", () => {
+            this.windows.file.export.show();
+        }));
         
         this.help.entries.push(new ContextMenuEntry("Documentation", () => {
             window.open("https://github.com/nahkd123/Mixery/wiki");

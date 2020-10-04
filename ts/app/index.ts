@@ -3,6 +3,8 @@ import { Session } from "../mixerycore/session.js";
 import { ExampleGenerator } from "../mixerycore/generator.js";
 import { notesIndex } from "../mixerycore/notes.js";
 import { MixeryGenerators } from "./plugins.js";
+import BunglesManager from "../bundles/bundlesmgr.js";
+import MixeryDefaultBundle from "../bundles/mixerydefaults/bundle.js";
 
 // Setting up session
 let session = new Session();
@@ -105,6 +107,12 @@ function renderLoop(timestamp: number) {
 }
 window.requestAnimationFrame(renderLoop);
 
+// Setting up bundles
+let bundlesManager = new BunglesManager(session, ui.explorer);
+bundlesManager.add(new MixeryDefaultBundle());
+bundlesManager.loadBundles();
+
+// ElectronJS part
 const capTimestamp = Date.now();
 const maxTimeout = 7000;
 globalThis.toggleElectronJS = function toggleElectronJS() {

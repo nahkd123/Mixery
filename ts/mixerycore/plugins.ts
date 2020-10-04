@@ -1,36 +1,60 @@
 import { Session } from "./session.js";
 import { AudioGenerator } from "./generator.js";
 
-export class Plugins {
+export class GeneratorsPlugins {
     session: Session;
-    plugins: PluginEntry[] = [];
-    selected: PluginEntry;
+    generators: GeneratorEntry[] = [];
+    selected: GeneratorEntry;
 
     constructor(session: Session) {
         this.session = session;
     }
 
-    addPlugin(generator: AudioGenerator) {
+    addGenerator(generator: AudioGenerator) {
         this.selected = undefined;
         this.updatePluginsInfo();
 
-        let entry = new PluginEntry(generator, this);
-        this.plugins.push(entry);
+        let entry = new GeneratorEntry(generator, this);
+        this.generators.push(entry);
         this.selected = entry;
 
         generator.generatorLoad(this.session, null);
+        this.rerouteAudioNodes();
         return entry;
     }
 
+    removeGenerator(generator: AudioGenerator) {
+        if (this.selected !== undefined && this.selected.generator === generator) {
+            this.generators.splice(this.generators.indexOf(this.selected), 1);
+            this.selected = undefined;
+            this.rerouteAudioNodes();
+            return;
+        }
+
+        let entryIndex = this.findPluginIndex(generator);
+        this.generators.splice(entryIndex, 1);
+        this.rerouteAudioNodes();
+    }
+
+    findPluginIndex(generator: AudioGenerator) {
+        for (let i = 0; i < this.generators.length; i++) {
+            let entry = this.generators[i];
+            if (entry.generator === generator) return i;
+        }
+        return -1;
+    }
+
     updatePluginsInfo() {
-        this.plugins.forEach(plugin => {
+        this.generators.forEach(plugin => {
             if (this.selected !== plugin && plugin.selected) plugin.selected = false;
         });
     }
+
+    rerouteAudioNodes() {}
 }
 
-export class PluginEntry {
-    mgr: Plugins;
+export class GeneratorEntry {
+    mgr: GeneratorsPlugins;
 
     _selected: boolean = true;
     generator: AudioGenerator;
@@ -47,7 +71,7 @@ export class PluginEntry {
         }
     }
 
-    constructor(generator: AudioGenerator, mgr: Plugins) {
+    constructor(generator: AudioGenerator, mgr: GeneratorsPlugins) {
         this.generator = generator;
         this.mgr = mgr;
     }

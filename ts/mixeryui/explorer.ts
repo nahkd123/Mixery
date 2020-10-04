@@ -28,9 +28,9 @@ export class ExplorerSection {
             this.pane.draggingContent = content;
 
             let self = this;
-            function mouseUp() {
+            function mouseUp(event: MouseEvent) {
                 self.pane.ui.dragMode = false;
-                self.pane.dragEnd();
+                self.pane.dragEnd(event);
 
                 document.removeEventListener("mouseup", mouseUp);
                 self.pane.draggingContent = undefined;
@@ -41,6 +41,10 @@ export class ExplorerSection {
 
         this.contents.push(content);
     }
+
+    addContents(contents: ExplorerContent[]) {
+        contents.forEach(a => this.addContent(a));
+    }
 }
 
 export abstract class ExplorerContent {
@@ -50,6 +54,7 @@ export abstract class ExplorerContent {
 }
 
 export abstract class GeneratorExplorerContent extends ExplorerContent {
+    color = "rgb(252, 186, 12)";
     abstract constructPlugin(preset: PluginPreset): AudioGenerator;
 }
 export abstract class PluginPresetExplorerContent extends ExplorerContent {
@@ -87,5 +92,13 @@ export class ExplorerPane {
         return out;
     }
 
-    dragEnd() {}
+    contentsConsumers: Map<Element, (content: ExplorerContent) => void> = new Map();
+    dragEnd(event: MouseEvent) {
+        let consumer = this.contentsConsumers.get(<Element> event.target);
+        if (consumer !== undefined) consumer(this.draggingContent);
+    }
+
+    addContentConsumer(element: Element, consumer: (content: ExplorerContent) => void) {
+        this.contentsConsumers.set(element, consumer);
+    }
 }

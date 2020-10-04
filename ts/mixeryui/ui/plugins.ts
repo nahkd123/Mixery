@@ -1,3 +1,4 @@
+import ContextMenu, { ContextMenuEntry } from "../../contextmenus/menu.js";
 import { AudioGenerator, ExampleGenerator } from "../../mixerycore/generator.js";
 import { Session } from "../../mixerycore/session.js";
 import { UserInterface } from "../ui.js";
@@ -24,7 +25,8 @@ export class PluginsInterface {
     }
 
     addPlugin(generator: AudioGenerator) {
-        let entry = this.session.plugins.addPlugin(generator);
+        generator.beforeLoad();
+        let entry = this.session.plugins.addGenerator(generator);
 
         let ele = document.createElement("div");
         ele.className = "pluginlistingentry selected";
@@ -38,10 +40,35 @@ export class PluginsInterface {
         this.pluginsListing.insertBefore(ele, this.pluginsListing.lastChild.previousSibling);
         entry.element = ele;
 
+        function showPluginInterface() {
+            // Open the window!
+            if (generator.window !== undefined) {
+                if (generator.window.hidden) generator.window.show();
+                else generator.window.hide();
+            }
+        }
+
+        let ctxmenu = new ContextMenu();
+        ctxmenu.entries.push(new ContextMenuEntry("Show Plugin Interface", () => {showPluginInterface()}));
+        ctxmenu.entries.push(new ContextMenuEntry("Remove Plugin", () => {
+            this.session.plugins.removeGenerator(generator);
+            ele.remove();
+        }));
+
+        let lastClickTime = 0;
         ele.addEventListener("click", event => {
             entry.selected = !entry.selected;
             this.session.plugins.selected = entry.selected? entry : undefined;
             this.session.plugins.updatePluginsInfo();
+
+            if (Date.now() - lastClickTime <= this.session.settings.accessibility.doubleClickSpeed) {
+                showPluginInterface();
+            }
+            lastClickTime = Date.now();
+        });
+        ele.addEventListener("contextmenu", event => {
+            event.preventDefault();
+            ctxmenu.openMenu(event.pageX, event.pageY);
         });
     }
 }

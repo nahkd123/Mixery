@@ -5,6 +5,7 @@ import { ExplorerPane } from "./explorer.js";
 import { PlaylistInterface } from "./ui/playlist.js";
 import { ClipEditorInterface } from "./ui/clipeditor.js";
 import { PluginsInterface } from "./ui/plugins.js";
+import { tbWindowsProcess } from "./ui/tbwindows.js";
 
 let canvasSizeDynamicUpdate: HTMLCanvasElement[] = [];
 export function updateCanvasSize(canvas: HTMLCanvasElement) {
@@ -47,8 +48,12 @@ export class UserInterface {
         this.playlist = new PlaylistInterface(this);
         this.plugins = new PluginsInterface(this);
         this.clipEditor = new ClipEditorInterface(this);
+
+        tbWindowsProcess(session);
     }
     applyUpdate() {
+        this.explorer = new ExplorerPane(this, this.element.querySelector("div.pane.explorer"));
+
         this.playlist.element = this.element.querySelector("div.pane.editor");
         this.playlist.applyUpdate();
 
@@ -57,8 +62,6 @@ export class UserInterface {
 
         this.clipEditor.element = this.element.querySelector("div.pane.clipeditor");
         this.clipEditor.applyUpdate();
-
-        this.explorer = new ExplorerPane(this, this.element.querySelector("div.pane.explorer"));
 
         onCanvasSizesUpdate = () => {
             this.canvasRenderUpdate();

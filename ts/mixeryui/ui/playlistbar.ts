@@ -1,6 +1,7 @@
 import { Session } from "../../mixerycore/session.js";
 import { Tools } from "../../mixerycore/tools.js";
 import { numberRounder } from "../../utils/numberround.js";
+import { GeneratorExplorerContent } from "../explorer.js";
 import { UserInterface } from "../ui.js";
 
 
@@ -44,6 +45,13 @@ export class PlaylistBar {
         (<HTMLDivElement> this.element.querySelector("div.editorbarentry.plugins")).addEventListener("click", event => {
             this.ui.pluginsTray = !this.ui.pluginsTray;
         });
+        this.ui.explorer.addContentConsumer((<HTMLDivElement> this.element.querySelector("div.editorbarentry.plugins > div.label")), (content) => {
+            if (content instanceof GeneratorExplorerContent) {
+                let generator = content.constructPlugin(undefined);
+                this.ui.plugins.addPlugin(generator);
+            }
+        });
+
         (<HTMLDivElement> this.element.querySelector("div.editorbarentry.clipedit")).addEventListener("click", event => {
             this.ui.clipEditorTray = !this.ui.clipEditorTray;
         });
