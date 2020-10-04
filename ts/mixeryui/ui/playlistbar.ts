@@ -49,6 +49,7 @@ export class PlaylistBar {
             if (content instanceof GeneratorExplorerContent) {
                 let generator = content.constructPlugin(undefined);
                 this.ui.plugins.addPlugin(generator);
+                generator.window.show();
             }
         });
 
