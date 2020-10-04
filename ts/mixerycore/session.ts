@@ -6,8 +6,11 @@ import { MIDIClip } from "./clips.js";
 import ContextMenu, { ContextMenuEntry } from "../contextmenus/menu.js";
 import MoveableWindow from "../windows/window.js";
 import { MixeryHTMLDocuments } from "../mixeryui/htmldocuments.js";
+import MixeryCanvasEngine from "../mixerycanvas/engine.js";
 
 export class Session {
+    audioEngine: MixeryCanvasEngine;
+
     appControls = new SessionControls();
     menus = new SessionMenus();
 
@@ -71,6 +74,8 @@ export class Session {
     documents: MixeryHTMLDocuments;
 
     constructor() {
+        this.audioEngine = new MixeryCanvasEngine();
+
         this.playlist = new Playlist(this);
         this.plugins = new GeneratorsPlugins(this);
         this.notifications = new NotificationsManager();
