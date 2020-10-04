@@ -7,6 +7,7 @@ export default class MixeryCanvasEngine {
 
     mixer: AudioMixer;
     get master() {return this.mixer.master;}
+    get liveTime() {return this.ctx.currentTime;}
 
     constructor() {
         this.ctx = new AudioContext({latencyHint: "interactive"});
@@ -30,5 +31,8 @@ export default class MixeryCanvasEngine {
     // Audio context thing
     createGain() {
         return this.ctx.createGain();
+    }
+    createOscillator() {
+        return this.ctx.createOscillator();
     }
 }

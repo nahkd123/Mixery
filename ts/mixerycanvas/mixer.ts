@@ -43,6 +43,9 @@ export class MixerTrack {
         this.mixer = mixer;
         this.gain = mixer.engine.createGain();
         this.gain.gain.value = 1.0;
+
+        this.input = mixer.engine.createGain();
+        this.input.gain.value = 1.0;
     }
 
     addEffectNode(cb?: (node: EffectNode) => void) {

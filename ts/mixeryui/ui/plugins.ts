@@ -25,7 +25,7 @@ export class PluginsInterface {
     }
 
     addPlugin(generator: AudioGenerator) {
-        generator.beforeLoad();
+        // generator.beforeLoad(this.session);
         let entry = this.session.plugins.addGenerator(generator);
 
         let ele = document.createElement("div");

@@ -48,6 +48,7 @@ export class PlaylistBar {
         this.ui.explorer.addContentConsumer((<HTMLDivElement> this.element.querySelector("div.editorbarentry.plugins > div.label")), (content) => {
             if (content instanceof GeneratorExplorerContent) {
                 let generator = content.constructPlugin(undefined);
+                generator.beforeLoad(this.session);
                 this.ui.plugins.addPlugin(generator);
                 generator.window.show();
             }

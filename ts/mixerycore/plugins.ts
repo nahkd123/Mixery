@@ -18,7 +18,7 @@ export class GeneratorsPlugins {
         this.generators.push(entry);
         this.selected = entry;
 
-        generator.generatorLoad(this.session, null);
+        generator.generatorLoad(this.session, generator.gain);
         this.rerouteAudioNodes();
         return entry;
     }

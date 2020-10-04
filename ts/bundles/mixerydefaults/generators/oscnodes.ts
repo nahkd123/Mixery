@@ -1,8 +1,10 @@
 import { MIDIClip } from "../../../mixerycore/clips.js";
 import { AudioGenerator } from "../../../mixerycore/generator.js";
+import { notesFrequency } from "../../../mixerycore/notes.js";
 import { PluginPreset } from "../../../mixerycore/plugins.js";
 import { Session } from "../../../mixerycore/session.js";
 import { GeneratorExplorerContent } from "../../../mixeryui/explorer.js";
+import { beatsToMS } from "../../../utils/msbeats.js";
 
 export default class OscNodesExplorerContent extends GeneratorExplorerContent {
     name = "OscNodes";
@@ -14,19 +16,21 @@ export default class OscNodesExplorerContent extends GeneratorExplorerContent {
 }
 
 class OscillatorsType {
+    id: OscillatorType;
     name: string;
     icon: string;
     addIcon: string;
 
-    constructor(name: string, icon: string, addIcon = icon) {
+    constructor(id: OscillatorType, name: string, icon: string, addIcon = icon) {
+        this.id = id;
         this.name = name;
         this.icon = icon;
         this.addIcon = addIcon;
     }
 }
 namespace OscillatorsTypes {
-    export const SINE = new OscillatorsType("Sine", "/assets/icons/sinewave.svg", "/assets/icons/add-sinewave.svg");
-    export const SQUARE = new OscillatorsType("Square", "/assets/icons/squarewave.svg", "/assets/icons/add-squarewave.svg");
+    export const SINE = new OscillatorsType("sine", "Sine", "/assets/icons/sinewave.svg", "/assets/icons/add-sinewave.svg");
+    export const SQUARE = new OscillatorsType("square", "Square", "/assets/icons/squarewave.svg", "/assets/icons/add-squarewave.svg");
 
     export const oscillators = [SINE, SQUARE];
 }
@@ -35,6 +39,10 @@ interface Oscillator {
     name: string;
     type: OscillatorsType;
     semitonesOffset: number;
+}
+interface OscillatorNote {
+    gain: GainNode; // Act like velocity
+    osc: OscillatorNode;
 }
 
 export class OscNodes extends AudioGenerator {
@@ -46,6 +54,8 @@ export class OscNodes extends AudioGenerator {
     output: AudioNode;
 
     oscListing: HTMLDivElement;
+
+    playingNotes: OscillatorNote[] = [];
 
     generatorLoad(session: Session, output: AudioNode) {
         this.session = session;
@@ -126,5 +136,30 @@ export class OscNodes extends AudioGenerator {
         return osc;
     }
 
-    playClip(clip: MIDIClip, clipOffset: number) {}
+    playClip(clip: MIDIClip, clipOffset: number) {
+        clip.notes.forEach(note => {
+            // console.log(note);
+
+            const noteOffset = beatsToMS(clipOffset + note.start, this.session.bpm) / 1000;
+            const noteEnd = beatsToMS(clipOffset + note.start + note.duration, this.session.bpm) / 1000;
+
+            this.oscillators.forEach(oscillator => {
+                let oscNote: OscillatorNote = {
+                    gain: this.session.audioEngine.createGain(),
+                    osc: this.session.audioEngine.createOscillator()
+                };
+                oscNote.osc.connect(oscNote.gain);
+                oscNote.gain.connect(this.session.audioEngine.ctx.destination);
+
+                oscNote.gain.gain.value = note.sensitivity;
+                oscNote.gain.gain.value = 1.0;
+                oscNote.osc.type = oscillator.type.id;
+                oscNote.osc.frequency.value = notesFrequency[note.note];
+
+                oscNote.osc.start(this.session.audioEngine.liveTime + noteOffset);
+                oscNote.osc.stop(this.session.audioEngine.liveTime + noteEnd);
+                this.playingNotes.push(oscNote);
+            });
+        });
+    }
 }
