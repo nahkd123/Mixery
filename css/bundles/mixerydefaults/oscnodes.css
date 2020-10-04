@@ -1,0 +1,9 @@
+div.oscnodesparent {
+    background-color: #272727;
+    color: white;
+}
+
+div.oscnodesparent > div.toolsbar {
+    background-color: #363636;
+    height: 32px;
+}
