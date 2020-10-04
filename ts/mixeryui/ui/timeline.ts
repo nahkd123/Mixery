@@ -1,7 +1,7 @@
-import { Session } from "../../mixerycore/session";
-import { msToBeats } from "../../utils/msbeats";
-import { BeatSnapPreset, snap } from "../../utils/snapper";
-import { UserInterface } from "../ui";
+import { Session } from "../../mixerycore/session.js";
+import { msToBeats } from "../../utils/msbeats.js";
+import { BeatSnapPreset, snap } from "../../utils/snapper.js";
+import { UserInterface } from "../ui.js";
 
 export class TimelineBar {
     ui: UserInterface;
