@@ -13,7 +13,7 @@ export function updateCanvasSize(canvas: HTMLCanvasElement, onResize?: (canvas: 
         canvas.width = canvas.offsetWidth;
         canvas.height = canvas.offsetHeight;
     });
-    if (canvas.width === 0 || canvas.height === 0) {
+    if (canvas.offsetWidth === 0 || canvas.offsetHeight === 0) {
     } else if (canvas.width !== canvas.offsetWidth || canvas.height !== canvas.offsetHeight) {
         canvas.width = canvas.offsetWidth;
         canvas.height = canvas.offsetHeight;

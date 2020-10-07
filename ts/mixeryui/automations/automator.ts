@@ -39,7 +39,7 @@ export default class AudioAutomator {
             buttons: {
                 hideInstead: true
             }
-        }, 0, 0, 500, 200, false);
+        }, 0, 0, 500, 200, true);
         this.automation = automation;
 
         this.canvas = document.createElement("canvas");
