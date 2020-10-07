@@ -7,28 +7,32 @@ import { ClipEditorInterface } from "./ui/clipeditor.js";
 import { PluginsInterface } from "./ui/plugins.js";
 import { tbWindowsProcess } from "./ui/tbwindows.js";
 
-let canvasSizeDynamicUpdate: HTMLCanvasElement[] = [];
-export function updateCanvasSize(canvas: HTMLCanvasElement) {
+let canvasSizeDynamicUpdate: Map<HTMLCanvasElement, (canvas: HTMLCanvasElement) => void> = new Map();
+export function updateCanvasSize(canvas: HTMLCanvasElement, onResize?: (canvas: HTMLCanvasElement) => void) {
     document.addEventListener("resize", () => {
         canvas.width = canvas.offsetWidth;
         canvas.height = canvas.offsetHeight;
     });
-    if (canvas.width !== canvas.offsetWidth || canvas.height !== canvas.offsetHeight) {
+    if (canvas.width === 0 || canvas.height === 0) {
+    } else if (canvas.width !== canvas.offsetWidth || canvas.height !== canvas.offsetHeight) {
         canvas.width = canvas.offsetWidth;
         canvas.height = canvas.offsetHeight;
         onCanvasSizesUpdate();
+        if (onResize !== undefined) onResize(canvas);
     }
 
-    canvasSizeDynamicUpdate.push(canvas);
+    canvasSizeDynamicUpdate.set(canvas, onResize !== undefined? onResize : () => {});
 }
 let onCanvasSizesUpdate = () => {}
 setInterval(() => {
     let updated = false;
-    canvasSizeDynamicUpdate.forEach(canvas => {
+    canvasSizeDynamicUpdate.forEach((onResize, canvas) => {
+        if (canvas.offsetWidth === 0 || canvas.offsetHeight === 0) return; // Without this, the browser is gonna hang. idk why
         if (canvas.width !== canvas.offsetWidth || canvas.height !== canvas.offsetHeight) {
             canvas.width = canvas.offsetWidth;
             canvas.height = canvas.offsetHeight;
             updated = true;
+            onResize(canvas);
         }
     });
 

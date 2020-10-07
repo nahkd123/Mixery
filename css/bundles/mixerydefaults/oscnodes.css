@@ -59,3 +59,8 @@ div.oscnodesparent > div.osclisting > div.oscentry > div.toolsbar > div.remove {
     mask-image: url("../../../assets/icons/close-or-remove.svg");
     background-color: #ff5b5b;
 }
+div.oscnodesparent > div.osclisting > div.oscentry > div.toolsbar > div.automation {
+    -webkit-mask-image: url("../../../assets/icons/automation.svg");
+    mask-image: url("../../../assets/icons/automation.svg");
+    background-color: #5be6ff;
+}

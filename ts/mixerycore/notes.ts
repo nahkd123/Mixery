@@ -20,6 +20,8 @@ export namespace NotesConfiguration {
     export const NOTE_TO = 131;
     export const NOTE_NAMING = ["C", "C#", "D", "D#", "E", "F", "F#", "G", "G#", "A", "A#", "B"];
     export const VAR_A = Math.pow(2, 1 / NOTE_NAMING.length);
+
+    export const ROUND_FREQUENCIES = true;
 }
 
 /**
@@ -42,6 +44,7 @@ export function generateNoteFrequency(index: number = 0) {
 
 for (let i = NotesConfiguration.NOTE_FROM; i <= NotesConfiguration.NOTE_TO; i++) {
     let name = notesName[i] = generateNoteName(i);
-    notesFrequency[i] = generateNoteFrequency(i);
+    let freq = generateNoteFrequency(i);
+    notesFrequency[i] = NotesConfiguration.ROUND_FREQUENCIES? Math.round(freq) : freq;
     notesIndex.set(name, i);
 }

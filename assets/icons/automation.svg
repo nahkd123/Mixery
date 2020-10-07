@@ -12,7 +12,7 @@
    viewBox="0 0 512.0 512.0"
    height="512.0px"
    width="512.0px"
-   sodipodi:docname="guide2.svg"
+   sodipodi:docname="automation.svg"
    inkscape:version="1.0 (4035a4fb49, 2020-05-01)">
   <defs
      id="defs10" />
@@ -24,8 +24,8 @@
      inkscape:pageopacity="0.0"
      inkscape:pageshadow="2"
      inkscape:zoom="0.7071068"
-     inkscape:cx="223.10717"
-     inkscape:cy="309.87614"
+     inkscape:cx="60.749022"
+     inkscape:cy="295.97629"
      inkscape:document-units="px"
      inkscape:current-layer="layer1"
      inkscape:document-rotation="0"
@@ -105,7 +105,7 @@
         <dc:format>image/svg+xml</dc:format>
         <dc:type
            rdf:resource="http://purl.org/dc/dcmitype/StillImage" />
-        <dc:title />
+        <dc:title></dc:title>
       </cc:Work>
     </rdf:RDF>
   </metadata>
@@ -116,6 +116,36 @@
     <path
        id="path853"
        d="m 64,382 64,-254 h 64 v 128 c 0,0 192,0 192,-64 h 64 v 190"
-       style="fill:none;stroke:#000000;stroke-width:24.354;stroke-linecap:round;stroke-linejoin:round;stroke-opacity:1;stroke-miterlimit:4;stroke-dasharray:none" />
+       style="fill:none;stroke:#000000;stroke-width:24;stroke-linecap:round;stroke-linejoin:round;stroke-opacity:1;stroke-miterlimit:4;stroke-dasharray:none" />
+    <circle
+       r="32"
+       cy="128.52692"
+       cx="125.69849"
+       id="path855"
+       style="fill:none;fill-rule:evenodd;stroke:#000000;stroke-width:10;stroke-linecap:round;stroke-linejoin:round;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1" />
+    <circle
+       style="fill:none;fill-rule:evenodd;stroke:#000000;stroke-width:10;stroke-linecap:round;stroke-linejoin:round;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1"
+       id="path855-4"
+       cx="193.74725"
+       cy="128.69344"
+       r="32" />
+    <circle
+       style="fill:none;fill-rule:evenodd;stroke:#000000;stroke-width:10;stroke-linecap:round;stroke-linejoin:round;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1"
+       id="path855-3"
+       cx="193"
+       cy="254"
+       r="32" />
+    <circle
+       style="fill:none;fill-rule:evenodd;stroke:#000000;stroke-width:10;stroke-linecap:round;stroke-linejoin:round;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1"
+       id="path855-1"
+       cx="383"
+       cy="196"
+       r="32" />
+    <circle
+       r="32"
+       style="fill:none;fill-rule:evenodd;stroke:#000000;stroke-width:10;stroke-linecap:round;stroke-linejoin:round;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1"
+       id="path855-5"
+       cx="451"
+       cy="195" />
   </g>
 </svg>

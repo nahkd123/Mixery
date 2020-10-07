@@ -2,7 +2,8 @@ import { Session } from "./session.js";
 import { MIDIClip } from "./clips.js";
 import { beatsToMS } from "../utils/msbeats.js";
 import MoveableWindow from "../windows/window.js";
-import { MixerTrack } from "../mixerycanvas/mixer.js";
+import MixerTrack from "../mixeryaudio/mixer/track.js";
+import RenderableGainNode from "../mixeryaudio/nodes/gain.js";
 
 export abstract class AudioGenerator {
     abstract name: string;
@@ -10,19 +11,18 @@ export abstract class AudioGenerator {
     window = new MoveableWindow("name", 0, 0, 300, 250);
 
     mixerTrack: MixerTrack;
-    gain: GainNode;
+    output: RenderableGainNode;
 
     beforeLoad(session: Session) {
         this.window.title.textContent = this.name;
 
         // Add to master mixer track by default
         // Will add ability to change mixer track
-        this.mixerTrack = session.audioEngine.master;
-        this.gain = session.audioEngine.createGain();
-        this.gain.gain.value = 1.0;
-        this.gain.connect(this.mixerTrack.input);
+        this.mixerTrack = session.audioEngine.mixer.master;
+        this.output = session.audioEngine.createGain();
+        this.output.connect(this.mixerTrack.input);
     }
-    abstract generatorLoad(session: Session, output: AudioNode);
+    abstract generatorLoad(session: Session, output: RenderableGainNode);
     /**
      * Play the MIDI clip
      * @param clip The MIDI clip
@@ -36,7 +36,7 @@ export class ExampleGenerator extends AudioGenerator {
     author = ["nahkd123"];
 
     session: Session;
-    generatorLoad(session: Session, output: AudioNode) {
+    generatorLoad(session: Session, output: RenderableGainNode) {
         this.session = session;
     }
     playClip(clip: MIDIClip, clipOffset: number) {

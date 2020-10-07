@@ -7,9 +7,10 @@ import ContextMenu, { ContextMenuEntry } from "../contextmenus/menu.js";
 import MoveableWindow from "../windows/window.js";
 import { MixeryHTMLDocuments } from "../mixeryui/htmldocuments.js";
 import MixeryCanvasEngine from "../mixerycanvas/engine.js";
+import MixeryAudioEngine from "../mixeryaudio/engine.js";
 
 export class Session {
-    audioEngine: MixeryCanvasEngine;
+    audioEngine: MixeryAudioEngine;
 
     appControls = new SessionControls();
     menus = new SessionMenus();
@@ -74,7 +75,7 @@ export class Session {
     documents: MixeryHTMLDocuments;
 
     constructor() {
-        this.audioEngine = new MixeryCanvasEngine();
+        this.audioEngine = new MixeryAudioEngine();
 
         this.playlist = new Playlist(this);
         this.plugins = new GeneratorsPlugins(this);
@@ -107,17 +108,24 @@ export class Session {
 
     play() {
         if (this.playing) return;
-        this.playing = true;
-        this.playTimestamp = Date.now();
 
-        // Pass all clips to all generators
-        this.playlist.tracks.forEach(track => {
-            if (!track.unmuted) return;
+        let self = this;
+        function realPlay() {
+            self.playing = true;
+            self.playTimestamp = Date.now();
 
-            track.clips.forEach(clip => {
-                if (clip instanceof MIDIClip) clip.generator.playClip(clip, clip.offset - this.seeker);
+            // Pass all clips to all generators
+            self.playlist.tracks.forEach(track => {
+                if (!track.unmuted) return;
+
+                track.clips.forEach(clip => {
+                    if (clip instanceof MIDIClip) clip.generator.playClip(clip, clip.offset - self.seeker);
+                });
             });
-        });
+        }
+
+        if (this.audioEngine.state === "suspended") this.audioEngine.audio.resume().then(realPlay);
+        else realPlay();
     }
     stop() {
         this.playing = false;

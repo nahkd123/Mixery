@@ -1,8 +1,12 @@
+import AudioAutomation from "../../../mixeryaudio/automations/automation.js";
+import RenderableGainNode from "../../../mixeryaudio/nodes/gain.js";
+import RenderableOscillatorNode from "../../../mixeryaudio/nodes/oscillator.js";
 import { MIDIClip } from "../../../mixerycore/clips.js";
 import { AudioGenerator } from "../../../mixerycore/generator.js";
 import { notesFrequency } from "../../../mixerycore/notes.js";
 import { PluginPreset } from "../../../mixerycore/plugins.js";
 import { Session } from "../../../mixerycore/session.js";
+import AudioAutomator from "../../../mixeryui/automations/automator.js";
 import { GeneratorExplorerContent } from "../../../mixeryui/explorer.js";
 import { beatsToMS } from "../../../utils/msbeats.js";
 
@@ -39,10 +43,13 @@ interface Oscillator {
     name: string;
     type: OscillatorsType;
     semitonesOffset: number;
+
+    gainAutomation: AudioAutomation;
+    gainAutomator: AudioAutomator;
 }
 interface OscillatorNote {
-    gain: GainNode; // Act like velocity
-    osc: OscillatorNode;
+    gain: RenderableGainNode; // Act like velocity
+    osc: RenderableOscillatorNode;
 }
 
 export class OscNodes extends AudioGenerator {
@@ -51,13 +58,13 @@ export class OscNodes extends AudioGenerator {
 
     oscillators: Oscillator[] = [];
     session: Session;
-    output: AudioNode;
+    output: RenderableGainNode;
 
     oscListing: HTMLDivElement;
 
     playingNotes: OscillatorNote[] = [];
 
-    generatorLoad(session: Session, output: AudioNode) {
+    generatorLoad(session: Session, output: RenderableGainNode) {
         this.session = session;
         this.output = output;
 
@@ -92,10 +99,19 @@ export class OscNodes extends AudioGenerator {
     }
 
     addOscillator(type: OscillatorsType) {
-        let osc = {
+        let automation = new AudioAutomation(
+            {type: "linearRamp", time: 0.15, value: 0.9},
+            {type: "linearRamp", time: 0.5, value: 0.25}
+        );
+        let automator = new AudioAutomator(null, automation, "OscNodes");
+
+        let osc: Oscillator = {
             name: type.name + " " + (this.oscillators.length + 1),
             type,
-            semitonesOffset: 0
+            semitonesOffset: 0,
+
+            gainAutomation: automation,
+            gainAutomator: automator
         };
         this.oscillators.push(osc);
 
@@ -108,11 +124,14 @@ export class OscNodes extends AudioGenerator {
         let toolsbar = document.createElement("div"); toolsbar.className = "toolsbar";
 
         let removeButton = document.createElement("div"); removeButton.className = "remove";
-        toolsbar.append(removeButton);
+        let automationButton = document.createElement("div"); automationButton.className = "automation";
+        toolsbar.append(removeButton, automationButton);
+
         removeButton.addEventListener("click", event => {
             this.oscillators.splice(this.oscillators.indexOf(osc), 1);
             element.remove();
         });
+        automationButton.addEventListener("click", event => automator.window.show());
 
         let toolsbarOscButtons: HTMLDivElement[] = [];
         OscillatorsTypes.oscillators.forEach(oscType => {
@@ -149,10 +168,10 @@ export class OscNodes extends AudioGenerator {
                     osc: this.session.audioEngine.createOscillator()
                 };
                 oscNote.osc.connect(oscNote.gain);
-                oscNote.gain.connect(this.session.audioEngine.ctx.destination);
+                oscNote.gain.connect(this.mixerTrack.input);
 
-                oscNote.gain.gain.value = note.sensitivity;
-                oscNote.gain.gain.value = 1.0;
+                // oscNote.gain.gain.value = note.sensitivity;
+                oscillator.gainAutomation.apply(oscNote.gain.gain, note.sensitivity, noteOffset);
                 oscNote.osc.type = oscillator.type.id;
                 oscNote.osc.frequency.value = notesFrequency[note.note];
 
