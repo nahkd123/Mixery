@@ -110,16 +110,21 @@ export class ClipEditorInterface {
                             if (note.note === clickedNote && (
                                 (start >= note.start && start < note.start + note.duration) ||
                                 (start <= note.start && startEnd > note.start)
-                            )) return;
+                            )) {
+                                if (event.buttons === 2) selectedClip.notes.splice(i, 1);
+                                return;
+                            };
                         }
 
-                        selectedClip.notes.push({
-                            note: clickedNote,
-                            sensitivity: 0.75,
-                            start,
-                            duration: this.session.clipEditor.noteLength
-                        });
-                        selectedClip.notes.sort((a, b) => (a.start - b.start))
+                        if (event.buttons === 1) {
+                            selectedClip.notes.push({
+                                note: clickedNote,
+                                sensitivity: 0.75,
+                                start,
+                                duration: this.session.clipEditor.noteLength
+                            });
+                            selectedClip.notes.sort((a, b) => (a.start - b.start));
+                        }
                     }
                 }
             }
