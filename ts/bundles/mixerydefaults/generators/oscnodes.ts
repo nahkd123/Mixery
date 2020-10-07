@@ -98,10 +98,7 @@ export class OscNodes extends AudioGenerator {
     }
 
     addOscillator(type: OscillatorsType) {
-        let automation = new AudioAutomation(
-            {type: "linearRamp", time: 0.15, value: 0.9},
-            {type: "linearRamp", time: 0.5, value: 0.25}
-        );
+        let automation = new AudioAutomation();
         let automator = new AudioAutomator(null, automation, "OscNodes");
 
         let osc: Oscillator = {
@@ -179,5 +176,22 @@ export class OscNodes extends AudioGenerator {
                 this.playingNotes.push(oscNote);
             });
         });
+    }
+
+    getConfiguration() {
+        let outputOscillators = [];
+
+        this.oscillators.forEach(osc => {
+            outputOscillators.push({
+                name: osc.name,
+                type: osc.type,
+                semitonesOffset: osc.semitonesOffset,
+                automation: osc.gainAutomation.nodes
+            });
+        });
+
+        return {
+            oscillators: outputOscillators
+        };
     }
 }
