@@ -76,5 +76,3 @@ export class GeneratorEntry {
         this.mgr = mgr;
     }
 }
-
-export class PluginPreset {}

@@ -1,4 +1,3 @@
-import { PluginPreset } from "../mixerycore/plugins.js";
 import { AudioGenerator } from "../mixerycore/generator.js";
 import { MIDINoteInfo } from "../mixerycore/midi.js";
 import { UserInterface } from "./ui.js";
@@ -55,10 +54,24 @@ export abstract class ExplorerContent {
 
 export abstract class GeneratorExplorerContent extends ExplorerContent {
     color = "rgb(252, 186, 12)";
-    abstract constructPlugin(preset: PluginPreset): AudioGenerator;
+    abstract constructPlugin(preset: object): AudioGenerator;
 }
-export abstract class PluginPresetExplorerContent extends ExplorerContent {
-    preset: PluginPreset;
+export class GeneratorPresetExplorerContent extends ExplorerContent {
+    name: string;
+    color = "rgb(252, 232, 100)";
+    generator: GeneratorExplorerContent;
+    preset: object;
+
+    constructor(name: string, generator: GeneratorExplorerContent, preset: object) {
+        super();
+        this.name = name;
+        this.generator = generator;
+        this.preset = preset;
+    }
+
+    constructPlugin() {
+        return this.generator.constructPlugin(this.preset);
+    }
 }
 export abstract class MIDIClipExplorerContent extends ExplorerContent {
     notes: MIDINoteInfo[] = [];

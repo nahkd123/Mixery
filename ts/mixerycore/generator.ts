@@ -29,6 +29,13 @@ export abstract class AudioGenerator {
      * @param clipOffset The clip offset in beats
      */
     abstract playClip(clip: MIDIClip, clipOffset: number);
+
+    /**
+     * Get the plugin current configuration. It can be used to save plugin preset for later use.
+     */
+    getConfiguration() {
+        return {};
+    }
 }
 
 export class ExampleGenerator extends AudioGenerator {
