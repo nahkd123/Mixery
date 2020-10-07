@@ -15,6 +15,8 @@ export default class MixerTrack {
     effects: MixerTrackEffect[] = [];
     input: RenderableGainNode;
 
+    get gain() {return this.output.gain;}
+
     constructor(mixer: Mixer, name = "Track " + mixer.tracks.length) {
         this.mixer = mixer;
         this.engine = mixer.engine;

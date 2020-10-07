@@ -20,6 +20,7 @@ div.sidebar.pluginslisting {
     height: 100%;
 
     overflow: scroll;
+    display: inline-block;
 }
 div.sidebar.pluginslisting::-webkit-scrollbar {
     display: none;

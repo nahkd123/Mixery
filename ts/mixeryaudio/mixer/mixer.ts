@@ -24,6 +24,15 @@ export default class Mixer {
         return track;
     }
 
+    removeTrack(track: MixerTrack) {
+        if (track.mixer !== this) throw "Wrong mixer";
+        let index = this.tracks.indexOf(track);
+        if (index === -1) throw "Unlinked mixer";
+
+        track.output.disconnect();
+        this.tracks.splice(index, 1);
+    }
+
     reconnectTracks() {
         this.tracks.forEach(track => {
             track.output.disconnect();

@@ -7,6 +7,13 @@ export function snap(val: number, ...vas: number[]) {
     });
     return hval + sel;
 }
+export function nearSnap(val: number, range: number, ...vas: number[]) {
+    for (let i = 0; i < vas.length; i++) {
+        const sval = vas[i];
+        if (val >= sval - range && val <= sval + range) return sval;
+    }
+    return val;
+}
 export function fixedSnap(val: number, segment: number) {
     return Math.floor(val / segment) * segment;
 }

@@ -2,6 +2,7 @@
 @import url("./editor.css");
 @import url("./pluginstray.css");
 @import url("./clipeditor.css");
+@import url("./mixer.css");
 
 div.pane {
     display: inline-block;

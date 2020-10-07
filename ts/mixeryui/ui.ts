@@ -6,6 +6,7 @@ import { PlaylistInterface } from "./ui/playlist.js";
 import { ClipEditorInterface } from "./ui/clipeditor.js";
 import { PluginsInterface } from "./ui/plugins.js";
 import { tbWindowsProcess } from "./ui/tbwindows.js";
+import { MixerInterface } from "./ui/mixer.js";
 
 let canvasSizeDynamicUpdate: Map<HTMLCanvasElement, (canvas: HTMLCanvasElement) => void> = new Map();
 export function updateCanvasSize(canvas: HTMLCanvasElement, onResize?: (canvas: HTMLCanvasElement) => void) {
@@ -46,12 +47,14 @@ export class UserInterface {
     plugins: PluginsInterface;
     clipEditor: ClipEditorInterface;
     explorer: ExplorerPane;
+    mixer: MixerInterface;
 
     constructor(session: Session) {
         this.session = session;
         this.playlist = new PlaylistInterface(this);
         this.plugins = new PluginsInterface(this);
         this.clipEditor = new ClipEditorInterface(this);
+        this.mixer = new MixerInterface(this);
 
         tbWindowsProcess(session);
     }
@@ -66,6 +69,8 @@ export class UserInterface {
 
         this.clipEditor.element = this.element.querySelector("div.pane.clipeditor");
         this.clipEditor.applyUpdate();
+
+        this.mixer.applyUpdate();
 
         onCanvasSizesUpdate = () => {
             this.canvasRenderUpdate();
