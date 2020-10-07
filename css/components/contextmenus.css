@@ -10,6 +10,8 @@ div.contextmenu {
 
     padding: 5px;
     padding-bottom: 0;
+
+    box-shadow: 0 0 6px black;
 }
 
 div.contextmenu > div.ctxbutton {
