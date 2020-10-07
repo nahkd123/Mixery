@@ -96,6 +96,31 @@ export class ClipEditorInterface {
 
                 if (selectedTool === Tools.NOTHING) {
                     this.midiDrawInfo.noteEnd = clickedBeat;
+                } else if (selectedTool === Tools.PENCIL) {
+                    let selectedClip = this.session.playlist.selectedClip;
+                    if (selectedClip instanceof MIDIClip) {
+                        const clickedNote = NotesConfiguration.NOTE_TO - Math.floor((this.mouse.y + this.session.clipEditor.verticalScroll) / this.session.clipEditor.verticalZoom);
+                        const start = fixedSnap(clickedBeat, this.session.clipEditor.noteLength);
+                        const startEnd = start + this.session.clipEditor.noteLength;
+                        
+                        // Check if the ghost note is occupied by other notes
+                        // ye I should have a better way to do this...
+                        for (let i = 0; i < selectedClip.notes.length; i++) {
+                            const note = selectedClip.notes[i];
+                            if (note.note === clickedNote && (
+                                (start >= note.start && start < note.start + note.duration) ||
+                                (start <= note.start && startEnd > note.start)
+                            )) return;
+                        }
+
+                        selectedClip.notes.push({
+                            note: clickedNote,
+                            sensitivity: 0.75,
+                            start,
+                            duration: this.session.clipEditor.noteLength
+                        });
+                        selectedClip.notes.sort((a, b) => (a.start - b.start))
+                    }
                 }
             }
 
