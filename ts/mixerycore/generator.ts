@@ -36,6 +36,17 @@ export abstract class AudioGenerator {
     getConfiguration() {
         return {};
     }
+
+    /**
+     * Get the plugin preset, includes the current configuration
+     */
+    getPluginPreset() {
+        return {
+            type: "generator",
+            name: this.name,
+            configuration: this.getConfiguration()
+        };
+    }
 }
 
 export class ExampleGenerator extends AudioGenerator {
