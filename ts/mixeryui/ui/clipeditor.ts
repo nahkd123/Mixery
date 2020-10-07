@@ -100,7 +100,7 @@ export class ClipEditorInterface {
                     let selectedClip = this.session.playlist.selectedClip;
                     if (selectedClip instanceof MIDIClip) {
                         const clickedNote = NotesConfiguration.NOTE_TO - Math.floor((this.mouse.y + this.session.clipEditor.verticalScroll) / this.session.clipEditor.verticalZoom);
-                        const start = fixedSnap(clickedBeat, this.session.clipEditor.noteLength);
+                        const start = fixedSnap(clickedBeat, this.session.clipEditor.noteLength) - selectedClip.offset;
                         const startEnd = start + this.session.clipEditor.noteLength;
                         
                         // Check if the ghost note is occupied by other notes
