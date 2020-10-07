@@ -4,7 +4,6 @@ import RenderableOscillatorNode from "../../../mixeryaudio/nodes/oscillator.js";
 import { MIDIClip } from "../../../mixerycore/clips.js";
 import { AudioGenerator } from "../../../mixerycore/generator.js";
 import { notesFrequency } from "../../../mixerycore/notes.js";
-import { PluginPreset } from "../../../mixerycore/plugins.js";
 import { Session } from "../../../mixerycore/session.js";
 import AudioAutomator from "../../../mixeryui/automations/automator.js";
 import { GeneratorExplorerContent } from "../../../mixeryui/explorer.js";
@@ -13,7 +12,7 @@ import { beatsToMS } from "../../../utils/msbeats.js";
 export default class OscNodesExplorerContent extends GeneratorExplorerContent {
     name = "OscNodes";
 
-    constructPlugin(preset: PluginPreset) {
+    constructPlugin(preset: object) {
         let plugin = new OscNodes();
         return plugin;
     }
