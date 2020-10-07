@@ -1,0 +1,10 @@
+{
+    "name": "mixery",
+    "description": "An open source Digital Audio Workspace. Made with Typescript",
+    "authors": "nahkd123",
+    "version": "1.0.0",
+    "main": "bin/httpserver/index.js",
+    "dependencies": {
+        "express": "^4.17.1"
+    }
+}

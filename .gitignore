@@ -3,3 +3,4 @@ lib
 *.js
 *.js.map
 temp
+node_modules
