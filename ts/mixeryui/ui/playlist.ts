@@ -92,7 +92,7 @@ export class PlaylistInterface {
                     globalCanvasMouseDown = false;
                     for (let i = 0; i < track.clips.length; i++) {
                         const clip = track.clips[i];
-                        if (beginBeat >= clip.offset && clip.offset <= clip.offset + clip.length) {
+                        if (beginBeat >= clip.offset && beginBeat <= clip.offset + clip.length) {
                             track.clips.splice(i, 1);
                             if (self.session.playlist.selectedClip === clip) self.session.playlist.selectedClip = undefined;
                             return;
