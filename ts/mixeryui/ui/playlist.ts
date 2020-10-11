@@ -222,7 +222,9 @@ export class PlaylistInterface {
                 if (content instanceof AudioClipExplorerContent) {
                     let clip = content.createClip(this.session);
                     clip.offset = this.session.seeker;
+                    clip.mixer = this.ui.mixer.mixerTracks.selected.track || this.session.audioEngine.mixer.master;
                     track.clips.push(clip);
+                    this.session.playlist.selectedClip = clip;
                     this.ui.canvasRenderUpdate();
                 }
             });
