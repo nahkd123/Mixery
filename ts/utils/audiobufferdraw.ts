@@ -1,3 +1,5 @@
+import CachedAudioBuffer from "./cachedaudiobuffer";
+
 function msToFrame(ms: number, rate = 44100) {
     return Math.floor(rate * ms / 1000);
 }
@@ -16,10 +18,11 @@ function getPeekByPixel(buffer: Float32Array, width: number, pixel = 0, start = 
     return val;
 }
 
-export default function drawAudioBuffer(buffer: AudioBuffer, ctx: CanvasRenderingContext2D, x: number, y: number, w: number, h: number, bufferStart: number, bufferEnd: number, pathLined = () => {}, flipChannels = true) {
+export default function drawAudioBuffer(buffer: CachedAudioBuffer, ctx: CanvasRenderingContext2D, x: number, y: number, w: number, h: number, bufferStart: number, bufferEnd: number, pathLined = () => {}, flipChannels = true) {
     const heightPerChannel = h / buffer.numberOfChannels;
     const startFrame = msToFrame(bufferStart, buffer.sampleRate);
     const endFrame = msToFrame(bufferEnd, buffer.sampleRate);
+    const realWidth = ctx.canvas.width;
 
     for (let i = 0; i < buffer.numberOfChannels; i++) {
         const channel = buffer.getChannelData(i);
@@ -29,8 +32,13 @@ export default function drawAudioBuffer(buffer: AudioBuffer, ctx: CanvasRenderin
         ctx.moveTo(x, y + (i + bottomDirection) * heightPerChannel);
         for (let dx = 0; dx < w; dx++) {
             if (x + dx < 0) continue;
-            // const peak = Math.abs(channel[getFrameIndexByPixel(w, dx, startFrame, endFrame)] || 0);
-            const peak = getPeekByPixel(channel, w, dx, startFrame, endFrame);
+            
+            const peak = Math.abs(channel[getFrameIndexByPixel(w, dx, startFrame, endFrame)] || 0);
+            // const peak = getPeekByPixel(channel, w, dx, startFrame, endFrame);
+            if (x + dx > realWidth) {
+                ctx.lineTo(x + dx, y + (i + bottomDirection) * heightPerChannel);
+                break;
+            }
             ctx.lineTo(x + dx, y + (i + (bottomDirection === 1? 1 - peak : peak)) * heightPerChannel);
         }
         pathLined();

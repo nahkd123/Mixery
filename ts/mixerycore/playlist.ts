@@ -97,7 +97,7 @@ export class PlaylistTrack {
                         this.ctx.fillStyle = clip.bgcolor;
                         this.ctx.lineWidth = 1;
                         drawAudioBuffer(
-                            clip.buffer, this.ctx,
+                            clip.cached, this.ctx,
                             drawX, 14, drawW, 25,
                             startMS, startMS + beatsToMS(clip.length, this.session.bpm),
                             () => {

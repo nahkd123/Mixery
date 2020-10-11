@@ -411,17 +411,22 @@ export class ClipEditorInterface {
 
         this.ctx.strokeStyle = clip.bgcolor;
         this.ctx.fillStyle = clip.bgcolor;
-        this.ctx.lineJoin = "round";
-        drawAudioBuffer(
-            clip.buffer, this.ctx,
-            sidebarWidth + (clip.offset - this.session.scrolledBeats - clip.audioOffset) * this.session.pxPerBeat, 0,
-            msToBeats(clip.buffer.duration * 1000, this.session.bpm) * this.session.pxPerBeat, this.canvas.height,
-            beatsToMS(0, this.session.bpm), clip.buffer.duration * 1000,
-            () => {
-                this.ctx.stroke();
-                this.ctx.fill();
-            }, false
-        );
+
+        if (clip.renderAudioClip) {
+            this.ctx.lineJoin = "round";
+            drawAudioBuffer(
+                clip.cached, this.ctx,
+                sidebarWidth + (clip.offset - this.session.scrolledBeats - clip.audioOffset) * this.session.pxPerBeat, 0,
+                msToBeats(clip.buffer.duration * 1000, this.session.bpm) * this.session.pxPerBeat, this.canvas.height,
+                beatsToMS(0, this.session.bpm), clip.buffer.duration * 1000,
+                () => {
+                    this.ctx.stroke();
+                    this.ctx.fill();
+                }, false
+            );
+        } else {
+            this.ctx.fillText("Audio waveform rendering has been disabled due to performance drop", sidebarWidth + 15, 15);
+        }
 
         // Draw the sidebar thing eee
         this.ctx.globalAlpha = 0.20;

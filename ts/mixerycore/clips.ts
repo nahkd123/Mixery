@@ -2,6 +2,7 @@ import { MIDINoteInfo } from "./midi.js";
 import { AudioGenerator } from "./generator.js";
 import { ThemeColors } from "../utils/themecolors.js";
 import MixerTrack from "../mixeryaudio/mixer/track.js";
+import CachedAudioBuffer from "../utils/cachedaudiobuffer.js";
 
 export abstract class Clip {
     name: string = "Unnamed Clip";
@@ -28,13 +29,19 @@ export class MIDIClip extends Clip {
 
 export class AudioClip extends Clip {
     buffer: AudioBuffer;
+    cached: CachedAudioBuffer;
     audioOffset: number = 0;
     mixer: MixerTrack;
+
+    renderAudioClip: boolean;
 
     constructor(buffer: AudioBuffer, track?: MixerTrack) {
         super();
         this.buffer = buffer;
+        this.cached = new CachedAudioBuffer(buffer);
         this.mixer = track;
+
+        this.renderAudioClip = buffer.duration > 45? false : true;
 
         const color = ThemeColors.randomClipColor();
         this.bgcolor = color[0];
