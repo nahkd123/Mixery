@@ -24,10 +24,19 @@ export class PlaylistBar {
 
         let mouseDown = false;
         let doubleBpm = 0;
+        this.tempo.addEventListener("contextmenu", event => {
+            event.preventDefault();
+        });
         this.tempo.addEventListener("mousedown", event => {
-            mouseDown = true;
-            doubleBpm = this.session.bpm * 2;
-            this.tempo.requestPointerLock();
+            if (event.buttons === 1) {
+                mouseDown = true;
+                doubleBpm = this.session.bpm * 2;
+                this.tempo.requestPointerLock();
+            } else if (event.buttons === 2) {
+                this.session.menus.windows.tools.bpmTapper.x = event.pageX + 1;
+                this.session.menus.windows.tools.bpmTapper.y = event.pageY + 1;
+                this.session.menus.windows.tools.bpmTapper.show();
+            }
         });
         this.tempo.addEventListener("mousemove", event => {
             if (mouseDown) {

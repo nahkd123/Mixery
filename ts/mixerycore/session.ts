@@ -10,6 +10,7 @@ import MixeryCanvasEngine from "../mixerycanvas/engine.js";
 import MixeryAudioEngine from "../mixeryaudio/engine.js";
 import RenderableGainNode from "../mixeryaudio/nodes/gain.js";
 import RenderableAudioBufferSourceNode from "../mixeryaudio/nodes/audiobuffer.js";
+import { UserInterface } from "../mixeryui/ui.js";
 
 export class Session {
     audioEngine: MixeryAudioEngine;
@@ -25,6 +26,8 @@ export class Session {
     bpm: number = 120;
 
     // Views
+    ui: UserInterface;
+
     pxPerBeat: number = 100;
     pxPerBeatTo: number = 100;
     scrolledBeats: number = 0;
@@ -92,11 +95,8 @@ export class Session {
         // Also add keyboard events
         document.addEventListener("keydown", event => {
             const keyStr = (event.ctrlKey? "Ctrl + " : "") + (event.altKey? "Alt + " : "") + (event.shiftKey? "Shift + " : "") + event.code;
-            this.keyboardShortcuts.forEach(shortcut => {
-                if (shortcut.code === keyStr) shortcut.action();
-            });
-
             if ((event.target as HTMLDivElement).isContentEditable) return;
+            
             switch (keyStr) {
                 case "Ctrl + KeyR": this.notifications.push({
                     title: "a",
@@ -109,6 +109,9 @@ export class Session {
                 case "F12": break;
                 default: event.preventDefault(); break;
             }
+            this.keyboardShortcuts.forEach(shortcut => {
+                if (shortcut.code === keyStr) shortcut.action();
+            });
         });
 
         this.documents = new MixeryHTMLDocuments();
@@ -184,6 +187,7 @@ export class Session {
         }
 
         linkMenu(ele.querySelector("div#file.topbarbutton"), this.menus.file);
+        linkMenu(ele.querySelector("div#tools.topbarbutton"), this.menus.tools);
         linkMenu(ele.querySelector("div#help.topbarbutton"), this.menus.help);
     }
 
@@ -211,11 +215,15 @@ export class SessionControls {
 
 export class SessionMenus {
     file: ContextMenu = new ContextMenu();
+    tools: ContextMenu = new ContextMenu();
     help: ContextMenu = new ContextMenu();
 
     windows = {
         file: {
             export: new MoveableWindow("Export", 0, 0)
+        },
+        tools: {
+            bpmTapper: new MoveableWindow("BPM Tapper", 0, 0, 200, 250)
         }
     };
 
@@ -225,6 +233,10 @@ export class SessionMenus {
         this.file.entries.push(new ContextMenuEntry("Import", () => {}));
         this.file.entries.push(new ContextMenuEntry("Export", () => {
             this.windows.file.export.show();
+        }));
+
+        this.tools.entries.push(new ContextMenuEntry("BPM Tapping", () => {
+            this.windows.tools.bpmTapper.show();
         }));
         
         this.help.entries.push(new ContextMenuEntry("Documentation", () => {

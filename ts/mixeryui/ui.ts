@@ -57,6 +57,8 @@ export class UserInterface {
         this.mixer = new MixerInterface(this);
 
         tbWindowsProcess(session);
+
+        this.session.ui = this;
     }
     applyUpdate() {
         this.explorer = new ExplorerPane(this, this.element.querySelector("div.pane.explorer"));
