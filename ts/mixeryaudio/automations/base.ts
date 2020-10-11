@@ -33,6 +33,11 @@ export default abstract class AudioParamsAutomation {
         if (this.isRendering) this.rendererParam.linearRampToValueAtTime(val, this.engine.renderer.currentTime + endTime);
     }
 
+    cancelScheduledValues(cancelTime: number) {
+        this.audioParam.cancelScheduledValues(cancelTime);
+        if (this.isRendering) this.rendererParam.cancelScheduledValues(cancelTime);
+    }
+
     get value() {return this.audioParam.value;}
     set value(val: number) {this.audioParam.value = val;}
 }

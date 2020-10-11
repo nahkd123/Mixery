@@ -2,7 +2,7 @@ import { Playlist } from "./playlist.js";
 import { GeneratorsPlugins } from "./plugins.js";
 import { NotificationsManager } from "../notifications/notificationsmgr.js";
 import { beatsToMS, msToBeats } from "../utils/msbeats.js";
-import { AudioClip, MIDIClip } from "./clips.js";
+import { AudioClip, AutomationClip, MIDIClip } from "./clips.js";
 import ContextMenu, { ContextMenuEntry } from "../contextmenus/menu.js";
 import MoveableWindow from "../windows/window.js";
 import { MixeryHTMLDocuments } from "../mixeryui/htmldocuments.js";
@@ -11,6 +11,7 @@ import MixeryAudioEngine from "../mixeryaudio/engine.js";
 import RenderableGainNode from "../mixeryaudio/nodes/gain.js";
 import RenderableAudioBufferSourceNode from "../mixeryaudio/nodes/audiobuffer.js";
 import { UserInterface } from "../mixeryui/ui.js";
+import RenderableAudioParam from "../mixeryaudio/automations/param.js";
 
 export class Session {
     audioEngine: MixeryAudioEngine;
@@ -56,11 +57,12 @@ export class Session {
         verticalScroll: 0
     };
 
-    // Audio Clips
+    // Audio Clips and Automation Clips
     playingAudios: {
         gain: RenderableGainNode,
         source: RenderableAudioBufferSourceNode
     }[] = [];
+    automatingParams: RenderableAudioParam[] = [];
 
     // Settings
     settings = {
@@ -148,6 +150,9 @@ export class Session {
                         );
 
                         self.playingAudios.push({gain, source});
+                    } else if (clip instanceof AutomationClip) {
+                        self.automatingParams.push(clip.param);
+                        clip.automation.applyBPM(clip.param, self.bpm, 1, beatsToMS(clip.offset, self.bpm));
                     }
                 });
             });
@@ -168,6 +173,10 @@ export class Session {
         this.playingAudios.forEach(clip => {
             clip.gain.disconnect();
             clip.source.stop();
+        });
+
+        this.automatingParams.forEach(param => {
+            param.cancelScheduledValues(this.audioEngine.liveTime);
         });
     }
     stopAndThenPlay() {

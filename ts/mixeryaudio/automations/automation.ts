@@ -1,4 +1,5 @@
-import RenderableAudioParam from "./param";
+import { beatsToMS } from "../../utils/msbeats.js";
+import RenderableAudioParam from "./param.js";
 
 export type AutomationNodeType = "instant" | "linearRamp" | "exponentialRamp";
 
@@ -34,6 +35,13 @@ export default class AudioAutomation {
         this.nodes.forEach(node => {
             if (node.type === "instant") param.setValueAtNextTime(offset + node.time, node.value * mul);
             if (node.type === "linearRamp") param.linearRampToValueAtNextTime(offset + node.time, node.value * mul);
+        });
+    }
+
+    applyBPM(param: RenderableAudioParam, bpm = 120, mul = 1, offset = 0) {
+        this.nodes.forEach(node => {
+            if (node.type === "instant") param.setValueAtNextTime(beatsToMS(offset + node.time, bpm) / 1000, node.value * mul);
+            if (node.type === "linearRamp") param.linearRampToValueAtNextTime(beatsToMS(offset + node.time, bpm) / 1000, node.value * mul);
         });
     }
 }

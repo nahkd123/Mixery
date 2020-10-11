@@ -1,6 +1,7 @@
 import ContextMenu, { ContextMenuEntry } from "../../contextmenus/menu.js";
 import Mixer from "../../mixeryaudio/mixer/mixer.js";
 import MixerTrack from "../../mixeryaudio/mixer/track.js";
+import { AutomationClip } from "../../mixerycore/clips.js";
 import { AudioEffect } from "../../mixerycore/effect.js";
 import { Session } from "../../mixerycore/session.js";
 import { nearSnap, snap } from "../../utils/snapper.js";
@@ -84,6 +85,17 @@ export class MixerTracksContainer {
         let labelCtxMenu = new ContextMenu();
         labelCtxMenu.entries.push(new ContextMenuEntry("Add Track", () => {
             this.addMixerTrack();
+        }));
+        labelCtxMenu.entries.push(new ContextMenuEntry("Automate Gain", () => {
+            let automationClip = new AutomationClip(track.gain);
+            automationClip.name = track.name + " - Gain";
+
+            let availableTrack = this.mi.session.playlist.findUnoccupiedTrack(this.mi.session.seeker, 1);
+            if (availableTrack !== undefined) {
+                availableTrack.clips.push(automationClip);
+            }
+            this.mi.session.playlist.selectedClip = automationClip;
+            this.mi.ui.canvasRenderUpdate();
         }));
         if (this.mi.mixerEngine.master !== track) {
             labelCtxMenu.entries.push(new ContextMenuEntry("Delete Track", () => {

@@ -1,11 +1,14 @@
 import ContextMenu, { ContextMenuEntry } from "../../contextmenus/menu.js";
-import { AudioClip, MIDIClip } from "../../mixerycore/clips.js";
+import { AutomationNode, AutomationNodeType } from "../../mixeryaudio/automations/automation.js";
+import { AudioClip, AutomationClip, MIDIClip } from "../../mixerycore/clips.js";
 import { NotesConfiguration, notesName } from "../../mixerycore/notes.js";
 import { Session } from "../../mixerycore/session.js";
 import { Tools } from "../../mixerycore/tools.js";
 import drawAudioBuffer from "../../utils/audiobufferdraw.js";
+import drawAutomation from "../../utils/automationdraw.js";
 import { beatsToMS, msToBeats } from "../../utils/msbeats.js";
-import { fixedSnap, snap } from "../../utils/snapper.js";
+import { numberRounder } from "../../utils/numberround.js";
+import { fixedSnap, fixedSnapCeil, snap } from "../../utils/snapper.js";
 import { updateCanvasSize, UserInterface } from "../ui.js";
 
 export class ClipEditorInterface {
@@ -27,6 +30,7 @@ export class ClipEditorInterface {
         this.session = ui.session;
     }
 
+    clickedAutomationNode: AutomationNode;
     applyUpdate() {
         this.canvas = this.element.querySelector("canvas");
         this.ctx = this.canvas.getContext("2d");
@@ -75,6 +79,13 @@ export class ClipEditorInterface {
         });
         
         let oldOffset = -1;
+
+        let automationNodeType: AutomationNodeType = "linearRamp";
+        let automationMenu = new ContextMenu();
+        automationMenu.entries.push(new ContextMenuEntry("Instant", () => {automationNodeType = "instant"}));
+        automationMenu.entries.push(new ContextMenuEntry("Linear Ramp", () => {automationNodeType = "linearRamp"}));
+        automationMenu.entries.push(new ContextMenuEntry("Exponential Ramp", () => {automationNodeType = "exponentialRamp"}));
+
         this.canvas.addEventListener("mousedown", event => {
             if (clickDisabled) return;
             
@@ -127,6 +138,37 @@ export class ClipEditorInterface {
                 if (selectedTool === Tools.MOVE) {
                     oldOffset = selectedClip.audioOffset;
                 }
+            } else if (selectedClip instanceof AutomationClip) {
+                const padding = 30;
+                const paddedHeight = this.canvas.height - padding * 2;
+                const rawClickedValue = 1 - Math.max(Math.min((event.offsetY - padding) / paddedHeight, 1.0), 0.0);
+                const mappedClickedValue = rawClickedValue;
+
+                this.clickedAutomationNode = undefined;
+
+                function findNodeAt(location: number) {
+                    const clip = selectedClip as AutomationClip;
+                    for (let i = 0; i < clip.automation.nodes.length; i++) {
+                        const node = clip.automation.nodes[i];
+                        if (node.time === location) return node;
+                    }
+                }
+
+                if (event.buttons === 4) {
+                    automationMenu.openMenu(event.pageX, event.pageY);
+                    event.preventDefault();
+                    return;
+                } else if (selectedTool === Tools.NOTHING) {
+                    const node = findNodeAt(clickedBeat);
+                    if (event.buttons === 1) {
+                        if (node === undefined) {
+                            this.clickedAutomationNode = selectedClip.automation.addNode(automationNodeType, clickedBeat, mappedClickedValue);
+                        } else this.clickedAutomationNode = node;
+                    } else if (event.buttons === 2) {
+                        this.mouse.down = false;
+                        selectedClip.automation.nodes.splice(selectedClip.automation.nodes.indexOf(node), 1);
+                    }
+                }
             }
 
             this.ui.canvasRenderUpdate();
@@ -141,7 +183,20 @@ export class ClipEditorInterface {
                 let selectedClip = this.session.playlist.selectedClip;
 
                 if (selectedTool === Tools.NOTHING) {
-                    this.midiDrawInfo.noteEnd = clickedBeat;
+                    if (selectedClip instanceof MIDIClip) {
+                        this.midiDrawInfo.noteEnd = clickedBeat;
+                    } else if (selectedClip instanceof AutomationClip) {
+                        const padding = 30;
+                        const paddedHeight = this.canvas.height - padding * 2;
+                        const rawClickedValue = 1 - Math.max(Math.min((event.offsetY - padding) / paddedHeight, 1.0), 0.0);
+                        const mappedClickedValue = rawClickedValue;
+
+                        if (this.clickedAutomationNode.time > 0) {
+                            this.clickedAutomationNode.time = clickedBeat;
+                        if (this.clickedAutomationNode.time <= 0) this.clickedAutomationNode.time = this.session.clipEditor.availableLengths[0];
+                        }
+                        this.clickedAutomationNode.value = event.shiftKey? mappedClickedValue : event.ctrlKey? fixedSnapCeil(mappedClickedValue, 0.05) : fixedSnap(mappedClickedValue, 0.05);
+                    }
                 } else if (selectedTool === Tools.PENCIL) {
                     if (selectedClip instanceof MIDIClip) {
                         const clickedNote = NotesConfiguration.NOTE_TO - Math.floor((this.mouse.y + this.session.clipEditor.verticalScroll) / this.session.clipEditor.verticalZoom);
@@ -204,6 +259,9 @@ export class ClipEditorInterface {
                         // console.log(selectedClip.notes);
                         selectedClip.notes.sort((a, b) => (a.start - b.start))
                     }
+                } else if (selectedClip instanceof AutomationClip) {
+                    selectedClip.automation.rearrange();
+                    this.clickedAutomationNode = undefined;
                 }
 
                 oldOffset = -1;
@@ -290,6 +348,7 @@ export class ClipEditorInterface {
 
         if (selectedClip instanceof MIDIClip) this.renderMIDIClip(selectedClip);
         else if (selectedClip instanceof AudioClip) this.renderAudioClip(selectedClip);
+        else if (selectedClip instanceof AutomationClip) this.renderAutomationClip(selectedClip);
 
         const resizerBeginX = ClipEditorInterface.SIDEBAR_WIDTH + ((selectedClip.offset - this.session.scrolledBeats) * this.session.pxPerBeat);
         const resizerEndX = resizerBeginX + (selectedClip.length * this.session.pxPerBeat);
@@ -307,6 +366,16 @@ export class ClipEditorInterface {
             ctx.strokeStyle = "rgb(252, 186, 3)";
             this.drawVerticalLine(seekPxPlaying, 0, this.canvas.height);
         }
+    }
+
+    renderHoveringBeat() {
+        const hoveringBeat = snap((this.mouse.x - ClipEditorInterface.SIDEBAR_WIDTH + this.session.scrolledPixels) / this.session.pxPerBeat, ...this.session.clipEditor.availableLengths);
+        this.ctx.strokeStyle = "#cecece10";
+        this.ctx.beginPath();
+        this.ctx.moveTo(hoveringBeat * this.session.pxPerBeat + ClipEditorInterface.SIDEBAR_WIDTH - this.session.scrolledPixels, 0);
+        this.ctx.lineTo(hoveringBeat * this.session.pxPerBeat + ClipEditorInterface.SIDEBAR_WIDTH - this.session.scrolledPixels, this.canvas.height);
+        this.ctx.stroke();
+        this.ctx.closePath();
     }
 
     renderMIDIClip(clip: MIDIClip) {
@@ -358,13 +427,7 @@ export class ClipEditorInterface {
             }
         }
 
-        // Render hovering beat thing
-        ctx.strokeStyle = "#cecece10";
-        ctx.beginPath();
-        ctx.moveTo(hoveringBeat * this.session.pxPerBeat + ClipEditorInterface.SIDEBAR_WIDTH - this.session.scrolledPixels, 0);
-        ctx.lineTo(hoveringBeat * this.session.pxPerBeat + ClipEditorInterface.SIDEBAR_WIDTH - this.session.scrolledPixels, this.canvas.height);
-        ctx.stroke();
-        ctx.closePath();
+        this.renderHoveringBeat();
         if (this.session.playlist.selectedTool === Tools.NOTHING && this.mouse.down) {
             ctx.globalAlpha = 0.25;
             ctx.fillStyle = clip.bgcolor;
@@ -437,6 +500,45 @@ export class ClipEditorInterface {
         const channelHeight = this.canvas.height / clip.buffer.numberOfChannels;
         for (let i = 0; i < clip.buffer.numberOfChannels; i++) {
             if (i !== clip.buffer.numberOfChannels - 1) this.drawHorizontalLine(0, sidebarWidth, (i + 1) * channelHeight);
+        }
+    }
+
+    renderAutomationClip(clip: AutomationClip) {
+        const hoveringBeat = snap((this.mouse.x - ClipEditorInterface.SIDEBAR_WIDTH + this.session.scrolledPixels) / this.session.pxPerBeat, ...this.session.clipEditor.availableLengths);
+        const sidebarWidth = ClipEditorInterface.SIDEBAR_WIDTH;
+        const padding = 30;
+        const rawClickedValue = 1 - Math.max(Math.min((this.mouse.y - padding) / (this.canvas.height - padding * 2), 1.0), 0.0);
+        const mappedClickedValue = rawClickedValue;
+
+        this.ctx.strokeStyle = clip.bgcolor;
+        this.ctx.fillStyle = clip.bgcolor;
+
+        drawAutomation(
+            clip, this.ctx,
+            sidebarWidth - (this.session.scrolledBeats - clip.offset) * this.session.pxPerBeat, padding,
+            this.canvas.width - sidebarWidth, this.canvas.height - padding * 2,
+            this.session.pxPerBeat, true, true
+        );
+        
+        // The sidebar thing
+        this.ctx.globalAlpha = 0.20;
+        this.ctx.fillRect(0, 0, sidebarWidth, this.canvas.height);
+        this.ctx.globalAlpha = 1;
+        this.drawVerticalLine(sidebarWidth, 0, this.canvas.height);
+        this.ctx.strokeStyle = "#cecece10";
+        for (let i = clip.maxValue; i >= clip.minValue; i -= 0.25) {
+            this.ctx.fillText(numberRounder(i, 2), 5, padding + (this.canvas.height - padding * 2) * (1 - i) + 3);
+            this.drawHorizontalLine(0, this.canvas.width, padding + (this.canvas.height - padding * 2) * (1 - i));
+        }
+
+        this.renderHoveringBeat();
+        // this.drawHorizontalLine(0, this.canvas.width, padding);
+        // this.drawHorizontalLine(0, this.canvas.width, this.canvas.height - padding);
+        this.drawHorizontalLine(0, this.canvas.width, padding + (this.canvas.height - padding * 2) * (1 - rawClickedValue));
+
+        if (this.clickedAutomationNode) {
+            this.ctx.fillStyle = clip.bgcolor;
+            this.ctx.fillText("V = " + numberRounder(this.clickedAutomationNode.value, 2), (hoveringBeat - this.session.scrolledBeats) * this.session.pxPerBeat + sidebarWidth + 5, padding + (this.canvas.height - padding * 2) * (1 - rawClickedValue) + 5);
         }
     }
 }

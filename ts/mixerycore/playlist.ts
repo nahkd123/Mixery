@@ -1,9 +1,10 @@
-import { AudioClip, Clip, MIDIClip } from "./clips.js";
+import { AudioClip, AutomationClip, Clip, MIDIClip } from "./clips.js";
 import { Session } from "./session.js";
 import { trimText } from "../utils/trimtext.js";
 import { Tools } from "./tools.js";
 import drawAudioBuffer from "../utils/audiobufferdraw.js";
 import { beatsToMS } from "../utils/msbeats.js";
+import drawAutomation from "../utils/automationdraw.js";
 
 export class PlaylistTrack {
     playlist: Playlist;
@@ -105,6 +106,11 @@ export class PlaylistTrack {
                                 this.ctx.fill();
                             }
                         );
+                        
+                        this.ctx.lineWidth = 2;
+                    } else if (clip instanceof AutomationClip) {
+                        this.ctx.strokeStyle = clip.bgcolor;
+                        drawAutomation(clip, this.ctx, drawX, 14, drawW, 25, this.session.pxPerBeat);
                     }
                 } else {
                     this.ctx.fillStyle = clip.bgcolor;
@@ -142,5 +148,19 @@ export class Playlist {
 
         this.tracks.push(track);
         return track;
+    }
+
+    findUnoccupiedTrack(location: number, length: number) {
+        outer: for (let trackIndex = 0; trackIndex < this.tracks.length; trackIndex++) {
+            const track = this.tracks[trackIndex];
+            for (let clipIndex = 0; clipIndex < track.clips.length; clipIndex++) {
+                const clip = track.clips[clipIndex];
+                if (
+                    (location >= clip.offset && location <= clip.offset + clip.length) ||
+                    (location + length >= clip.offset && location + length <= clip.offset + clip.length)
+                ) continue outer;
+            }
+            return track;
+        }
     }
 }

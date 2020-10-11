@@ -3,6 +3,8 @@ import { AudioGenerator } from "./generator.js";
 import { ThemeColors } from "../utils/themecolors.js";
 import MixerTrack from "../mixeryaudio/mixer/track.js";
 import CachedAudioBuffer from "../utils/cachedaudiobuffer.js";
+import AudioAutomation, { AutomationNode } from "../mixeryaudio/automations/automation.js";
+import RenderableAudioParam from "../mixeryaudio/automations/param.js";
 
 export abstract class Clip {
     name: string = "Unnamed Clip";
@@ -42,6 +44,23 @@ export class AudioClip extends Clip {
         this.mixer = track;
 
         this.renderAudioClip = buffer.duration > 45? false : true;
+
+        const color = ThemeColors.randomClipColor();
+        this.bgcolor = color[0];
+        this.fgcolor = color[1];
+    }
+}
+
+export class AutomationClip extends Clip {
+    automation: AudioAutomation;
+    param: RenderableAudioParam;
+    minValue: number = 0;
+    maxValue: number = 1;
+
+    constructor(param: RenderableAudioParam) {
+        super();
+        this.param = param;
+        this.automation = new AudioAutomation({time: 0, type: "instant", value: 0.5}); // Default node, yes you can't remove it
 
         const color = ThemeColors.randomClipColor();
         this.bgcolor = color[0];
