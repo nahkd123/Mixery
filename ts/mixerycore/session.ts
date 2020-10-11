@@ -130,6 +130,8 @@ export class Session {
                     if (clip.offset + clip.length < self.seeker) return;
                     if (clip instanceof MIDIClip) clip.generator.playClip(clip, clip.offset - self.seeker);
                     else if (clip instanceof AudioClip) {
+                        const playDuration = beatsToMS(clip.length, self.bpm) / 1000;
+                        if (playDuration <= 0) return;
                         let gain = self.audioEngine.createGain();
                         let source = self.audioEngine.createBufferSource(clip.buffer);
 
@@ -138,8 +140,8 @@ export class Session {
 
                         source.start(
                             self.audioEngine.liveTime + beatsToMS(clip.offset - self.seeker, self.bpm) / 1000,
-                            beatsToMS(Math.max(self.seeker - clip.offset, 0), self.bpm) / 1000,
-                            beatsToMS(clip.length, self.bpm) / 1000
+                            beatsToMS(Math.max(self.seeker - clip.offset, 0) + clip.audioOffset, self.bpm) / 1000,
+                            playDuration
                         );
 
                         self.playingAudios.push({gain, source});

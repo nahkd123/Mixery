@@ -1,8 +1,9 @@
-import { MIDIClip } from "../../mixerycore/clips.js";
+import { AudioClip, MIDIClip } from "../../mixerycore/clips.js";
 import { NotesConfiguration, notesName } from "../../mixerycore/notes.js";
 import { Session } from "../../mixerycore/session.js";
 import { Tools } from "../../mixerycore/tools.js";
-import { msToBeats } from "../../utils/msbeats.js";
+import drawAudioBuffer from "../../utils/audiobufferdraw.js";
+import { beatsToMS, msToBeats } from "../../utils/msbeats.js";
 import { fixedSnap, snap } from "../../utils/snapper.js";
 import { updateCanvasSize, UserInterface } from "../ui.js";
 
@@ -47,20 +48,23 @@ export class ClipEditorInterface {
             this.ui.canvasRenderUpdate();
         });
         
+        let oldOffset = -1;
         this.canvas.addEventListener("mousedown", event => {
             if (clickDisabled) return;
             
             this.mouse.down = true;
             this.mouse.x = event.offsetX;
             this.mouse.y = event.offsetY;
+            this.mouse.dragStartX = event.offsetX;
+            this.mouse.dragStartY = event.offsetY;
 
             if (this.mouse.x <= ClipEditorInterface.SIDEBAR_WIDTH) return;
             let selectedClip = this.session.playlist.selectedClip;
             const clickedBeat = snap((this.mouse.x - ClipEditorInterface.SIDEBAR_WIDTH + this.session.scrolledPixels) / this.session.pxPerBeat, ...this.session.clipEditor.availableLengths);
+            const selectedTool = this.session.playlist.selectedTool;
 
             if (selectedClip instanceof MIDIClip) {
                 const clickedNote = NotesConfiguration.NOTE_TO - Math.floor((this.mouse.y + this.session.clipEditor.verticalScroll) / this.session.clipEditor.verticalZoom);
-                const selectedTool = this.session.playlist.selectedTool;
 
                 if (selectedTool === Tools.NOTHING) {
                     if (event.button === 2) {
@@ -82,6 +86,10 @@ export class ClipEditorInterface {
                 } else if (selectedTool === Tools.PENCIL) {
                     // Freedraw
                 }
+            } else if (selectedClip instanceof AudioClip) {
+                if (selectedTool === Tools.MOVE) {
+                    oldOffset = selectedClip.audioOffset;
+                }
             }
 
             this.ui.canvasRenderUpdate();
@@ -93,11 +101,11 @@ export class ClipEditorInterface {
             if (this.mouse.down) {
                 const selectedTool = this.session.playlist.selectedTool;
                 const clickedBeat = snap((this.mouse.x - ClipEditorInterface.SIDEBAR_WIDTH + this.session.scrolledPixels) / this.session.pxPerBeat, ...this.session.clipEditor.availableLengths);
+                let selectedClip = this.session.playlist.selectedClip;
 
                 if (selectedTool === Tools.NOTHING) {
                     this.midiDrawInfo.noteEnd = clickedBeat;
                 } else if (selectedTool === Tools.PENCIL) {
-                    let selectedClip = this.session.playlist.selectedClip;
                     if (selectedClip instanceof MIDIClip) {
                         const clickedNote = NotesConfiguration.NOTE_TO - Math.floor((this.mouse.y + this.session.clipEditor.verticalScroll) / this.session.clipEditor.verticalZoom);
                         const start = fixedSnap(clickedBeat, this.session.clipEditor.noteLength) - selectedClip.offset;
@@ -126,6 +134,12 @@ export class ClipEditorInterface {
                             selectedClip.notes.sort((a, b) => (a.start - b.start));
                         }
                     }
+                } else if (selectedTool === Tools.MOVE) {
+                    if (selectedClip instanceof AudioClip) {
+                        // selectedClip.audioOffset -= event.movementX / this.session.pxPerBeat;
+                        if (oldOffset === -1) return;
+                        selectedClip.audioOffset = Math.max(snap(oldOffset - (event.offsetX - this.mouse.dragStartX) / this.session.pxPerBeat, ...this.session.clipEditor.availableLengths), 0);
+                    }
                 }
             }
 
@@ -153,6 +167,8 @@ export class ClipEditorInterface {
                         selectedClip.notes.sort((a, b) => (a.start - b.start))
                     }
                 }
+
+                oldOffset = -1;
             }
 
             this.mouse.down = false;
@@ -166,13 +182,53 @@ export class ClipEditorInterface {
     mouse = {
         x: -1,
         y: -1,
-        down: false
+        down: false,
+
+        dragStartX: -1,
+        dragStartY: -1
     };
     midiDrawInfo = {
         noteIndex: 0,
         noteStart: 0,
         noteEnd: 0
     };
+
+    drawLine(x1: number, y1: number, x2: number, y2: number) {
+        this.ctx.beginPath();
+        this.ctx.moveTo(x1, y1);
+        this.ctx.lineTo(x2, y2);
+        this.ctx.stroke();
+        this.ctx.closePath();
+    }
+    drawVerticalLine(x: number, y1: number, y2: number) {
+        if (x < ClipEditorInterface.SIDEBAR_WIDTH) return;
+        this.drawLine(x, y1, x, y2);
+    }
+    drawHorizontalLine(x1: number, x2: number, y: number) {
+        this.drawLine(x1, y, x2, y);
+    }
+
+    drawGrid(beatSegments = 4) {
+        let ctx = this.ctx;
+        const verticalLines = Math.floor(this.canvas.width / this.session.pxPerBeat) + 1;
+        const lineOffset = this.session.scrolledPixels % this.session.pxPerBeat;
+
+        for (let i = 0; i < verticalLines; i++) {
+            const barSperator = Math.floor(i + this.session.scrolledBeats) % 4 === 0;
+            const lineX = ClipEditorInterface.SIDEBAR_WIDTH - lineOffset + i * this.session.pxPerBeat;
+
+            ctx.strokeStyle = barSperator? "#cecece30" : "#cecece10";
+            ctx.lineWidth = barSperator? 4 : 2;
+            this.drawVerticalLine(lineX, 0, this.canvas.height);
+
+            ctx.lineWidth = 1;
+            for (let i = 1; i < beatSegments; i++) {
+                this.drawVerticalLine(lineX + (i * this.session.pxPerBeat / beatSegments), 0, this.canvas.height);
+            }
+        }
+
+        ctx.lineWidth = 2;
+    }
 
     render() {
         if (this.session.clipEditor.verticalScroll < 0) this.session.clipEditor.verticalScroll = 0;
@@ -194,31 +250,23 @@ export class ClipEditorInterface {
         let selectedClip = this.session.playlist.selectedClip;
 
         if (selectedClip instanceof MIDIClip) this.renderMIDIClip(selectedClip);
+        else if (selectedClip instanceof AudioClip) this.renderAudioClip(selectedClip);
 
         const resizerBeginX = ClipEditorInterface.SIDEBAR_WIDTH + ((selectedClip.offset - this.session.scrolledBeats) * this.session.pxPerBeat);
         const resizerEndX = resizerBeginX + (selectedClip.length * this.session.pxPerBeat);
         ctx.strokeStyle = selectedClip.bgcolor;
         ctx.lineWidth = 2;
 
-        function drawLine(x1: number, y1: number, x2: number, y2: number) {
-            ctx.beginPath();
-            ctx.moveTo(x1, y1);
-            ctx.lineTo(x2, y2);
-            ctx.stroke();
-            ctx.closePath();
-        }
-        function drawVerticalLine(x: number, y1: number, y2: number) {
-            if (x < ClipEditorInterface.SIDEBAR_WIDTH) return;
-            drawLine(x, y1, x, y2);
-        }
-        drawVerticalLine(resizerBeginX, 0, this.canvas.height);
-        drawVerticalLine(resizerEndX, 0, this.canvas.height);
+        this.drawVerticalLine(resizerBeginX, 0, this.canvas.height);
+        this.drawVerticalLine(resizerEndX, 0, this.canvas.height);
+
+        this.drawGrid();
 
         //ctx.strokeStyle = "";
         if (this.session.playing) {
             const seekPxPlaying = (this.session.seeker - this.session.scrolledBeats + msToBeats(this.session.playedLength, this.session.bpm)) * this.session.pxPerBeat + ClipEditorInterface.SIDEBAR_WIDTH;
             ctx.strokeStyle = "rgb(252, 186, 3)";
-            drawVerticalLine(seekPxPlaying, 0, this.canvas.height);
+            this.drawVerticalLine(seekPxPlaying, 0, this.canvas.height);
         }
     }
 
@@ -309,11 +357,42 @@ export class ClipEditorInterface {
             
             if (drawX + drawW - ClipEditorInterface.SIDEBAR_WIDTH < 0) return;
 
+            ctx.globalAlpha = 1 - Math.min(Math.max(0, (ClipEditorInterface.SIDEBAR_WIDTH - drawX) / drawW), 1);
             ctx.fillStyle = clip.bgcolor;
             ctx.fillRect(drawX, drawY, drawW, zoom);
 
             ctx.fillStyle = clip.fgcolor;
             ctx.fillText(notesName[note.note], drawX + 5, drawY + 16);
+            ctx.globalAlpha = 1;
         });
+    }
+
+    renderAudioClip(clip: AudioClip) {
+        const sidebarWidth = ClipEditorInterface.SIDEBAR_WIDTH;
+
+        this.ctx.strokeStyle = clip.bgcolor;
+        this.ctx.fillStyle = clip.bgcolor;
+        this.ctx.lineJoin = "round";
+        drawAudioBuffer(
+            clip.buffer, this.ctx,
+            sidebarWidth + (clip.offset - this.session.scrolledBeats - clip.audioOffset) * this.session.pxPerBeat, 0,
+            msToBeats(clip.buffer.duration * 1000, this.session.bpm) * this.session.pxPerBeat, this.canvas.height,
+            beatsToMS(0, this.session.bpm), clip.buffer.duration * 1000,
+            () => {
+                this.ctx.stroke();
+                this.ctx.fill();
+            }, false
+        );
+
+        // Draw the sidebar thing eee
+        this.ctx.globalAlpha = 0.20;
+        this.ctx.fillRect(0, 0, sidebarWidth, this.canvas.height);
+        this.ctx.globalAlpha = 1;
+        this.drawVerticalLine(sidebarWidth, 0, this.canvas.height);
+
+        const channelHeight = this.canvas.height / clip.buffer.numberOfChannels;
+        for (let i = 0; i < clip.buffer.numberOfChannels; i++) {
+            if (i !== clip.buffer.numberOfChannels - 1) this.drawHorizontalLine(0, sidebarWidth, (i + 1) * channelHeight);
+        }
     }
 }

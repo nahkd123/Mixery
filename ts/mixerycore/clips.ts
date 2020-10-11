@@ -28,6 +28,7 @@ export class MIDIClip extends Clip {
 
 export class AudioClip extends Clip {
     buffer: AudioBuffer;
+    audioOffset: number = 0;
     mixer: MixerTrack;
 
     constructor(buffer: AudioBuffer, track?: MixerTrack) {

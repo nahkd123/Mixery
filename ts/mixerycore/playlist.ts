@@ -90,10 +90,21 @@ export class PlaylistTrack {
                             this.ctx.fillRect(drawX + noteX, 14 + noteY, noteW, noteH);
                         }
                     } else if (clip instanceof AudioClip) {
+                        const startMS = beatsToMS(clip.audioOffset, this.session.bpm);
+
                         // clip.buffer.getChannelData(0);
                         this.ctx.strokeStyle = clip.bgcolor;
+                        this.ctx.fillStyle = clip.bgcolor;
                         this.ctx.lineWidth = 1;
-                        drawAudioBuffer(clip.buffer, this.ctx, drawX, 14, drawW, 25, 0, beatsToMS(clip.length, this.session.bpm));
+                        drawAudioBuffer(
+                            clip.buffer, this.ctx,
+                            drawX, 14, drawW, 25,
+                            startMS, startMS + beatsToMS(clip.length, this.session.bpm),
+                            () => {
+                                this.ctx.stroke();
+                                this.ctx.fill();
+                            }
+                        );
                     }
                 } else {
                     this.ctx.fillStyle = clip.bgcolor;
