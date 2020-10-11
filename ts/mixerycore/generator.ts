@@ -30,6 +30,8 @@ export abstract class AudioGenerator {
      */
     abstract playClip(clip: MIDIClip, clipOffset: number);
 
+    stopPlayingClips() {}
+
     /**
      * Get the plugin current configuration. It can be used to save plugin preset for later use.
      */

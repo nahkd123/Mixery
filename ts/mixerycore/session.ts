@@ -157,6 +157,10 @@ export class Session {
         this.playing = false;
 
         // Stop all generators
+        this.plugins.generators.forEach(generatorEntry => {
+            generatorEntry.generator.stopPlayingClips();
+        });
+
         // Stop all playing audio clips
         this.playingAudios.forEach(clip => {
             clip.gain.disconnect();

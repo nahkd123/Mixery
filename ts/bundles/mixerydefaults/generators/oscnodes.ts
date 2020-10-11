@@ -196,6 +196,13 @@ export class OscNodes extends AudioGenerator {
         });
     }
 
+    stopPlayingClips() {
+        this.playingNotes.forEach(note => {
+            note.gain.disconnect();
+            note.osc.disconnect();
+        });
+    }
+
     getConfiguration() {
         let outputOscillators = [];
 
