@@ -1,6 +1,10 @@
+import MixeryAudioEngine from "../mixeryaudio/engine.js";
+import { AudioClip } from "../mixerycore/clips.js";
 import { AudioEffect } from "../mixerycore/effect.js";
 import { AudioGenerator } from "../mixerycore/generator.js";
 import { MIDINoteInfo } from "../mixerycore/midi.js";
+import { Session } from "../mixerycore/session.js";
+import { msToBeats } from "../utils/msbeats.js";
 import { UserInterface } from "./ui.js";
 
 export class ExplorerSection {
@@ -80,6 +84,42 @@ export class GeneratorPresetExplorerContent extends ExplorerContent {
 }
 export abstract class MIDIClipExplorerContent extends ExplorerContent {
     notes: MIDINoteInfo[] = [];
+}
+export class AudioClipExplorerContent extends ExplorerContent {
+    name: string;
+    color = "rgb(87, 250, 93)";
+    bufferUrl: string;
+    buffer: AudioBuffer;
+    bufferLoaded: boolean = false;
+
+    constructor(name: string, buffer: AudioBuffer | string) {
+        super();
+        this.name = name;
+        if (typeof buffer === "string") {
+            this.bufferUrl = buffer;
+        } else {
+            this.buffer = buffer;
+            this.bufferLoaded = true;
+        }
+    }
+
+    async loadBuffer(engine: MixeryAudioEngine) {
+        let fetchInf = await fetch(this.bufferUrl);
+        engine.audio.decodeAudioData(await fetchInf.arrayBuffer(), (data) => {
+            this.buffer = data;
+            this.bufferLoaded = true;
+        }, (err) => {
+            console.error(err);
+        });
+    }
+
+    createClip(session: Session) {
+        if (this.bufferLoaded === false) throw "Buffer is not loaded yet";
+        let clip = new AudioClip(this.buffer);
+        clip.name = this.name;
+        clip.length = msToBeats(this.buffer.duration * 1000, session.bpm);
+        return clip;
+    }
 }
 
 export class ExplorerPane {

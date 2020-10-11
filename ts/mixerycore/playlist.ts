@@ -1,7 +1,9 @@
-import { Clip, MIDIClip } from "./clips.js";
+import { AudioClip, Clip, MIDIClip } from "./clips.js";
 import { Session } from "./session.js";
 import { trimText } from "../utils/trimtext.js";
 import { Tools } from "./tools.js";
+import drawAudioBuffer from "../utils/audiobufferdraw.js";
+import { beatsToMS } from "../utils/msbeats.js";
 
 export class PlaylistTrack {
     playlist: Playlist;
@@ -87,6 +89,11 @@ export class PlaylistTrack {
                             this.ctx.fillStyle = clip.bgcolor;
                             this.ctx.fillRect(drawX + noteX, 14 + noteY, noteW, noteH);
                         }
+                    } else if (clip instanceof AudioClip) {
+                        // clip.buffer.getChannelData(0);
+                        this.ctx.strokeStyle = clip.bgcolor;
+                        this.ctx.lineWidth = 1;
+                        drawAudioBuffer(clip.buffer, this.ctx, drawX, 14, drawW, 25, 0, beatsToMS(clip.length, this.session.bpm));
                     }
                 } else {
                     this.ctx.fillStyle = clip.bgcolor;

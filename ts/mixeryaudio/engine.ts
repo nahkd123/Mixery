@@ -1,4 +1,5 @@
 import Mixer from "./mixer/mixer.js";
+import RenderableAudioBufferSourceNode from "./nodes/audiobuffer.js";
 import RenderableDestinationNode from "./nodes/destination.js";
 import RenderableGainNode from "./nodes/gain.js";
 import RenderableAudioNode from "./nodes/node.js";
@@ -25,6 +26,11 @@ export default class MixeryAudioEngine {
 
     createGain() {return new RenderableGainNode(this);}
     createOscillator() {return new RenderableOscillatorNode(this);}
+    createBufferSource(buffer?: AudioBuffer) {
+        let source = new RenderableAudioBufferSourceNode(this);
+        if (buffer) source.buffer = buffer;
+        return source;
+    }
 
     //#region Renderer
     beforeRender() {

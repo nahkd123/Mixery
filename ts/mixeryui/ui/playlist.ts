@@ -2,6 +2,7 @@ import { MIDIClip } from "../../mixerycore/clips.js";
 import { Session } from "../../mixerycore/session.js";
 import { Tools } from "../../mixerycore/tools.js";
 import { BeatSnapPreset, snap } from "../../utils/snapper.js";
+import { AudioClipExplorerContent } from "../explorer.js";
 import { updateCanvasSize, UserInterface } from "../ui.js";
 import { PlaylistBar } from "./playlistbar.js";
 import { TimelineBar } from "./timeline.js";
@@ -84,13 +85,14 @@ export class PlaylistInterface {
                 tool = this.session.playlist.selectedTool;
                 // console.log(clickedBeat);
 
+                let self = this;
                 function deleteClipAtCursor() {
                     globalCanvasMouseDown = false;
                     for (let i = 0; i < track.clips.length; i++) {
                         const clip = track.clips[i];
                         if (beginBeat >= clip.offset && clip.offset <= clip.offset + clip.length) {
                             track.clips.splice(i, 1);
-                            if (this.session.playlist.selectedClip === clip) this.session.playlist.selectedClip = undefined;
+                            if (self.session.playlist.selectedClip === clip) self.session.playlist.selectedClip = undefined;
                             return;
                         }
                     }
@@ -215,6 +217,16 @@ export class PlaylistInterface {
                 }
             });
             
+            // Explorer contents consumer
+            this.ui.explorer.addContentConsumer(canvas, (content) => {
+                if (content instanceof AudioClipExplorerContent) {
+                    let clip = content.createClip(this.session);
+                    clip.offset = this.session.seeker;
+                    track.clips.push(clip);
+                    this.ui.canvasRenderUpdate();
+                }
+            });
+
             this.ui.canvasRenderUpdate();
         });
 

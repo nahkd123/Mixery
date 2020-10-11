@@ -1,13 +1,15 @@
 import { Playlist } from "./playlist.js";
 import { GeneratorsPlugins } from "./plugins.js";
 import { NotificationsManager } from "../notifications/notificationsmgr.js";
-import { msToBeats } from "../utils/msbeats.js";
-import { MIDIClip } from "./clips.js";
+import { beatsToMS, msToBeats } from "../utils/msbeats.js";
+import { AudioClip, MIDIClip } from "./clips.js";
 import ContextMenu, { ContextMenuEntry } from "../contextmenus/menu.js";
 import MoveableWindow from "../windows/window.js";
 import { MixeryHTMLDocuments } from "../mixeryui/htmldocuments.js";
 import MixeryCanvasEngine from "../mixerycanvas/engine.js";
 import MixeryAudioEngine from "../mixeryaudio/engine.js";
+import RenderableGainNode from "../mixeryaudio/nodes/gain.js";
+import RenderableAudioBufferSourceNode from "../mixeryaudio/nodes/audiobuffer.js";
 
 export class Session {
     audioEngine: MixeryAudioEngine;
@@ -50,6 +52,12 @@ export class Session {
         verticalZoom: 25, // 25px height per note
         verticalScroll: 0
     };
+
+    // Audio Clips
+    playingAudios: {
+        gain: RenderableGainNode,
+        source: RenderableAudioBufferSourceNode
+    }[] = [];
 
     // Settings
     settings = {
@@ -119,7 +127,23 @@ export class Session {
                 if (!track.unmuted) return;
 
                 track.clips.forEach(clip => {
+                    if (clip.offset + clip.length < self.seeker) return;
                     if (clip instanceof MIDIClip) clip.generator.playClip(clip, clip.offset - self.seeker);
+                    else if (clip instanceof AudioClip) {
+                        let gain = self.audioEngine.createGain();
+                        let source = self.audioEngine.createBufferSource(clip.buffer);
+
+                        source.connect(gain);
+                        gain.connect(clip.mixer !== undefined? clip.mixer.input : self.audioEngine.mixer.master.input);
+
+                        source.start(
+                            self.audioEngine.liveTime + beatsToMS(clip.offset - self.seeker, self.bpm) / 1000,
+                            beatsToMS(Math.max(self.seeker - clip.offset, 0), self.bpm) / 1000,
+                            beatsToMS(clip.length, self.bpm) / 1000
+                        );
+
+                        self.playingAudios.push({gain, source});
+                    }
                 });
             });
         }
@@ -131,6 +155,11 @@ export class Session {
         this.playing = false;
 
         // Stop all generators
+        // Stop all playing audio clips
+        this.playingAudios.forEach(clip => {
+            clip.gain.disconnect();
+            clip.source.stop();
+        });
     }
     stopAndThenPlay() {
         this.stop();

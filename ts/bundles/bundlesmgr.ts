@@ -31,6 +31,11 @@ export default class BunglesManager {
                 let explorerSection = this.explorer.addSection(bundle.name);
                 explorerSection.addContents(bundle.generators);
                 explorerSection.addContents(bundle.effects);
+                explorerSection.addContents(bundle.audios);
+
+                bundle.audios.forEach(audio => {
+                    audio.loadBuffer(this.session.audioEngine);
+                });
 
                 this.loaded.push(bundle);
                 this.found.splice(this.found.indexOf(bundle), 1);

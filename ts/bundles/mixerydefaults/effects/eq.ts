@@ -54,13 +54,14 @@ export class EQ extends AudioEffect {
 
                 let ctx = self.analyserCtx;
                 ctx.clearRect(0, 0, ctx.canvas.width, ctx.canvas.height);
-                ctx.fillStyle = "black";
 
                 const barWidth = ctx.canvas.width / data.length;
 
                 for (let i = 0; i < data.length; i++) {
                     const prog = data[i] / 256;
+                    ctx.fillStyle = `rgb(0, 0, 0, ${prog})`;
                     ctx.fillRect(i * barWidth, ctx.canvas.height - (prog * ctx.canvas.height), barWidth, prog * ctx.canvas.height);
+                    // ctx.fillRect(i * barWidth, ctx.canvas.height - 5, barWidth, 5);
                 }
             }
             requestAnimationFrame(render);

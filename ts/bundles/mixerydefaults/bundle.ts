@@ -1,3 +1,4 @@
+import { AudioClipExplorerContent } from "../../mixeryui/explorer.js";
 import Bundle from "../bundle.js";
 import EQExplorerContent from "./effects/eq.js";
 import OscNodesExplorerContent from "./generators/oscnodes.js";
@@ -15,5 +16,9 @@ export default class MixeryDefaultBundle extends Bundle {
 
         // Effects
         this.effects.push(new EQExplorerContent());
+
+        // Audios
+        let test = new AudioClipExplorerContent("Music Box C6", "/assets/test-assets/Alesis-Sanctuary-QCard-Music-Box-C6.wav");
+        this.audios.push(test);
     }
 }

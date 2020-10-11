@@ -24,7 +24,7 @@ export default abstract class RenderableAudioNode {
     }
 
     disconnect(node?: RenderableAudioNode) {
-        this.audioNode.disconnect(node?.audioNode);
-        if (this.isRendering) this.rendererNode.disconnect(node?.rendererNode);
+        this.audioNode.disconnect(node !== undefined? node.audioNode : undefined);
+        if (this.isRendering) this.rendererNode.disconnect(node !== undefined? node.rendererNode : undefined);
     }
 }

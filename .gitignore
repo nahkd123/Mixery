@@ -4,3 +4,4 @@ lib
 *.js.map
 temp
 node_modules
+assets/test-assets
