@@ -85,6 +85,17 @@ export class ClipEditorInterface {
                     }
                 } else if (selectedTool === Tools.PENCIL) {
                     // Freedraw
+                    if (event.buttons === 1) {
+                        const start = fixedSnap(clickedBeat, this.session.clipEditor.noteLength) - selectedClip.offset;
+                        
+                        selectedClip.notes.push({
+                            note: clickedNote,
+                            sensitivity: 0.75,
+                            start,
+                            duration: this.session.clipEditor.noteLength
+                        });
+                        selectedClip.notes.sort((a, b) => (a.start - b.start));
+                    }
                 }
             } else if (selectedClip instanceof AudioClip) {
                 if (selectedTool === Tools.MOVE) {
@@ -163,6 +174,7 @@ export class ClipEditorInterface {
                             start: this.midiDrawInfo.noteStart - selectedClip.offset,
                             duration: clickedBeat - this.midiDrawInfo.noteStart
                         });
+                        this.session.clipEditor.noteLength = clickedBeat - this.midiDrawInfo.noteStart;
                         // console.log(selectedClip.notes);
                         selectedClip.notes.sort((a, b) => (a.start - b.start))
                     }
