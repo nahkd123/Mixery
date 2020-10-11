@@ -142,7 +142,7 @@ export class Session {
                         gain.connect(clip.mixer !== undefined? clip.mixer.input : self.audioEngine.mixer.master.input);
 
                         source.start(
-                            self.audioEngine.liveTime + beatsToMS(clip.offset - self.seeker, self.bpm) / 1000,
+                            self.audioEngine.liveTime + beatsToMS(Math.max(clip.offset - self.seeker, 0), self.bpm) / 1000,
                             beatsToMS(Math.max(self.seeker - clip.offset, 0) + clip.audioOffset, self.bpm) / 1000,
                             playDuration
                         );
