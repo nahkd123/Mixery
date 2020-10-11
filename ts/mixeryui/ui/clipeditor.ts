@@ -35,8 +35,9 @@ export class ClipEditorInterface {
         this.optionsButton.addEventListener("click", event => {
             let element: HTMLDivElement;
 
-            if (this.session.playlist.selectedClip instanceof MIDIClip) element = this.midiClipOptions.openMenu().element;
-            else if (this.session.playlist.selectedClip instanceof AudioClip) element = this.audioClipOptions.openMenu().element;
+            if (this.session.playlist.selectedClip instanceof MIDIClip) element = this.midiClipOptions.openMenu()?.element;
+            else if (this.session.playlist.selectedClip instanceof AudioClip) element = this.audioClipOptions.openMenu()?.element;
+            if (element === undefined) return;
 
             element.style.top = element.style.left = "";
             element.style.right = "15px";

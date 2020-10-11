@@ -1,7 +1,9 @@
-import { MIDIClip } from "../../mixerycore/clips.js";
+import { AudioClip, MIDIClip } from "../../mixerycore/clips.js";
 import { Session } from "../../mixerycore/session.js";
 import { Tools } from "../../mixerycore/tools.js";
-import { BeatSnapPreset, snap } from "../../utils/snapper.js";
+import { ArrayBufferLoader, AudioBufferLoader } from "../../utils/loader.js";
+import { msToBeats } from "../../utils/msbeats.js";
+import { BeatSnapPreset, fixedSnapCeil, snap } from "../../utils/snapper.js";
 import { AudioClipExplorerContent } from "../explorer.js";
 import { updateCanvasSize, UserInterface } from "../ui.js";
 import { PlaylistBar } from "./playlistbar.js";
@@ -217,6 +219,47 @@ export class PlaylistInterface {
                 }
             });
             
+            canvas.addEventListener("dragover", event => {
+                event.preventDefault();
+            });
+            canvas.addEventListener("drop", event => {
+                event.preventDefault();
+                let files = event.dataTransfer.files;
+                if (files.length === 0) return;
+
+                let arrayBuffersAsync: Promise<ArrayBuffer>[] = [];
+                let audioBuffersNames: string[] = [];
+                for (let i = 0; i < files.length; i++) {
+                    const file = files.item(i);
+                    audioBuffersNames[i] = file.name;
+                    arrayBuffersAsync[i] = file.arrayBuffer();
+                }
+                let arrBuffersLoader = new ArrayBufferLoader(arrBuffers => {
+
+                    let audioBuffersAsync: Promise<AudioBuffer>[] = [];
+                    arrBuffers.forEach((arr, index) => {
+                        audioBuffersAsync[index] = this.session.audioEngine.audio.decodeAudioData(arr);
+                    });
+
+                    new AudioBufferLoader(audio => {
+                        let previousOffset = 0;
+
+                        audio.forEach((buffer, index) => {
+                            let clip = new AudioClip(buffer, this.ui.mixer.mixerTracks.selected.track);
+                            clip.length = msToBeats(buffer.duration * 1000, this.session.bpm);
+                            clip.offset = this.session.seeker + previousOffset;
+                            clip.name = audioBuffersNames[index];
+                            previousOffset += fixedSnapCeil(clip.length, 0.25);
+
+                            track.clips.push(clip);
+                            console.log(clip);
+                        });
+                        this.ui.canvasRenderUpdate();
+                    }, ...audioBuffersAsync)
+                }, ...arrayBuffersAsync);
+
+            });
+
             // Explorer contents consumer
             this.ui.explorer.addContentConsumer(canvas, (content) => {
                 if (content instanceof AudioClipExplorerContent) {
