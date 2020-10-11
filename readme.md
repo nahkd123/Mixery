@@ -1,7 +1,6 @@
+![Mixery social image](https://repository-images.githubusercontent.com/297007305/08d88a00-0bbf-11eb-8242-db9749473e69 "Mixery")
+
 # Mixery
-
-![Mixery social image](https://repository-images.githubusercontent.com/297007305/65a7ce00-fb46-11ea-8f9a-7b2314c258f8 "Mixery")
-
 An open source Digital Audio Workspace. Mixery uses Web Audio API to render audio in realtime, as well as rendering it to audio file.
 
 ## Try Mixery
