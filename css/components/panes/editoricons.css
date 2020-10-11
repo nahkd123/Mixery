@@ -1,3 +1,12 @@
+div.icon {
+    -webkit-mask-size: cover;
+    -webkit-mask-position: center;
+    -webkit-mask-repeat: none;
+    mask-size: cover;
+    mask-position: center;
+    mask-repeat: none;
+}
+
 div.playbackbutton.play {
     -webkit-mask-image: url("../../../assets/ionicons/play-sharp.svg");
     mask-image: url("../../../assets/ionicons/play-sharp.svg");

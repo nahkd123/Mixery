@@ -1,3 +1,4 @@
+import ContextMenu, { ContextMenuEntry } from "../../contextmenus/menu.js";
 import { AudioClip, MIDIClip } from "../../mixerycore/clips.js";
 import { NotesConfiguration, notesName } from "../../mixerycore/notes.js";
 import { Session } from "../../mixerycore/session.js";
@@ -15,6 +16,10 @@ export class ClipEditorInterface {
     canvas: HTMLCanvasElement;
     ctx: CanvasRenderingContext2D;
 
+    optionsButton: HTMLDivElement;
+    midiClipOptions: ContextMenu = new ContextMenu();
+    audioClipOptions: ContextMenu = new ContextMenu();
+
     static readonly SIDEBAR_WIDTH = 242;
 
     constructor(ui: UserInterface) {
@@ -25,6 +30,26 @@ export class ClipEditorInterface {
     applyUpdate() {
         this.canvas = this.element.querySelector("canvas");
         this.ctx = this.canvas.getContext("2d");
+
+        this.optionsButton = this.element.querySelector("div.icon.options");
+        this.optionsButton.addEventListener("click", event => {
+            let element: HTMLDivElement;
+
+            if (this.session.playlist.selectedClip instanceof MIDIClip) element = this.midiClipOptions.openMenu().element;
+            else if (this.session.playlist.selectedClip instanceof AudioClip) element = this.audioClipOptions.openMenu().element;
+
+            element.style.top = element.style.left = "";
+            element.style.right = "15px";
+            element.style.bottom = "40px";
+        });
+
+        this.midiClipOptions.entries.push(new ContextMenuEntry("Export to .MID"));
+
+        this.audioClipOptions.entries.push(new ContextMenuEntry("Set to selected mixer track", () => {
+            let clip = this.session.playlist.selectedClip;
+            if (!(clip instanceof AudioClip)) return;
+            clip.mixer = this.ui.mixer.mixerTracks.selected.track;
+        }));
 
         this.canvas.addEventListener("wheel", event => {
             if (event.ctrlKey) {
