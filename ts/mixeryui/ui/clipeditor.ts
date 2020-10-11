@@ -87,7 +87,7 @@ export class ClipEditorInterface {
                     // Freedraw
                     if (event.buttons === 1) {
                         const start = fixedSnap(clickedBeat, this.session.clipEditor.noteLength) - selectedClip.offset;
-                        
+
                         selectedClip.notes.push({
                             note: clickedNote,
                             sensitivity: 0.75,
@@ -232,6 +232,7 @@ export class ClipEditorInterface {
             ctx.strokeStyle = barSperator? "#cecece30" : "#cecece10";
             ctx.lineWidth = barSperator? 4 : 2;
             this.drawVerticalLine(lineX, 0, this.canvas.height);
+            if (barSperator) ctx.strokeStyle = "#cecece10";
 
             ctx.lineWidth = 1;
             for (let i = 1; i < beatSegments; i++) {
