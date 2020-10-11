@@ -30,6 +30,7 @@ export default class BunglesManager {
                 // Insert load thing in here
                 let explorerSection = this.explorer.addSection(bundle.name);
                 explorerSection.addContents(bundle.generators);
+                explorerSection.addContents(bundle.effects);
 
                 this.loaded.push(bundle);
                 this.found.splice(this.found.indexOf(bundle), 1);

@@ -16,6 +16,8 @@ export default class AudioAutomator {
     // Controls configurations
     min: number = 0;
     max: number = 1;
+    snap: number = 0.05;
+    startValue: number = 1;
     clickRadius: number = 3;
     
     // User interface variables
@@ -23,6 +25,8 @@ export default class AudioAutomator {
     maxPPS: number = 500;
     pxPerSecond: number = 100;
     scrolledSecond: number = 0;
+    displayMultiply: number = 1.0;
+    displayUnit: string = " unit";
 
     lastNodeType: AutomationNodeType = "instant";
     nodeSelectMenu: ContextMenu = new ContextMenu();
@@ -39,7 +43,7 @@ export default class AudioAutomator {
             buttons: {
                 hideInstead: true
             }
-        }, 0, 0, 500, 200, true);
+        }, 0, 0, 500, 300, true);
         this.automation = automation;
 
         this.canvas = document.createElement("canvas");
@@ -97,17 +101,17 @@ export default class AudioAutomator {
         this.canvas.addEventListener("mousemove", event => {if (mouseDown) {
             if (mouseDown) {
                 const rawTime = event.offsetX / this.pxPerSecond;
-                const rawValue = (this.max - event.offsetY / this.canvas.height) / (this.max - this.min);
+                const rawValue = (this.max - this.min) * (1 - event.offsetY / this.canvas.height) + this.min;
 
                 clickedNode.time = event.shiftKey? rawTime : event.ctrlKey? fixedSnapCeil(rawTime, 0.05) : fixedSnap(rawTime, 0.05);
-                clickedNode.value = event.shiftKey? rawValue : event.ctrlKey? fixedSnapCeil(rawValue, 0.05) : fixedSnap(rawValue, 0.05);
+                clickedNode.value = event.shiftKey? rawValue : event.ctrlKey? fixedSnapCeil(rawValue, this.snap) : fixedSnap(rawValue, this.snap);
                 this.renderAutomation();
 
                 let ctx = this.ctx;
                 ctx.fillStyle = "white";
                 ctx.font = "14px 'Nunito Sans', 'Noto Sans', 'Ubuntu', Calibri, sans-serif";
                 ctx.fillText(numberRounder(clickedNode.time, 2) + "s", event.offsetX, event.offsetY);
-                ctx.fillText(numberRounder(clickedNode.value, 2) + "", event.offsetX, event.offsetY + 18);
+                ctx.fillText(numberRounder(clickedNode.value * this.displayMultiply, 2) + this.displayUnit, event.offsetX, event.offsetY + 18);
             }
         }});
 
@@ -166,9 +170,9 @@ export default class AudioAutomator {
 
         // Draw lines
         let lastNode: AutomationNode = undefined;
-        lastPointY = 1;
+        lastPointY = ((this.max - this.startValue) / (this.max - this.min)) * ctx.canvas.height;
         ctx.beginPath();
-        ctx.moveTo(0, 0);
+        ctx.moveTo(0, lastPointY);
         this.automation.nodes.forEach(node => {
             const pointX = (this.scrolledSecond + node.time) * this.pxPerSecond;
             const pointY = ((this.max - node.value) / range) * this.canvas.height;

@@ -45,6 +45,9 @@ interface Oscillator {
 
     gainAutomation: AudioAutomation;
     gainAutomator: AudioAutomator;
+
+    frequencyAutomation: AudioAutomation;
+    frequencyAutomator: AudioAutomator;
 }
 interface OscillatorNote {
     gain: RenderableGainNode; // Act like velocity
@@ -98,16 +101,28 @@ export class OscNodes extends AudioGenerator {
     }
 
     addOscillator(type: OscillatorsType) {
-        let automation = new AudioAutomation();
-        let automator = new AudioAutomator(null, automation, "OscNodes");
+        let gainAutomation = new AudioAutomation();
+        let gainAutomator = new AudioAutomator(null, gainAutomation, "OscNodes - " + type.name + " - Gain");
+        gainAutomator.displayUnit = "";
+
+        let freqAutomation = new AudioAutomation();
+        let freqAutomator = new AudioAutomator(null, freqAutomation, "OscNodes - " + type.name + " - Detune");
+        freqAutomator.min = -12;
+        freqAutomator.max = 12;
+        freqAutomator.startValue = 0;
+        freqAutomator.snap = 0.5;
+        freqAutomator.displayUnit = " semitone";
 
         let osc: Oscillator = {
             name: type.name + " " + (this.oscillators.length + 1),
             type,
             semitonesOffset: 0,
 
-            gainAutomation: automation,
-            gainAutomator: automator
+            gainAutomation: gainAutomation,
+            gainAutomator: gainAutomator,
+
+            frequencyAutomation: freqAutomation,
+            frequencyAutomator: freqAutomator
         };
         this.oscillators.push(osc);
 
@@ -120,14 +135,16 @@ export class OscNodes extends AudioGenerator {
         let toolsbar = document.createElement("div"); toolsbar.className = "toolsbar";
 
         let removeButton = document.createElement("div"); removeButton.className = "remove";
-        let automationButton = document.createElement("div"); automationButton.className = "automation";
-        toolsbar.append(removeButton, automationButton);
+        let gainAutomationButton = document.createElement("div"); gainAutomationButton.className = "automation gain";
+        let freqAutomationButton = document.createElement("div"); freqAutomationButton.className = "automation freq";
+        toolsbar.append(removeButton, gainAutomationButton, freqAutomationButton);
 
         removeButton.addEventListener("click", event => {
             this.oscillators.splice(this.oscillators.indexOf(osc), 1);
             element.remove();
         });
-        automationButton.addEventListener("click", event => automator.window.show());
+        gainAutomationButton.addEventListener("click", event => gainAutomator.window.show());
+        freqAutomationButton.addEventListener("click", event => freqAutomator.window.show());
 
         let toolsbarOscButtons: HTMLDivElement[] = [];
         OscillatorsTypes.oscillators.forEach(oscType => {
@@ -170,6 +187,7 @@ export class OscNodes extends AudioGenerator {
                 oscillator.gainAutomation.apply(oscNote.gain.gain, note.sensitivity, noteOffset);
                 oscNote.osc.type = oscillator.type.id;
                 oscNote.osc.frequency.value = notesFrequency[note.note];
+                oscillator.frequencyAutomation.apply(oscNote.osc.detune, 100, noteOffset);
 
                 oscNote.osc.start(this.session.audioEngine.liveTime + noteOffset);
                 oscNote.osc.stop(this.session.audioEngine.liveTime + noteEnd);

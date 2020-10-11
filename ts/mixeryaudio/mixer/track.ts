@@ -25,7 +25,8 @@ export default class MixerTrack {
 
         this.output = this.engine.createGain();
         this.input = this.engine.createGain();
-        this.reconnectEffects();
+
+        this.input.connect(this.output);
     }
 
     add(effect: MixerTrackEffect) {
@@ -35,15 +36,16 @@ export default class MixerTrack {
 
     reconnectEffects() {
         this.effects.forEach(effect => {
-            effect.input.disconnect();
+            //effect.input.disconnect();
             effect.output.disconnect();
         });
+        this.input.disconnect(this.output);
 
-        let currentOutput = this.output;
+        let currentInput = this.output;
         this.effects.forEach(effect => {
-            effect.output.connect(currentOutput);
-            currentOutput = effect.input;
+            effect.output.connect(currentInput);
+            currentInput = effect.input;
         });
-        this.input.connect(currentOutput);
+        this.input.connect(currentInput);
     }
 }

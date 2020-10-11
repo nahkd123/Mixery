@@ -1,4 +1,4 @@
-import { GeneratorExplorerContent } from "../mixeryui/explorer.js";
+import { EffectExplorerContent, GeneratorExplorerContent } from "../mixeryui/explorer.js";
 
 export default class Bundle {
     name: string;
@@ -7,4 +7,5 @@ export default class Bundle {
 
     // Bundle contents
     generators: GeneratorExplorerContent[] = [];
+    effects: EffectExplorerContent[] = [];
 }

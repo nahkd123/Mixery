@@ -12,6 +12,7 @@ export class MixerInterface {
 
     mixerEngine: Mixer;
     mixerTracks: MixerTracksContainer;
+    mixerTrackPlugins: MixerTracksEffects;
 
     constructor(ui: UserInterface) {
         this.ui = ui;
@@ -22,6 +23,7 @@ export class MixerInterface {
 
     applyUpdate() {
         this.mixerTracks = new MixerTracksContainer(this);
+        this.mixerTrackPlugins = new MixerTracksEffects(this);
     }
 }
 
@@ -126,6 +128,7 @@ export class MixerTracksContainer {
             this.selected.element.classList.remove("selected");
             this.selected.element = trackElement;
             trackElement.classList.add("selected");
+            this.mi.mixerTrackPlugins.listEffectPlugins(track);
         });
         trackLabel.addEventListener("contextmenu", event => {
             event.preventDefault();
@@ -172,5 +175,13 @@ export class MixerTracksEffects {
 
         pluginEntry.append(entryLabel);
         this.element.insertBefore(pluginEntry, this.addButton);
+
+        entryLabel.addEventListener("click", event => {
+            effect.window.show();
+        });
+    }
+    addEffectPlugin(effect: AudioEffect) {
+        this.mi.mixerTracks.selected.track.add(effect);
+        this.addEffectPluginEntry(effect);
     }
 }

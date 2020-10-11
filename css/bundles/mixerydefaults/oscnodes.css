@@ -62,5 +62,7 @@ div.oscnodesparent > div.osclisting > div.oscentry > div.toolsbar > div.remove {
 div.oscnodesparent > div.osclisting > div.oscentry > div.toolsbar > div.automation {
     -webkit-mask-image: url("../../../assets/icons/automation.svg");
     mask-image: url("../../../assets/icons/automation.svg");
-    background-color: #5be6ff;
 }
+
+div.oscnodesparent > div.osclisting > div.oscentry > div.toolsbar > div.automation.gain {background-color: #5be6ff;}
+div.oscnodesparent > div.osclisting > div.oscentry > div.toolsbar > div.automation.freq {background-color: #ffaa5b;}

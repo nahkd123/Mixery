@@ -7,6 +7,7 @@ export default class RenderableOscillatorNode extends RenderableAudioNode {
     rendererNode: OscillatorNode;
 
     readonly frequency: RenderableAudioParam;
+    readonly detune: RenderableAudioParam;
     get type() {return this.audioNode.type;}
     set type(val: OscillatorType) {
         this.audioNode.type = val;
@@ -19,11 +20,15 @@ export default class RenderableOscillatorNode extends RenderableAudioNode {
         this.audioNode = this.audioContext.createOscillator();
         this.frequency = new RenderableAudioParam(engine);
         this.frequency.audioParam = this.audioNode.frequency;
+
+        this.detune = new RenderableAudioParam(engine);
+        this.detune.audioParam = this.audioNode.detune;
     }
 
     beforeRender() {
         this.rendererNode = this.audioContext.createOscillator();
         this.frequency.rendererParam = this.rendererNode.frequency;
+        this.detune.rendererParam = this.rendererNode.frequency;
     }
 
     start(time: number) {
