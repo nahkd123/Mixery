@@ -44,4 +44,5 @@ export default abstract class AudioParamsAutomation {
 
     get value() {return this.audioParam.value;}
     set value(val: number) {this.audioParam.value = val;}
+    get defaultValue() {return this.audioParam.defaultValue;}
 }
