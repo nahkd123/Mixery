@@ -14,6 +14,10 @@ export default class MIDIManager {
     constructor() {}
 
     async addConnectedDevices() {
+        if (!navigator.requestMIDIAccess) {
+            console.warn("This browser is missing requestMIDIAccess (a.k.a does not supported MIDI devices yet). Consider using Chrome 43+ for more features");
+            return;
+        }
         let midiAccess = await navigator.requestMIDIAccess();
         Array.from(midiAccess.inputs.keys()).forEach(midiInputName => {
             const midiInput = midiAccess.inputs.get(midiInputName);
