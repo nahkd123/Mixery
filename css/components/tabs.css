@@ -1,0 +1,15 @@
+div.tabs.content {
+    position: relative;
+    height: calc(100% - 29px);
+}
+div.tabs.content.hidden {
+    display: none;
+}
+div.tabs.buttonscontainer {
+    background-color: #272727;
+    color: white;
+}
+div.tabs.button {
+    display: inline-block;
+    padding: 5px 12px;
+}

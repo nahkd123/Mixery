@@ -50,6 +50,9 @@ export default class ParamControl {
             new ContextMenuEntry("Create Automation Clip", () => {
                 let clip = new AutomationClip(this.param);
                 clip.name = name;
+                clip.automation.nodes[0].value = this.param.value;
+                clip.minValue = this.minValue;
+                clip.maxValue = this.maxValue;
 
                 let availableTrack = this.session.playlist.findUnoccupiedTrack(this.session.seeker, 1);
                 if (availableTrack !== undefined) {

@@ -7,11 +7,15 @@ import RenderableGainNode from "../mixeryaudio/nodes/gain.js";
 import { MIDINoteInfo } from "./midi.js";
 import EnvelopeAutomation from "../mixeryaudio/automations/envelope.js";
 import MIDIKeysListener from "../mididev/listener.js";
+import TabsContainer from "../mixeryui/tabs.js";
 
 export abstract class AudioGenerator implements MIDIKeysListener {
     abstract name: string;
     abstract author: string[];
     window = new MoveableWindow("name", 0, 0, 300, 250);
+    tabs: TabsContainer;
+    pluginView: HTMLDivElement;
+    settingsView: HTMLDivElement;
 
     mixerTrack: MixerTrack;
     output: RenderableGainNode;
@@ -24,6 +28,10 @@ export abstract class AudioGenerator implements MIDIKeysListener {
         this.envelopes.gain.enabled = true;
 
         this.window.title.textContent = this.name;
+        this.tabs = new TabsContainer(this.window.innerElement);
+        this.pluginView = this.tabs.addTab("Plugin");
+        this.settingsView = this.tabs.addTab("Settings", false);
+        this.settingsView.style.backgroundColor = "#1b1b1b";
 
         // Add to master mixer track by default
         // Will add ability to change mixer track

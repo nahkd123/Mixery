@@ -74,7 +74,7 @@ export class OscNodes extends AudioGenerator {
         let window = this.window;
         window.width = 350;
         window.height = 300;
-        window.innerElement.classList.add("oscnodesparent");
+        this.pluginView.classList.add("oscnodesparent");
 
         let toolsBar = document.createElement("div");
         toolsBar.className = "toolsbar";
@@ -94,7 +94,7 @@ export class OscNodes extends AudioGenerator {
         this.oscListing = document.createElement("div");
         this.oscListing.className = "osclisting";
 
-        window.innerElement.append(toolsBar, this.oscListing);
+        this.pluginView.append(toolsBar, this.oscListing);
     }
 
     addOscillator(type: OscillatorsType) {
