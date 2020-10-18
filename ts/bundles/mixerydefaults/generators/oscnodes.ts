@@ -193,6 +193,40 @@ export class OscNodes extends AudioGenerator {
         });
     }
 
+    playingMIDINote: OscillatorNote[][] = [];
+    midiKeyDown(note: number, sensitivity: number) {
+        if (this.playingMIDINote[note] !== undefined) return;
+        let oscs: OscillatorNote[] = [];
+
+        this.oscillators.forEach(oscillator => {
+            let oscNote: OscillatorNote = {
+                gain: this.session.audioEngine.createGain(),
+                osc: this.session.audioEngine.createOscillator()
+            };
+            oscNote.osc.connect(oscNote.gain);
+            oscNote.gain.connect(this.mixerTrack.input);
+
+            this.envelopes.gain.applyNoteInMS(oscNote.gain.gain, 60000, this.session.bpm, sensitivity);
+            oscNote.osc.type = oscillator.type.id;
+            oscNote.osc.frequency.value = notesFrequency[note];
+            oscillator.frequencyAutomation.apply(oscNote.osc.detune, 100, 0);
+
+            oscNote.osc.start(this.session.audioEngine.liveTime);
+            oscs.push(oscNote);
+        });
+
+        this.playingMIDINote[note] = oscs;
+    }
+    midiKeyUp(note: number) {
+        const decayTime = this.envelopes.gain.measureNoteTimeInMS(0, this.session.bpm) / 1000;
+        this.playingMIDINote[note]?.forEach(osc => {
+            osc.osc.stop(this.session.audioEngine.liveTime + decayTime);
+            osc.gain.gain.cancelAndHoldAtValue(this.session.audioEngine.liveTime);
+            osc.gain.gain.linearRampToValueAtNextTime(decayTime, 0);
+        });
+        this.playingMIDINote[note] = undefined;
+    }
+
     stopPlayingClips() {
         this.playingNotes.forEach(note => {
             note.gain.disconnect();

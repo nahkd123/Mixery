@@ -63,6 +63,7 @@ export class PluginsInterface {
         ele.addEventListener("click", event => {
             entry.selected = !entry.selected;
             this.session.plugins.selected = entry.selected? entry : undefined;
+            this.session.midi.defaultKeysListener = entry.selected? generator : undefined;
             this.session.plugins.updatePluginsInfo();
 
             if (Date.now() - lastClickTime <= this.session.settings.accessibility.doubleClickSpeed) {

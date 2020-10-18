@@ -17,6 +17,7 @@ export class GeneratorsPlugins {
         let entry = new GeneratorEntry(generator, this);
         this.generators.push(entry);
         this.selected = entry;
+        this.session.midi.defaultKeysListener = generator;
 
         generator.generatorLoad(this.session, generator.output);
         this.rerouteAudioNodes();
@@ -27,6 +28,7 @@ export class GeneratorsPlugins {
         if (this.selected !== undefined && this.selected.generator === generator) {
             this.generators.splice(this.generators.indexOf(this.selected), 1);
             this.selected = undefined;
+            this.session.midi.defaultKeysListener = undefined;
             this.rerouteAudioNodes();
             return;
         }
@@ -64,6 +66,7 @@ export class GeneratorEntry {
     get selected() {return this._selected;}
     set selected(val: boolean) {
         this._selected = val;
+        this.mgr.session.midi.defaultKeysListener = this.generator;
         if (val) {
             this.element.classList.add("selected");
         } else {

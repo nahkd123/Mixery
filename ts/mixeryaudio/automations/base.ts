@@ -37,6 +37,10 @@ export default abstract class AudioParamsAutomation {
         this.audioParam.cancelScheduledValues(cancelTime);
         if (this.isRendering) this.rendererParam.cancelScheduledValues(cancelTime);
     }
+    cancelAndHoldAtValue(cancelTime: number) {
+        this.audioParam.cancelAndHoldAtTime(cancelTime);
+        if (this.isRendering) this.rendererParam.cancelAndHoldAtTime(cancelTime);
+    }
 
     get value() {return this.audioParam.value;}
     set value(val: number) {this.audioParam.value = val;}

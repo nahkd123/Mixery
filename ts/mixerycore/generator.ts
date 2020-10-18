@@ -6,8 +6,9 @@ import MixerTrack from "../mixeryaudio/mixer/track.js";
 import RenderableGainNode from "../mixeryaudio/nodes/gain.js";
 import { MIDINoteInfo } from "./midi.js";
 import EnvelopeAutomation from "../mixeryaudio/automations/envelope.js";
+import MIDIKeysListener from "../mididev/listener.js";
 
-export abstract class AudioGenerator {
+export abstract class AudioGenerator implements MIDIKeysListener {
     abstract name: string;
     abstract author: string[];
     window = new MoveableWindow("name", 0, 0, 300, 250);
@@ -53,10 +54,6 @@ export abstract class AudioGenerator {
     midiKeyDown(note: number, sensitivity: number) {
         this.playNote(note, sensitivity, 0, 1);
     }
-    /**
-     * Send MIDI keyup event.
-     * @param note The note number
-     */
     midiKeyUp(note: number) {}
     //#endregion
 

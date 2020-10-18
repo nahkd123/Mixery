@@ -12,6 +12,7 @@ import RenderableGainNode from "../mixeryaudio/nodes/gain.js";
 import RenderableAudioBufferSourceNode from "../mixeryaudio/nodes/audiobuffer.js";
 import { UserInterface } from "../mixeryui/ui.js";
 import RenderableAudioParam from "../mixeryaudio/automations/param.js";
+import MIDIManager from "../mididev/manager.js";
 
 export class Session {
     audioEngine: MixeryAudioEngine;
@@ -22,6 +23,8 @@ export class Session {
     playlist: Playlist;
     plugins: GeneratorsPlugins;
     notifications: NotificationsManager;
+
+    midi: MIDIManager = new MIDIManager();
 
     // General
     bpm: number = 120;
@@ -93,6 +96,8 @@ export class Session {
         this.playlist = new Playlist(this);
         this.plugins = new GeneratorsPlugins(this);
         this.notifications = new NotificationsManager();
+
+        this.midi.addConnectedDevices();
 
         // Also add keyboard events
         document.addEventListener("keydown", event => {

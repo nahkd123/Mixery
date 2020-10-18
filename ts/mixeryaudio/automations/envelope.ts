@@ -34,6 +34,14 @@ export default class EnvelopeAutomation {
         }
     }
 
+    /**
+     * Apply envelope
+     * @param param The audio param to apply
+     * @param noteLength The duration of the note in ms, or -1/Infinity for infinite note duration
+     * @param bpm The current BPM
+     * @param mul Multiplier
+     * @param offset Start offset in ms
+     */
     applyNoteInMS(param: RenderableAudioParam, noteLength: number, bpm: number = 120, mul = 1.0, offset: number = 0) {
         if (!this.enabled || noteLength === 0) return;
 
@@ -49,7 +57,13 @@ export default class EnvelopeAutomation {
             holdTo  = beatsToMS(this.holdTo, bpm);
             decay   = beatsToMS(this.decayTime, bpm);
         }
-        console.log(noteLength, atk, hold, decay);
+
+        if (noteLength === -1) {
+            param.linearRampToValueAtNextTime(offset / 1000, 0);
+            param.linearRampToValueAtNextTime((offset + atk) / 1000, mul);
+            param.linearRampToValueAtNextTime((offset + atk + hold) / 1000, holdTo * mul);
+            return;
+        }
 
         if (atk > 0) param.linearRampToValueAtNextTime(offset / 1000, 0);
         if (noteLength < atk) {
