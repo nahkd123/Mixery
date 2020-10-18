@@ -5,6 +5,10 @@ import { notesIndex } from "../mixerycore/notes.js";
 import { MixeryGenerators } from "./plugins.js";
 import BunglesManager from "../bundles/bundlesmgr.js";
 import MixeryDefaultBundle from "../bundles/mixerydefaults/bundle.js";
+import { MixeryConfigurations } from "./config.js";
+import { ElectronJSApp } from "../utils/electronjs.js";
+
+const config = MixeryConfigurations;
 
 // Setting up session
 let session = new Session();
@@ -112,11 +116,59 @@ let bundlesManager = new BunglesManager(session, ui.explorer);
 bundlesManager.add(new MixeryDefaultBundle());
 bundlesManager.loadBundles();
 
+// Configurations
+if (config.exposeToGlobal) {
+    const appObj = {
+        session,
+        bundlesManager,
+        ui,
+        config: MixeryConfigurations
+    };
+    globalThis.app = appObj;
+}
+if (config.emulateElectronJS && globalThis.electronjs === undefined) {
+    console.warn("ElectronJS app emulation mode is currently on");
+
+    let filesMap = new Map<string, ElectronJSApp.FileEntry>();
+    let windowState: ElectronJSApp.WindowState = "windowed";
+    let windowMinimized = false;
+
+    const api: ElectronJSApp.API = {
+        _filesMap: filesMap,
+        listFiles(path: string) {
+            if (path === undefined || path === "/" || path === "") return Array.from(filesMap.keys());
+            else return undefined;
+        },
+        readFile(path: string) {return filesMap.get(path);},
+
+        close() {console.log("close()");},
+        maximize() {console.log("maximize()"); windowState = "maximized"; windowMinimized = false;},
+        minimize() {console.log("minimize()"); windowMinimized = true;},
+        restore() {console.log("restore()"); windowMinimized = false;},
+        getWindowState() {return windowMinimized? "minimized" : windowState;}
+    };
+    globalThis.electronjs = api;
+
+    // Add virtual files
+    filesMap.set("exampleplugin.json", {
+        dateCreate: Date.now(),
+        contents: JSON.stringify({
+            type: "generator",
+            name: "Non-existent generator",
+            configuration: {}
+        })
+    });
+}
+
 // ElectronJS part
-const capTimestamp = Date.now();
-const maxTimeout = 7000;
-globalThis.toggleElectronJS = function toggleElectronJS() {
-    if (Date.now() < capTimestamp + maxTimeout) {
-        session.electronAppEnabled();
-    } else console.warn("Unable to toggle Mixery Electron features");
-};
+if (globalThis.electronjs) {
+    session.electronAppEnabled();
+}
+
+// Logo thing. Not really needed
+if (config.showLogo) {
+    console.log(
+        "%c" + config.logo.join("\n"),
+        "color: " + config.randomLogoColor[Math.floor(config.randomLogoColor.length * Math.random())]
+    );
+}
