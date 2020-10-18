@@ -18,7 +18,6 @@ export default class MixeryDefaultBundle extends Bundle {
         this.effects.push(new EQExplorerContent());
 
         // Audios
-        let test = new AudioClipExplorerContent("Music Box C6", "/assets/test-assets/Alesis-Sanctuary-QCard-Music-Box-C6.wav");
-        this.audios.push(test);
+        
     }
 }
