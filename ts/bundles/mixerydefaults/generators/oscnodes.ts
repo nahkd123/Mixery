@@ -168,31 +168,28 @@ export class OscNodes extends AudioGenerator {
         return osc;
     }
 
-    playClip(clip: MIDIClip, clipOffset: number) {
-        clip.notes.forEach(note => {
-            // console.log(note);
+    playNote(note: number, sensitivity: number, offset: number, duration: number) {
+        const noteOffset = beatsToMS(offset, this.session.bpm) / 1000;
+        const noteEnd = beatsToMS(offset + this.envelopes.gain.measureNoteTimeInBeats(duration), this.session.bpm) / 1000;
 
-            const noteOffset = beatsToMS(clipOffset + note.start, this.session.bpm) / 1000;
-            const noteEnd = beatsToMS(clipOffset + note.start + note.duration, this.session.bpm) / 1000;
+        this.oscillators.forEach(oscillator => {
+            let oscNote: OscillatorNote = {
+                gain: this.session.audioEngine.createGain(),
+                osc: this.session.audioEngine.createOscillator()
+            };
+            oscNote.osc.connect(oscNote.gain);
+            oscNote.gain.connect(this.mixerTrack.input);
 
-            this.oscillators.forEach(oscillator => {
-                let oscNote: OscillatorNote = {
-                    gain: this.session.audioEngine.createGain(),
-                    osc: this.session.audioEngine.createOscillator()
-                };
-                oscNote.osc.connect(oscNote.gain);
-                oscNote.gain.connect(this.mixerTrack.input);
+            // oscNote.gain.gain.value = note.sensitivity;
+            // oscillator.gainAutomation.apply(oscNote.gain.gain, sensitivity, noteOffset);
+            this.envelopes.gain.applyNoteInMS(oscNote.gain.gain, beatsToMS(duration, this.session.bpm), this.session.bpm, sensitivity, noteOffset * 1000);
+            oscNote.osc.type = oscillator.type.id;
+            oscNote.osc.frequency.value = notesFrequency[note];
+            oscillator.frequencyAutomation.apply(oscNote.osc.detune, 100, noteOffset);
 
-                // oscNote.gain.gain.value = note.sensitivity;
-                oscillator.gainAutomation.apply(oscNote.gain.gain, note.sensitivity, noteOffset);
-                oscNote.osc.type = oscillator.type.id;
-                oscNote.osc.frequency.value = notesFrequency[note.note];
-                oscillator.frequencyAutomation.apply(oscNote.osc.detune, 100, noteOffset);
-
-                oscNote.osc.start(this.session.audioEngine.liveTime + noteOffset);
-                oscNote.osc.stop(this.session.audioEngine.liveTime + noteEnd);
-                this.playingNotes.push(oscNote);
-            });
+            oscNote.osc.start(this.session.audioEngine.liveTime + noteOffset);
+            oscNote.osc.stop(this.session.audioEngine.liveTime + noteEnd);
+            this.playingNotes.push(oscNote);
         });
     }
 

@@ -4,6 +4,8 @@ import { beatsToMS } from "../utils/msbeats.js";
 import MoveableWindow from "../windows/window.js";
 import MixerTrack from "../mixeryaudio/mixer/track.js";
 import RenderableGainNode from "../mixeryaudio/nodes/gain.js";
+import { MIDINoteInfo } from "./midi.js";
+import EnvelopeAutomation from "../mixeryaudio/automations/envelope.js";
 
 export abstract class AudioGenerator {
     abstract name: string;
@@ -13,7 +15,13 @@ export abstract class AudioGenerator {
     mixerTrack: MixerTrack;
     output: RenderableGainNode;
 
+    envelopes = {
+        gain: new EnvelopeAutomation(500, 0, 1, 500)
+    };
+
     beforeLoad(session: Session) {
+        this.envelopes.gain.enabled = true;
+
         this.window.title.textContent = this.name;
 
         // Add to master mixer track by default
@@ -28,7 +36,29 @@ export abstract class AudioGenerator {
      * @param clip The MIDI clip
      * @param clipOffset The clip offset in beats
      */
-    abstract playClip(clip: MIDIClip, clipOffset: number);
+    playClip(clip: MIDIClip, clipOffset: number) {
+        clip.notes.forEach(note => {
+            this.playNote(note.note, note.sensitivity, clipOffset + note.start, note.duration);
+        });
+    }
+
+    abstract playNote(note: number, sensitivity: number, offset: number, duration: number);
+
+    //#region MIDI related
+    /**
+     * Send MIDI keydown event. If this method is not overrided, it will play a note for 1 beat
+     * @param note The note number
+     * @param sensitivity Note sensitivity
+     */
+    midiKeyDown(note: number, sensitivity: number) {
+        this.playNote(note, sensitivity, 0, 1);
+    }
+    /**
+     * Send MIDI keyup event.
+     * @param note The note number
+     */
+    midiKeyUp(note: number) {}
+    //#endregion
 
     stopPlayingClips() {}
 
@@ -59,7 +89,5 @@ export class ExampleGenerator extends AudioGenerator {
     generatorLoad(session: Session, output: RenderableGainNode) {
         this.session = session;
     }
-    playClip(clip: MIDIClip, clipOffset: number) {
-        // console.log(clip, clipOffset);
-    }
+    playNote() {}
 }
