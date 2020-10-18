@@ -8,6 +8,8 @@ import { MIDINoteInfo } from "./midi.js";
 import EnvelopeAutomation from "../mixeryaudio/automations/envelope.js";
 import MIDIKeysListener from "../mididev/listener.js";
 import TabsContainer from "../mixeryui/tabs.js";
+import EnvelopeEditor from "../mixeryui/automations/envelope.js";
+import { updateCanvasSize } from "../mixeryui/ui.js";
 
 export abstract class AudioGenerator implements MIDIKeysListener {
     abstract name: string;
@@ -21,7 +23,7 @@ export abstract class AudioGenerator implements MIDIKeysListener {
     output: RenderableGainNode;
 
     envelopes = {
-        gain: new EnvelopeAutomation(500, 0, 1, 500)
+        gain: new EnvelopeAutomation(500, 250, 1, 500)
     };
 
     beforeLoad(session: Session) {
@@ -32,6 +34,7 @@ export abstract class AudioGenerator implements MIDIKeysListener {
         this.pluginView = this.tabs.addTab("Plugin");
         this.settingsView = this.tabs.addTab("Settings", false);
         this.settingsView.style.backgroundColor = "#1b1b1b";
+        this.setupSettingsView();
 
         // Add to master mixer track by default
         // Will add ability to change mixer track
@@ -39,6 +42,16 @@ export abstract class AudioGenerator implements MIDIKeysListener {
         this.output = session.audioEngine.createGain();
         this.output.connect(this.mixerTrack.input);
     }
+    private setupSettingsView() {
+        let gainEnvelope = new EnvelopeEditor(this.envelopes.gain);
+        gainEnvelope.viewCanvas.style.width = "100%";
+        gainEnvelope.viewCanvas.style.height = "100px";
+        updateCanvasSize(gainEnvelope.viewCanvas, () => {
+            gainEnvelope.renderEnvelope();
+        });
+        this.settingsView.appendChild(gainEnvelope.viewCanvas);
+    }
+
     abstract generatorLoad(session: Session, output: RenderableGainNode);
     /**
      * Play the MIDI clip

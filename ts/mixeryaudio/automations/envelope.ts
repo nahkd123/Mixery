@@ -68,17 +68,17 @@ export default class EnvelopeAutomation {
         if (atk > 0) param.linearRampToValueAtNextTime(offset / 1000, 0);
         if (noteLength < atk) {
             param.linearRampToValueAtNextTime((offset + noteLength) / 1000, (noteLength / atk) * mul);
-            param.linearRampToValueAtNextTime((offset + noteLength + decay) / 1000, 0);
+            param.linearRampToValueAtNextTime((offset + noteLength + release) / 1000, 0);
             return;
         }
         param.linearRampToValueAtNextTime((offset + atk) / 1000, mul);
         if (noteLength < atk + decay) {
             param.linearRampToValueAtNextTime((offset + noteLength) / 1000, decayTo + ((1 - decayTo) * (1 - (noteLength - atk) / decay)) * mul);
-            param.linearRampToValueAtNextTime((offset + noteLength + decay) / 1000, 0);
+            param.linearRampToValueAtNextTime((offset + noteLength + release) / 1000, 0);
             return;
         }
         param.linearRampToValueAtNextTime((offset + atk + decay) / 1000, decayTo * mul);
-        param.linearRampToValueAtNextTime((offset + noteLength) / 1000, mul);
-        param.linearRampToValueAtNextTime((offset + noteLength + decay) / 1000, 0);
+        param.linearRampToValueAtNextTime((offset + noteLength) / 1000, decayTo * mul);
+        param.linearRampToValueAtNextTime((offset + noteLength + release) / 1000, 0);
     }
 }
