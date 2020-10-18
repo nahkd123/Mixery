@@ -24,8 +24,10 @@ export default class BunglesManager {
         if (this.failed.length > 0) this.failed = [];
 
         console.log("[bundlesmgr] Found " + this.found.length + " bundles.");
-        this.found.forEach(bundle => {
+        for (let i = 0; i < this.found.length; i++) {
+            const bundle = this.found[i];
             console.log("[bundlesmgr] Loading " + bundle.name + " by " + bundle.author + "...");
+
             try {
                 // Insert load thing in here
                 let explorerSection = this.explorer.addSection(bundle.name);
@@ -38,12 +40,15 @@ export default class BunglesManager {
                 });
 
                 this.loaded.push(bundle);
-                this.found.splice(this.found.indexOf(bundle), 1);
             } catch (e) {
                 this.failed.push(bundle);
             }
+        }
+
+        this.loaded.forEach(loadedBundle => {
+            this.found.splice(this.found.indexOf(loadedBundle), 1);
         });
 
-        console.log("[bundlesmgr] " + this.loaded.length + " loaded, " + this.failed.length + " failed.");
+        console.log("[bundlesmgr] " + this.loaded.length + " loaded, " + this.failed.length + " failed, " + this.found.length + " not loaded.");
     }
 }

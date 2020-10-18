@@ -18,6 +18,5 @@ export default class MixeryDefaultBundle extends Bundle {
         this.effects.push(new EQExplorerContent());
 
         // Audios
-        
     }
 }

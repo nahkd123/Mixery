@@ -136,7 +136,6 @@ export class ExplorerPane {
     }
 
     addSection(name: string) {
-        console.log(name);
         let out = new ExplorerSection(this, name);
 
         let ele = document.createElement("details");

@@ -7,6 +7,7 @@ import BunglesManager from "../bundles/bundlesmgr.js";
 import MixeryDefaultBundle from "../bundles/mixerydefaults/bundle.js";
 import { MixeryConfigurations } from "./config.js";
 import { ElectronJSApp } from "../utils/electronjs.js";
+import MemesBundle from "../bundles/memes/bundle.js";
 
 const config = MixeryConfigurations;
 
@@ -114,6 +115,7 @@ window.requestAnimationFrame(renderLoop);
 // Setting up bundles
 let bundlesManager = new BunglesManager(session, ui.explorer);
 bundlesManager.add(new MixeryDefaultBundle());
+bundlesManager.add(new MemesBundle());
 bundlesManager.loadBundles();
 
 // Configurations
