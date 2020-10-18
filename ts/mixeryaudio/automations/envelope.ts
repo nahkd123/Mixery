@@ -6,30 +6,30 @@ export default class EnvelopeAutomation {
     enabled = false;
 
     attackTime: number;
-    holdTime: number;
-    holdTo: number;
     decayTime: number;
+    decayTo: number;
+    releaseTime: number;
 
-    constructor(attackTime = 0, holdTime = 0, holdTo = 1, decayTime = 0) {
+    constructor(attackTime = 0, decayTime = 0, decayTo = 1, releaseTime = 0) {
         this.unit = "seconds";
         this.attackTime = attackTime;
-        this.holdTime = holdTime;
-        this.holdTo = holdTo;
         this.decayTime = decayTime;
+        this.decayTo = decayTo;
+        this.releaseTime = releaseTime;
     }
 
     measureNoteTimeInMS(ms: number, bpm: number = 120) {
         switch (this.unit) {
-            case "seconds": return ms + this.decayTime;
-            case "bpm":     return ms + beatsToMS(this.decayTime, bpm);
+            case "seconds": return ms + this.releaseTime;
+            case "bpm":     return ms + beatsToMS(this.releaseTime, bpm);
             default:        return 0;
         }
     }
 
     measureNoteTimeInBeats(beats: number, bpm: number = 120) {
         switch (this.unit) {
-            case "seconds": return beats + msToBeats(this.decayTime, bpm);
-            case "bpm":     return beats + this.decayTime;
+            case "seconds": return beats + msToBeats(this.releaseTime, bpm);
+            case "bpm":     return beats + this.releaseTime;
             default:        return 0;
         }
     }
@@ -45,23 +45,23 @@ export default class EnvelopeAutomation {
     applyNoteInMS(param: RenderableAudioParam, noteLength: number, bpm: number = 120, mul = 1.0, offset: number = 0) {
         if (!this.enabled || noteLength === 0) return;
 
-        let atk, hold, holdTo, decay: number; // In ms
+        let atk, decay, decayTo, release: number; // In ms
         if (this.unit === "seconds") {
-            atk     = this.attackTime;
-            hold    = this.holdTime;
-            holdTo  = this.holdTo;
-            decay   = this.decayTime;
+            atk         = this.attackTime;
+            decay       = this.decayTime;
+            decayTo     = this.decayTo;
+            release     = this.releaseTime;
         } else if (this.unit === "bpm") {
-            atk     = beatsToMS(this.attackTime, bpm);
-            hold    = beatsToMS(this.holdTime, bpm);
-            holdTo  = beatsToMS(this.holdTo, bpm);
-            decay   = beatsToMS(this.decayTime, bpm);
+            atk         = beatsToMS(this.attackTime, bpm);
+            decay       = beatsToMS(this.decayTime, bpm);
+            decayTo     = beatsToMS(this.decayTo, bpm);
+            release     = beatsToMS(this.releaseTime, bpm);
         }
 
         if (noteLength === -1) {
             param.linearRampToValueAtNextTime(offset / 1000, 0);
             param.linearRampToValueAtNextTime((offset + atk) / 1000, mul);
-            param.linearRampToValueAtNextTime((offset + atk + hold) / 1000, holdTo * mul);
+            param.linearRampToValueAtNextTime((offset + atk + decay) / 1000, decayTo * mul);
             return;
         }
 
@@ -72,12 +72,12 @@ export default class EnvelopeAutomation {
             return;
         }
         param.linearRampToValueAtNextTime((offset + atk) / 1000, mul);
-        if (noteLength < atk + hold) {
-            param.linearRampToValueAtNextTime((offset + noteLength) / 1000, holdTo + ((1 - holdTo) * (1 - (noteLength - atk) / hold)) * mul);
+        if (noteLength < atk + decay) {
+            param.linearRampToValueAtNextTime((offset + noteLength) / 1000, decayTo + ((1 - decayTo) * (1 - (noteLength - atk) / decay)) * mul);
             param.linearRampToValueAtNextTime((offset + noteLength + decay) / 1000, 0);
             return;
         }
-        param.linearRampToValueAtNextTime((offset + atk + hold) / 1000, holdTo * mul);
+        param.linearRampToValueAtNextTime((offset + atk + decay) / 1000, decayTo * mul);
         param.linearRampToValueAtNextTime((offset + noteLength) / 1000, mul);
         param.linearRampToValueAtNextTime((offset + noteLength + decay) / 1000, 0);
     }
