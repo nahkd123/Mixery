@@ -14,7 +14,7 @@ function getPeekByPixel(buffer: Float32Array, width: number, pixel = 0, start = 
     const frameIndex = getFrameIndexByPixel(width, pixel, start, end);
     const framesCountPerPX = getFramesCountPerPixel(width, end - start);
     let val = Math.abs(buffer[frameIndex] || 0);
-    for (let i = 0; i < framesCountPerPX; i++) val = Math.max(val, Math.abs(buffer[frameIndex] || 0));
+    for (let i = 0; i < framesCountPerPX; i++) val = Math.max(val, Math.abs(buffer[frameIndex + i] || 0));
     return val;
 }
 
@@ -30,16 +30,21 @@ export default function drawAudioBuffer(buffer: CachedAudioBuffer, ctx: CanvasRe
 
         ctx.beginPath();
         ctx.moveTo(x, y + (i + bottomDirection) * heightPerChannel);
+
+        let previousPeak = 0;
         for (let dx = 0; dx < w; dx++) {
             if (x + dx < 0) continue;
             
-            const peak = Math.abs(channel[getFrameIndexByPixel(w, dx, startFrame, endFrame)] || 0);
-            // const peak = getPeekByPixel(channel, w, dx, startFrame, endFrame);
+            // const peak = Math.abs(channel[getFrameIndexByPixel(w, dx, startFrame, endFrame)] || 0);
+            const peak = getPeekByPixel(channel, w, dx, startFrame, endFrame);
+            const renderPeak = previousPeak * 0.5 + peak * 0.5;
             if (x + dx > realWidth) {
                 ctx.lineTo(x + dx, y + (i + bottomDirection) * heightPerChannel);
                 break;
             }
-            ctx.lineTo(x + dx, y + (i + (bottomDirection === 1? 1 - peak : peak)) * heightPerChannel);
+            ctx.lineTo(x + dx, y + (i + (bottomDirection === 1? 1 - renderPeak : renderPeak)) * heightPerChannel);
+
+            previousPeak = peak;
         }
         pathLined();
         ctx.closePath();
