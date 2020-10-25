@@ -159,6 +159,28 @@ export class Session {
                                     clip.generator.playNote(note.note, note.sensitivity, 0, note.duration);
                                 }, beatsToMS(clip.offset + note.start - self.seeker, self.bpm)));
                             });
+                        } else if (clip instanceof AudioClip) {
+                            const playDuration = beatsToMS(clip.length, self.bpm) / 1000;
+                            if (playDuration <= 0) return;
+
+                            self.scheduledPlayTasks.push(setTimeout(() => {
+                                let gain = self.audioEngine.createGain();
+                                let source = self.audioEngine.createBufferSource(clip.buffer);
+        
+                                source.connect(gain);
+                                gain.connect(clip.mixer !== undefined? clip.mixer.input : self.audioEngine.mixer.master.input);
+
+                                source.start(
+                                    self.audioEngine.liveTime,
+                                    beatsToMS(Math.max(self.seeker - clip.offset, 0) + clip.audioOffset, self.bpm) / 1000,
+                                    playDuration
+                                );
+                                self.playingAudios.push({gain, source});
+                            }, beatsToMS(clip.offset - self.seeker, self.bpm)));
+                        } else if (clip instanceof AutomationClip) {
+                            // We'll apply every nodes atm
+                            self.automatingParams.push(clip.param);
+                            clip.automation.applyBPM(clip.param, self.bpm, 1, beatsToMS(clip.offset, self.bpm));
                         }
                     } else {
                         if (clip instanceof MIDIClip) clip.generator.playClip(clip, clip.offset - self.seeker);
