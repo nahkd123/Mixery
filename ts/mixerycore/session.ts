@@ -160,15 +160,15 @@ export class Session {
                         if (clip instanceof MIDIClip) {
                             clip.notes.forEach(note => {
                                 // Play note one by one
-                                if (clip.offset + note.start - self.seeker >= 0) self.scheduledPlayTasks.push(setTimeout(() => {
+                                if (clip.offset + note.start - self.seeker >= 0) self.scheduledPlayTasks.push((setTimeout(() => {
                                     clip.generator.playNote(note.note, note.sensitivity, 0, note.duration);
-                                }, beatsToMS(clip.offset + note.start - self.seeker, self.bpm)) as number);
+                                }, beatsToMS(clip.offset + note.start - self.seeker, self.bpm)) as unknown) as number);
                             });
                         } else if (clip instanceof AudioClip) {
                             const playDuration = beatsToMS(clip.length, self.bpm) / 1000;
                             if (playDuration <= 0) return;
 
-                            self.scheduledPlayTasks.push(setTimeout(() => {
+                            self.scheduledPlayTasks.push((setTimeout(() => {
                                 let gain = self.audioEngine.createGain();
                                 let source = self.audioEngine.createBufferSource(clip.buffer);
         
@@ -181,7 +181,7 @@ export class Session {
                                     playDuration
                                 );
                                 self.playingAudios.push({gain, source});
-                            }, beatsToMS(clip.offset - self.seeker, self.bpm)) as number);
+                            }, beatsToMS(clip.offset - self.seeker, self.bpm)) as unknown) as number);
                         } else if (clip instanceof AutomationClip) {
                             // We'll apply every nodes atm
                             self.automatingParams.push(clip.param);
