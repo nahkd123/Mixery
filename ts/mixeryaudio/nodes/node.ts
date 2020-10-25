@@ -1,3 +1,4 @@
+import RenderableAudioParam from "../automations/param.js";
 import MixeryAudioEngine from "../engine.js";
 
 export default abstract class RenderableAudioNode {
@@ -21,6 +22,11 @@ export default abstract class RenderableAudioNode {
 
         this.audioNode.connect(node.audioNode);
         if (this.isRendering) this.rendererNode.connect(node.rendererNode);
+    }
+
+    connectParam(param: RenderableAudioParam) {
+        this.audioNode.connect(param.audioParam);
+        if (this.isRendering) this.audioNode.connect(param.rendererParam);
     }
 
     disconnect(node?: RenderableAudioNode) {

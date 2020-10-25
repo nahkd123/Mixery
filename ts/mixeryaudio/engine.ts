@@ -32,6 +32,10 @@ export default class MixeryAudioEngine {
         return source;
     }
 
+    async decodeAudio(data: ArrayBuffer) {
+        return this.audio.decodeAudioData(data);
+    }
+
     //#region Renderer
     beforeRender() {
         this.nodes.forEach(node => node.beforeRender());

@@ -1,3 +1,4 @@
+import RenderableAudioParam from "../automations/param.js";
 import MixeryAudioEngine from "../engine.js";
 import RenderableAudioNode from "./node.js";
 
@@ -5,10 +6,15 @@ export default class RenderableAudioBufferSourceNode extends RenderableAudioNode
     audioNode: AudioBufferSourceNode;
     rendererNode: AudioBufferSourceNode;
 
+    readonly detune: RenderableAudioParam;
+
     constructor(engine: MixeryAudioEngine) {
         super(engine);
 
         this.audioNode = engine.audio.createBufferSource();
+
+        this.detune = new RenderableAudioParam(engine);
+        this.detune.audioParam = this.audioNode.detune;
     }
 
     get buffer() {return this.audioNode.buffer;}
@@ -19,6 +25,7 @@ export default class RenderableAudioBufferSourceNode extends RenderableAudioNode
 
     beforeRender() {
         this.rendererNode = this.engine.renderer.createBufferSource();
+        this.detune.rendererParam = this.rendererNode.detune;
     }
 
     /**
