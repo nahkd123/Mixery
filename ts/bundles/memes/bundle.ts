@@ -10,6 +10,6 @@ export default class MemesBundle extends Bundle {
         super();
 
         // SFX
-        this.audios.push(new AudioClipExplorerContent("Taco Bell SFX", "/assets/bundles/memes/taco-bell.mp3"));
+        this.audios.push(new AudioClipExplorerContent("Taco Bell SFX", "../assets/bundles/memes/taco-bell.mp3"));
     }
 }

@@ -4,6 +4,6 @@ export class MixeryHTMLDocuments {
     ccRecommendation: ExternalHTMLDocument;
 
     constructor() {
-        this.ccRecommendation = new ExternalHTMLDocument("/app/ccrecommendation.html");
+        this.ccRecommendation = new ExternalHTMLDocument("../app/ccrecommendation.html");
     }
 }
