@@ -162,7 +162,7 @@ export class Session {
                                 // Play note one by one
                                 if (clip.offset + note.start - self.seeker >= 0) self.scheduledPlayTasks.push(setTimeout(() => {
                                     clip.generator.playNote(note.note, note.sensitivity, 0, note.duration);
-                                }, beatsToMS(clip.offset + note.start - self.seeker, self.bpm)));
+                                }, beatsToMS(clip.offset + note.start - self.seeker, self.bpm)) as number);
                             });
                         } else if (clip instanceof AudioClip) {
                             const playDuration = beatsToMS(clip.length, self.bpm) / 1000;
@@ -181,7 +181,7 @@ export class Session {
                                     playDuration
                                 );
                                 self.playingAudios.push({gain, source});
-                            }, beatsToMS(clip.offset - self.seeker, self.bpm)));
+                            }, beatsToMS(clip.offset - self.seeker, self.bpm)) as number);
                         } else if (clip instanceof AutomationClip) {
                             // We'll apply every nodes atm
                             self.automatingParams.push(clip.param);
