@@ -27,8 +27,6 @@ export abstract class AudioGenerator implements MIDIKeysListener {
     };
 
     beforeLoad(session: Session) {
-        this.envelopes.gain.enabled = true;
-
         this.window.title.textContent = this.name;
         this.tabs = new TabsContainer(this.window.innerElement);
         this.pluginView = this.tabs.addTab("Plugin");
@@ -49,7 +47,19 @@ export abstract class AudioGenerator implements MIDIKeysListener {
         updateCanvasSize(gainEnvelope.viewCanvas, () => {
             gainEnvelope.renderEnvelope();
         });
-        this.settingsView.appendChild(gainEnvelope.viewCanvas);
+
+        let envelopeButton = document.createElement("div");
+        envelopeButton.textContent = "Envelope (Off)";
+        envelopeButton.style.padding = "5px 12px";
+        envelopeButton.style.color = "white";
+        envelopeButton.addEventListener("click", event => {
+            this.envelopes.gain.enabled = !this.envelopes.gain.enabled;
+            envelopeButton.textContent = "Envelope (" + (this.envelopes.gain.enabled? "On" : "Off") + ")";
+            envelopeButton.style.color = this.envelopes.gain.enabled? "black" : "white";
+            envelopeButton.style.backgroundColor = this.envelopes.gain.enabled? "rgb(252, 186, 12)" : "";
+        });
+
+        this.settingsView.append(envelopeButton, gainEnvelope.viewCanvas);
     }
 
     abstract generatorLoad(session: Session, output: RenderableGainNode);
