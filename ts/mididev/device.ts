@@ -1,3 +1,4 @@
+import { notesName } from "../mixerycore/notes.js";
 import { MIDIMessagesID } from "./consts.js";
 import MIDIManager, { MIDIKeysRouting } from "./manager.js";
 
@@ -10,6 +11,8 @@ export abstract class MIDIInputDevice extends MIDIDevice {
     routing: MIDIKeysRouting[] = [];
     
     keyDownMessage(channel: number, note: number, sensitivity: number) {
+        this.manager.session.statusBox.innerText = this.name + "\nNote On: " + notesName[note] + ", CH " + (channel + 1);
+
         if (this.routing.length === 0) {
             this.manager.defaultKeysListener?.midiKeyDown(note, sensitivity);
             return;
@@ -19,6 +22,8 @@ export abstract class MIDIInputDevice extends MIDIDevice {
         });
     }
     keyUpMessage(channel: number, note: number) {
+        this.manager.session.statusBox.innerText = this.name + "\nNote Off: " + notesName[note] + ", CH " + (channel + 1);
+
         if (this.routing.length === 0) {
             this.manager.defaultKeysListener?.midiKeyUp(note);
             return;

@@ -19,3 +19,13 @@ div.topbar > div.topbarbutton {
 div.topbar > div.topbarbutton:hover {
     background-color: rgb(49, 44, 70);
 }
+
+div.topbar > div.topbarstatus {
+    background-color: rgb(49, 44, 70);
+    position: absolute;
+    top: 0; right: 0;
+    width: 200px; height: 32px;
+    padding: 3.5px 9px;
+    font-size: 12px;
+    text-align: right;
+}

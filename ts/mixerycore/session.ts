@@ -24,13 +24,14 @@ export class Session {
     plugins: GeneratorsPlugins;
     notifications: NotificationsManager;
 
-    midi: MIDIManager = new MIDIManager();
+    midi: MIDIManager;
 
     // General
     bpm: number = 120;
 
     // Views
     ui: UserInterface;
+    statusBox: HTMLDivElement;
 
     pxPerBeat: number = 100;
     pxPerBeatTo: number = 100;
@@ -102,9 +103,13 @@ export class Session {
     constructor() {
         this.audioEngine = new MixeryAudioEngine();
 
+        this.midi = new MIDIManager(this);
         this.playlist = new Playlist(this);
         this.plugins = new GeneratorsPlugins(this);
         this.notifications = new NotificationsManager();
+
+        this.statusBox = document.querySelector("div.topbarstatus");
+        this.statusBox.textContent = "Ready";
 
         this.midi.addConnectedDevices();
 
