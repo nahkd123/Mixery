@@ -1,3 +1,4 @@
+import ContextMenu, { ContextMenuEntry } from "../../../contextmenus/menu.js";
 import RenderableGainNode from "../../../mixeryaudio/nodes/gain.js";
 import { AudioGenerator } from "../../../mixerycore/generator.js";
 import { notesFrequency, notesIndex } from "../../../mixerycore/notes.js";
@@ -46,8 +47,26 @@ export class CheapPiano extends AudioGenerator {
         bufferSource.start(engine.liveTime + noteOffset);
     }
 
+    sampleSelectMenu = new ContextMenu();
+    sampleSelectButton: HTMLDivElement;
     initWindow() {
         const view = this.pluginView;
+
+        let label0 = document.createElement("div");
+        label0.textContent = "Selected sample:";
+        label0.style.padding = "5px 12px";
+        view.appendChild(label0);
+
+        this.sampleSelectButton = document.createElement("div");
+        this.sampleSelectButton.textContent = this.selectedSample;
+        this.sampleSelectButton.style.padding = "5px 12px";
+        this.sampleSelectButton.style.margin = "5px 12px";
+        this.sampleSelectButton.style.border = "2px solid #cecece";
+        this.sampleSelectButton.style.borderRadius = "3px";
+        this.sampleSelectButton.addEventListener("click", event => {
+            this.sampleSelectMenu.openMenu(event.pageX, event.pageY);
+        });
+        view.appendChild(this.sampleSelectButton);
     }
 
     samples: Map<string, AudioBuffer> = new Map();
@@ -56,6 +75,10 @@ export class CheapPiano extends AudioGenerator {
         let self = this;
         async function fetchAndLoadSample(name: string, noteMapping: number | string = "A4") {
             self.samplesNoteMapping[name] = typeof noteMapping === "number"? noteMapping : notesIndex.get(noteMapping);
+            self.sampleSelectMenu.entries.push(new ContextMenuEntry(name, () => {
+                self.selectedSample = name;
+                self.sampleSelectButton.textContent = name;
+            }));
 
             let fetchData = await fetch("/assets/bundles/default/CheapPiano " + name + ".wav");
             let arrayBuffer = await fetchData.arrayBuffer();
