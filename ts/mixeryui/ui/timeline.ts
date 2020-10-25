@@ -34,7 +34,6 @@ export class TimelineBar {
         let move = false;
         this.canvas.addEventListener("mousedown", event => {
             mouseDown = true;
-            this.canvas.requestPointerLock();
             seekBeat = this.session.seeker;
             move = false;
         });
@@ -57,7 +56,6 @@ export class TimelineBar {
         });
         this.canvas.addEventListener("mouseup", event => {
             mouseDown = false;
-            document.exitPointerLock();
 
             if (!move) {
                 this.session.seeker = snap((event.offsetX / this.session.pxPerBeat) + this.session.scrolledBeats, ...BeatSnapPreset);
@@ -70,25 +68,37 @@ export class TimelineBar {
         // Canvas Render
         this.ctx.clearRect(0, 0, this.canvas.width, this.canvas.height);
         const visibleBeats = Math.floor(this.canvas.width / this.session.pxPerBeat) + 2;
-        const scrolledBeats = Math.ceil(this.session.scrolledBeats - 0.001);
+        const scrolledBeats = Math.ceil(this.session.scrolledBeats);
         const drawStart = this.session.pxPerBeat - (Math.floor(this.session.scrolledBeats * this.session.pxPerBeat) % this.session.pxPerBeat || this.session.pxPerBeat);
 
         this.ctx.strokeStyle = "white";
         this.ctx.fillStyle = "white";
         this.ctx.beginPath();
         for (let i = 0; i < visibleBeats; i++) {
-            this.ctx.moveTo(drawStart + i * this.session.pxPerBeat, ((scrolledBeats + i) % 4 === 0)? 29 : 34);
+            this.ctx.moveTo(drawStart + i * this.session.pxPerBeat, 29);
             this.ctx.lineTo(drawStart + i * this.session.pxPerBeat, 39);
         }
         this.ctx.stroke();
         this.ctx.closePath();
         
         this.ctx.font = "14px 'Nunito Sans', 'Noto Sans', 'Ubuntu', Calibri, sans-serif";
-        for (let i = 0; i < visibleBeats; i++) {
+        /*for (let i = 0; i < visibleBeats; i++) {
             const text = (scrolledBeats + i + 1) + "";
             const charWidth = this.ctx.measureText(text).width;
             this.ctx.globalAlpha = ((scrolledBeats + i) % 4) === 0? 1 : Math.min((this.session.pxPerBeat - 50) / 50, 1.0);
             if (this.session.pxPerBeat >= 50 || ((scrolledBeats + i) % 4) === 0) this.ctx.fillText(text, drawStart + i * this.session.pxPerBeat - charWidth / 2, 23);
+        }*/
+        const textDrawStart = Math.floor(this.session.scrolledBeats);
+        for (let i = textDrawStart; i < Math.ceil(this.session.scrolledBeats + visibleBeats); i++) {
+            const text = (i + 1) + "";
+            const charWidth = this.ctx.measureText(text).width;
+            this.ctx.globalAlpha = (i % 4) === 0? 1 : Math.min((this.session.pxPerBeat - 50) / 50, 1.0);
+            if (this.session.pxPerBeat >= 50 || (i % 4) === 0)
+                this.ctx.fillText(
+                    text,
+                    (i - textDrawStart) * this.session.pxPerBeat - charWidth / 2 - 1 - (Math.floor(this.session.scrolledBeats * this.session.pxPerBeat) % (this.session.pxPerBeat)),
+                    23
+                );
         }
         this.ctx.globalAlpha = 1.0;
 

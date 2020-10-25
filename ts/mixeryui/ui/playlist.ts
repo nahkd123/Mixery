@@ -325,6 +325,11 @@ export class PlaylistInterface {
                 this.tracksList.scrollTo(0, this.tracksContainer.scrollTop);
             } else scrollLink = false;
         });
+        this.tracksContainer.addEventListener("wheel", event => {
+            this.session.scrolledPixels += event.deltaX;
+            if (this.session.scrolledBeats < 0) this.session.scrolledBeats = 0;
+            this.ui.canvasRenderUpdate();
+        });
 
         this.timelineBar.applyUpdate();
     }
