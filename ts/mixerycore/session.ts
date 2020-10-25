@@ -71,6 +71,11 @@ export class Session {
     settings = {
         _title: "Settings",
 
+        playback: {
+            _title: "Playback",
+            autoScroll: true,
+            autoScrollPercentage: 0.75
+        },
         accessibility: {
             _title: "Accessibility",
             doubleClickSpeed: 350
@@ -128,11 +133,13 @@ export class Session {
         this.documents = new MixeryHTMLDocuments();
     }
 
+    oldScrolledBeat: number;
     scheduledPlayTasks: number[] = [];
     play() {
         if (this.playing) return;
 
         let self = this;
+        this.oldScrolledBeat = this.scrolledBeats;
         function realPlay() {
             self.playing = true;
             self.playTimestamp = Date.now();

@@ -90,10 +90,19 @@ export class UserInterface {
             if (this.session.scrollFriction !== 0) {
                 this.session.scrollFriction -= this.session.scrollFriction > 0? 1 : -1;
                 this.session.scrolledPixels += this.session.scrollFriction;
-                if (this.session.scrolledBeats < 0) {
+                if (this.session.scrolledBeats < 0.00000001) {
                     this.session.scrollFriction = 0;
                     this.session.scrolledBeats = 0;
                 }
+            }
+            if (this.session.playing && this.session.settings.playback.autoScroll) {
+                const globalSeekerPos = this.session.playedBeats + this.session.seeker;
+                const localSeekerPos = globalSeekerPos - this.session.scrolledBeats;
+                const spaceSeekerScroller = this.session.seeker - this.session.oldScrolledBeat;
+                // this.session.scrolledPixels += this.session.pxPerBeat / 30;
+                // console.log(globalSeekerPos, localSeekerPos);
+                // this.session.scrolledBeats = this.session.oldScrolledBeat + globalSeekerPos;
+                this.session.scrolledBeats += localSeekerPos - spaceSeekerScroller;
             }
             if (this.session.pxPerBeatTo !== this.session.pxPerBeat) {
                 this.session.pxPerBeat += (this.session.pxPerBeatTo - this.session.pxPerBeat) * 0.5;

@@ -69,23 +69,28 @@ export class TimelineBar {
     render() {
         // Canvas Render
         this.ctx.clearRect(0, 0, this.canvas.width, this.canvas.height);
-        const visibleBeats = Math.floor(this.canvas.width / this.session.pxPerBeat) + 1;
-        const scrolledBeats = Math.ceil(this.session.scrolledBeats);
+        const visibleBeats = Math.floor(this.canvas.width / this.session.pxPerBeat) + 2;
+        const scrolledBeats = Math.ceil(this.session.scrolledBeats - 0.001);
         const drawStart = this.session.pxPerBeat - (Math.floor(this.session.scrolledBeats * this.session.pxPerBeat) % this.session.pxPerBeat || this.session.pxPerBeat);
 
         this.ctx.strokeStyle = "white";
         this.ctx.fillStyle = "white";
-        this.ctx.font = "14px 'Nunito Sans', 'Noto Sans', 'Ubuntu', Calibri, sans-serif";
         this.ctx.beginPath();
         for (let i = 0; i < visibleBeats; i++) {
             this.ctx.moveTo(drawStart + i * this.session.pxPerBeat, ((scrolledBeats + i) % 4 === 0)? 29 : 34);
             this.ctx.lineTo(drawStart + i * this.session.pxPerBeat, 39);
-            const text = (scrolledBeats + i + 1) + "";
-            const charWidth = this.ctx.measureText(text).width;
-            this.ctx.fillText(text, drawStart + i * this.session.pxPerBeat - charWidth / 2, 23);
         }
         this.ctx.stroke();
         this.ctx.closePath();
+        
+        this.ctx.font = "14px 'Nunito Sans', 'Noto Sans', 'Ubuntu', Calibri, sans-serif";
+        for (let i = 0; i < visibleBeats; i++) {
+            const text = (scrolledBeats + i + 1) + "";
+            const charWidth = this.ctx.measureText(text).width;
+            this.ctx.globalAlpha = ((scrolledBeats + i) % 4) === 0? 1 : Math.min((this.session.pxPerBeat - 50) / 50, 1.0);
+            if (this.session.pxPerBeat >= 50 || ((scrolledBeats + i) % 4) === 0) this.ctx.fillText(text, drawStart + i * this.session.pxPerBeat - charWidth / 2, 23);
+        }
+        this.ctx.globalAlpha = 1.0;
 
         function drawSeekerShape(ctx: CanvasRenderingContext2D, seekPx: number) {
             ctx.beginPath();
