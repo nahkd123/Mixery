@@ -2,7 +2,7 @@ import { Session } from "../mixerycore/session.js";
 import { ExplorerPane, ExplorerSection } from "../mixeryui/explorer.js";
 import Bundle from "./bundle.js";
 
-export default class BunglesManager {
+export default class BundlesManager {
     session: Session;
     explorer: ExplorerPane;
 

@@ -3,11 +3,12 @@ import { Session } from "../mixerycore/session.js";
 import { ExampleGenerator } from "../mixerycore/generator.js";
 import { notesIndex } from "../mixerycore/notes.js";
 import { MixeryGenerators } from "./plugins.js";
-import BunglesManager from "../bundles/bundlesmgr.js";
+import BundlesManager from "../bundles/bundlesmgr.js";
 import MixeryDefaultBundle from "../bundles/mixerydefaults/bundle.js";
 import { MixeryConfigurations } from "./config.js";
 import { ElectronJSApp } from "../utils/electronjs.js";
 import MemesBundle from "../bundles/memes/bundle.js";
+import { testbox } from "./dev/testbox.js";
 
 const config = MixeryConfigurations;
 
@@ -113,7 +114,7 @@ function renderLoop(timestamp: number) {
 window.requestAnimationFrame(renderLoop);
 
 // Setting up bundles
-let bundlesManager = new BunglesManager(session, ui.explorer);
+let bundlesManager = new BundlesManager(session, ui.explorer);
 bundlesManager.add(new MixeryDefaultBundle());
 bundlesManager.add(new MemesBundle());
 bundlesManager.loadBundles();
@@ -126,7 +127,7 @@ if (config.exposeToGlobal) {
         ui,
         config: MixeryConfigurations
     };
-    globalThis.app = appObj;
+    (globalThis as any).app = appObj;
 }
 if (config.emulateElectronJS && globalThis.electronjs === undefined) {
     console.warn("ElectronJS app emulation mode is currently on");
@@ -173,4 +174,19 @@ if (config.showLogo) {
         "%c" + config.logo.join("\n"),
         "color: " + config.randomLogoColor[Math.floor(config.randomLogoColor.length * Math.random())]
     );
+}
+
+if (MixeryConfigurations.allowTestBox && MixeryConfigurations.exposeToGlobal) {
+    const startTime = Date.now();
+    testbox().then(() => {
+        console.log("[testbox/measure] Task finished (" + (Date.now() - startTime) + "ms)");
+    });
+}
+
+declare global {
+    const app: undefined | {
+        session: Session,
+        bundlesManager: BundlesManager,
+        ui: UserInterface
+    };
 }

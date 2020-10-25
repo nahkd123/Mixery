@@ -1,3 +1,4 @@
+import MIDIFile from "../../mididev/midifile.js";
 import { AudioClip, MIDIClip } from "../../mixerycore/clips.js";
 import { Session } from "../../mixerycore/session.js";
 import { Tools } from "../../mixerycore/tools.js";
@@ -226,11 +227,47 @@ export class PlaylistInterface {
                 event.preventDefault();
                 let files = event.dataTransfer.files;
                 if (files.length === 0) return;
+                if (files.length === 1) {
+                    // File filtering (ik this succ)
+                    const file = files.item(0);
+                    if (file.type === "audio/mid") {
+                        if (this.session.plugins.selected === undefined) {
+                            if (this.session.notifications.hasTag("selectplugin")) return;
+                            this.session.notifications.push({
+                                desc: "You need to select a plugin to continue",
+                                tags: ["selectplugin"],
+                                duration: 3000
+                            });
+                            return;
+                        }
+                        let targetPlugin = this.session.plugins.selected;
+                        
+                        file.arrayBuffer().then(buffer => {
+                            let midi = new MIDIFile(new Uint8Array(buffer));
+                            let clip = new MIDIClip(targetPlugin.generator);
+                            if (midi.header.format === "doubleTracks") {
+                                clip.notes = midi.tracks[1].notes;
+                                clip.length = midi.tracks[1].trackLength;
+                            }
+                            
+                            clip.name = file.name;
+                            clip.offset = this.session.seeker;
+                            track.clips.push(clip);
+
+                            this.session.playlist.selectedClip = clip;
+                            this.ui.canvasRenderUpdate();
+
+                        });
+                        return;
+                    }
+                }
 
                 let arrayBuffersAsync: Promise<ArrayBuffer>[] = [];
                 let audioBuffersNames: string[] = [];
                 for (let i = 0; i < files.length; i++) {
                     const file = files.item(i);
+                    if (!file.type.startsWith("audio/")) continue;
+
                     audioBuffersNames[i] = file.name;
                     arrayBuffersAsync[i] = file.arrayBuffer();
                 }

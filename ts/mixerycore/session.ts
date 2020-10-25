@@ -78,6 +78,10 @@ export class Session {
         rendering: {
             _title: "Rendering settings",
             renderNotes: true
+        },
+        performance: {
+            _title: "Performance settings",
+            realTimeRendering: true // Place nodes in real time (which reduce load for AudioContext)
         }
     };
     keyboardShortcuts: {
@@ -124,6 +128,7 @@ export class Session {
         this.documents = new MixeryHTMLDocuments();
     }
 
+    scheduledPlayTasks: number[] = [];
     play() {
         if (this.playing) return;
 
@@ -138,26 +143,38 @@ export class Session {
 
                 track.clips.forEach(clip => {
                     if (clip.offset + clip.length < self.seeker) return;
-                    if (clip instanceof MIDIClip) clip.generator.playClip(clip, clip.offset - self.seeker);
-                    else if (clip instanceof AudioClip) {
-                        const playDuration = beatsToMS(clip.length, self.bpm) / 1000;
-                        if (playDuration <= 0) return;
-                        let gain = self.audioEngine.createGain();
-                        let source = self.audioEngine.createBufferSource(clip.buffer);
-
-                        source.connect(gain);
-                        gain.connect(clip.mixer !== undefined? clip.mixer.input : self.audioEngine.mixer.master.input);
-
-                        source.start(
-                            self.audioEngine.liveTime + beatsToMS(Math.max(clip.offset - self.seeker, 0), self.bpm) / 1000,
-                            beatsToMS(Math.max(self.seeker - clip.offset, 0) + clip.audioOffset, self.bpm) / 1000,
-                            playDuration
-                        );
-
-                        self.playingAudios.push({gain, source});
-                    } else if (clip instanceof AutomationClip) {
-                        self.automatingParams.push(clip.param);
-                        clip.automation.applyBPM(clip.param, self.bpm, 1, beatsToMS(clip.offset, self.bpm));
+                    
+                    if (self.settings.performance.realTimeRendering) {
+                        if (clip instanceof MIDIClip) {
+                            clip.notes.forEach(note => {
+                                // Play note one by one
+                                if (clip.offset + note.start - self.seeker >= 0) self.scheduledPlayTasks.push(setTimeout(() => {
+                                    clip.generator.playNote(note.note, note.sensitivity, 0, note.duration);
+                                }, beatsToMS(clip.offset + note.start - self.seeker, self.bpm)));
+                            });
+                        }
+                    } else {
+                        if (clip instanceof MIDIClip) clip.generator.playClip(clip, clip.offset - self.seeker);
+                        else if (clip instanceof AudioClip) {
+                            const playDuration = beatsToMS(clip.length, self.bpm) / 1000;
+                            if (playDuration <= 0) return;
+                            let gain = self.audioEngine.createGain();
+                            let source = self.audioEngine.createBufferSource(clip.buffer);
+    
+                            source.connect(gain);
+                            gain.connect(clip.mixer !== undefined? clip.mixer.input : self.audioEngine.mixer.master.input);
+    
+                            source.start(
+                                self.audioEngine.liveTime + beatsToMS(Math.max(clip.offset - self.seeker, 0), self.bpm) / 1000,
+                                beatsToMS(Math.max(self.seeker - clip.offset, 0) + clip.audioOffset, self.bpm) / 1000,
+                                playDuration
+                            );
+    
+                            self.playingAudios.push({gain, source});
+                        } else if (clip instanceof AutomationClip) {
+                            self.automatingParams.push(clip.param);
+                            clip.automation.applyBPM(clip.param, self.bpm, 1, beatsToMS(clip.offset, self.bpm));
+                        }
                     }
                 });
             });
@@ -183,6 +200,10 @@ export class Session {
         this.automatingParams.forEach(param => {
             param.cancelScheduledValues(this.audioEngine.liveTime);
         });
+
+        // Stop scheduled tasks
+        this.scheduledPlayTasks.forEach(taskId => {clearTimeout(taskId);});
+        this.scheduledPlayTasks = [];
     }
     stopAndThenPlay() {
         this.stop();
