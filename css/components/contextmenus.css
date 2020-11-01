@@ -1,23 +1,21 @@
 div.contextmenu {
     display: block;
     position: absolute;
-
     color: black;
     background: white;
-
-    border-radius: 3px;
     min-width: 200px;
-
-    padding: 5px;
-    padding-bottom: 0;
-
     box-shadow: 0 0 6px black;
+    background-color: #efefef;
+}
+div.contextmenu::before {
+    content: '';
+    display: block;
+    width: 100%; height: 2px;
+    background-color: #7c7c7c;
 }
 
 div.contextmenu > div.ctxbutton {
-    padding: 5px 15px;
-    margin-bottom: 5px;
-    transition: background-color 0.08s linear;
+    padding: 7px 15px;
     border-radius: 3px;
 }
 div.contextmenu > div.ctxbutton:hover {

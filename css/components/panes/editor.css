@@ -180,7 +180,7 @@ canvas.track {
     display: block;
 }
 canvas.track:nth-child(even) {
-    background: rgb(23, 16, 51);
+    background: rgb(14, 10, 34);
 }
 
 div.sidebar.tracks::-webkit-scrollbar, div.trackscontainer::-webkit-scrollbar {
