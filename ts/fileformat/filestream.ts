@@ -137,17 +137,20 @@ export namespace ByteStream {
     }
     export class WriteableStream {
         contents: BlobPart[] = [];
+        position: number = 0;
 
         writeArray(val: ArrayLike<number>) {
             if (val instanceof Uint8Array) this.contents.push(val);
             else this.contents.push(new Uint8Array(val));
+            this.position += val.length;
         }
-        writeUint8(val: number) { this.writeArray([val]) }
+        writeUint8(val: number) { this.writeArray([val]); this.position++; }
         writeUint16(val: number) {
             this.contents.push(new Uint8Array([
                 (val & 0xFF00) >> 8,
                 (val & 0x00FF)
             ]));
+            this.position += 2;
         }
         writeUint24(val: number) {
             this.contents.push(new Uint8Array([
@@ -155,6 +158,7 @@ export namespace ByteStream {
                 (val & 0x00FF00) >> 8,
                 (val & 0x0000FF)
             ]));
+            this.position += 3;
         }
         writeUint32(val: number) {
             this.contents.push(new Uint8Array([
@@ -163,6 +167,7 @@ export namespace ByteStream {
                 (val & 0x0000FF00) >> 8,
                 (val & 0x000000FF)
             ]));
+            this.position += 4;
         }
         writeUint48(val: number) {
             this.contents.push(new Uint8Array([
@@ -172,6 +177,7 @@ export namespace ByteStream {
                 (val & 0x000000FF00) >> 8,
                 (val & 0x00000000FF)
             ]));
+            this.position += 5;
         }
         // yes i know that's programming practice
 
@@ -194,11 +200,12 @@ export namespace ByteStream {
             if (data instanceof ArrayBuffer || data instanceof Uint8Array) this.contents.push(data);
             else this.contents.push(new Uint8Array(data));
         }
-        writeFloat32(val: number) { this.contents.push(ByteStreamData.convertFrom.float32(val)); }
-        writeFloat64(val: number) { this.contents.push(ByteStreamData.convertFrom.float64(val)); }
+        writeFloat32(val: number) { this.contents.push(ByteStreamData.convertFrom.float32(val)); this.position += 4; }
+        writeFloat64(val: number) { this.contents.push(ByteStreamData.convertFrom.float64(val)); this.position += 8; }
         writeFloat32FixedArray(arr: Float32Array) {
             let buffer = arr.buffer;
             this.contents.push(new Uint8Array(buffer));
+            this.position += arr.length * 4;
         }
 
         convertToBlob(options?: BlobPropertyBag) {

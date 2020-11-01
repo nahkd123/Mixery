@@ -15,6 +15,9 @@ import RenderableAudioParam from "../mixeryaudio/automations/param.js";
 import MIDIManager from "../mididev/manager.js";
 import { MixeryFileFormat } from "../fileformat/mixeryfile.js";
 import download from "../utils/downloader.js";
+import { AudioEncodersManager } from "../encoders/encoder.js";
+import MixeryAudioEncoder from "../encoders/mixeryaudio.js";
+import WaveFileAudioEncoder from "../encoders/wavefile.js";
 
 export class Session {
     audioEngine: MixeryAudioEngine;
@@ -27,6 +30,7 @@ export class Session {
     notifications: NotificationsManager;
 
     midi: MIDIManager;
+    encoders: AudioEncodersManager;
 
     // General/Project metadata
     projectName: string = "Untitled Project";
@@ -109,6 +113,11 @@ export class Session {
         this.audioEngine = new MixeryAudioEngine();
 
         this.midi = new MIDIManager(this);
+        
+        this.encoders = new AudioEncodersManager();
+        this.encoders.addEncoder(new MixeryAudioEncoder());
+        this.encoders.addEncoder(new WaveFileAudioEncoder());
+
         this.playlist = new Playlist(this);
         this.plugins = new GeneratorsPlugins(this);
         this.notifications = new NotificationsManager();
