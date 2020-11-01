@@ -266,7 +266,7 @@ export class PlaylistInterface {
                 let audioBuffersNames: string[] = [];
                 for (let i = 0; i < files.length; i++) {
                     const file = files.item(i);
-                    if (!file.type.startsWith("audio/")) continue;
+                    if (!file.name.endsWith(".mxyaudio") && !file.type.startsWith("audio/")) continue;
 
                     audioBuffersNames[i] = file.name;
                     arrayBuffersAsync[i] = file.arrayBuffer();
@@ -275,7 +275,8 @@ export class PlaylistInterface {
 
                     let audioBuffersAsync: Promise<AudioBuffer>[] = [];
                     arrBuffers.forEach((arr, index) => {
-                        audioBuffersAsync[index] = this.session.audioEngine.audio.decodeAudioData(arr);
+                        // audioBuffersAsync[index] = this.session.audioEngine.audio.decodeAudioData(arr);
+                        audioBuffersAsync[index] = this.session.decodeAudio(arr, audioBuffersNames[index]);
                     });
 
                     new AudioBufferLoader(audio => {

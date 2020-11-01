@@ -46,8 +46,19 @@ export namespace ByteStreamData {
             }
             return val;
         }
-
-        export function uint16(data: ArrayLike<number>) {
+        export function float32(data: ArrayLike<number>) {
+            if (data.length !== 4) throw "Not 32-bit value";
+            let arr = data instanceof Uint8Array? data : new Uint8Array(data);
+            let buffer = arr.buffer;
+            let floatArr = new Float32Array(buffer);
+            return floatArr[0];
+        }
+        export function float64(data: ArrayLike<number>) {
+            if (data.length !== 8) throw "Not 64-bit value";
+            let arr = data instanceof Uint8Array? data : new Uint8Array(data);
+            let buffer = arr.buffer;
+            let floatArr = new Float64Array(buffer);
+            return floatArr[0];
         }
     }
 }
@@ -56,6 +67,7 @@ export namespace ByteStream {
     export class ReadableStream {
         pointer: number = 0;
         data: Uint8Array;
+        get eof() {return this.pointer >= this.data.length;}
 
         constructor(data: ArrayLike<number> | ArrayBuffer) {
             if (data instanceof Uint8Array) this.data = data;
@@ -97,6 +109,31 @@ export namespace ByteStream {
             return str;
         }
         readString() { return this.readUnicodeString(); }
+        readFloat32() { return ByteStreamData.convertTo.float32(this.readFixedBinaryData(4)); }
+        readFloat64() { return ByteStreamData.convertTo.float64(this.readFixedBinaryData(8)); }
+        readFloat32FixedArray(length: number) {
+            let buffer = this.readFixedBinaryData(length * 4).buffer;
+            return new Float32Array(buffer);
+        }
+
+        /**
+         * Seek after header
+         * @param headerData The header data
+         * @returns true if the header found, otherwise false
+         */
+        seekAfterHeader(headerData: ArrayLike<number>) {
+            const self = this;
+            function compareHeader() {
+                for (let i = 0; i < headerData.length; i++) if (self.data[self.pointer + i] !== headerData[i]) return false;
+                return true;
+            }
+            while (!compareHeader()) {
+                this.pointer++;
+                if (this.eof) return false;
+            }
+            this.pointer += headerData.length;
+            return true;
+        }
     }
     export class WriteableStream {
         contents: BlobPart[] = [];
@@ -136,7 +173,8 @@ export namespace ByteStream {
                 (val & 0x00000000FF)
             ]));
         }
-        // yes i know this is bad programming practice
+        // yes i know that's programming practice
+
         writeVarInt(val: number) {
             let array: number[] = [];
             let log: number;
@@ -152,6 +190,16 @@ export namespace ByteStream {
             for (let i = 0; i < str.length; i++) this.writeVarInt(str.charCodeAt(i));
         }
         writeString(str: string) { this.writeUnicodeString(str); }
+        writeBinaryData(data: ArrayLike<number>) {
+            if (data instanceof ArrayBuffer || data instanceof Uint8Array) this.contents.push(data);
+            else this.contents.push(new Uint8Array(data));
+        }
+        writeFloat32(val: number) { this.contents.push(ByteStreamData.convertFrom.float32(val)); }
+        writeFloat64(val: number) { this.contents.push(ByteStreamData.convertFrom.float64(val)); }
+        writeFloat32FixedArray(arr: Float32Array) {
+            let buffer = arr.buffer;
+            this.contents.push(new Uint8Array(buffer));
+        }
 
         convertToBlob(options?: BlobPropertyBag) {
             return new Blob(this.contents, options);
@@ -161,6 +209,9 @@ export namespace ByteStream {
         }
         async convertToReadableStream() {
             return new ReadableStream(await this.convertToArrayBuffer());
+        }
+        async convertToUint8Array() {
+            return new Uint8Array(await this.convertToArrayBuffer());
         }
     }
 }

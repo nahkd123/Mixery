@@ -13,6 +13,8 @@ import RenderableAudioBufferSourceNode from "../mixeryaudio/nodes/audiobuffer.js
 import { UserInterface } from "../mixeryui/ui.js";
 import RenderableAudioParam from "../mixeryaudio/automations/param.js";
 import MIDIManager from "../mididev/manager.js";
+import { MixeryFileFormat } from "../fileformat/mixeryfile.js";
+import download from "../utils/downloader.js";
 
 export class Session {
     audioEngine: MixeryAudioEngine;
@@ -26,7 +28,10 @@ export class Session {
 
     midi: MIDIManager;
 
-    // General
+    // General/Project metadata
+    projectName: string = "Untitled Project";
+    projectDesc: string = "Write some text here...";
+    projectCreationTime = Date.now();
     bpm: number = 120;
 
     // Views
@@ -269,6 +274,24 @@ export class Session {
         }));
 
         console.log("Electron features enabled. It might cause some problem if you're trying to use Electron-only features.");
+    }
+
+    async saveProject(name = this.projectName + ".mxyproj") {
+        console.log("[main] Saving project...");
+        let stream = await MixeryFileFormat.convertToProjectFile(this);
+        let blob = stream.convertToBlob();
+
+        download(blob, name);
+        console.log("[main] Saved project!");
+    }
+
+    async decodeAudio(input: ArrayBuffer | Blob, name: string) {
+        let data = input instanceof ArrayBuffer? input : await input.arrayBuffer();
+        if (name.endsWith(".mxyaudio")) {
+            let audioFile = MixeryFileFormat.Audio.readAudioFile(data);
+            if (audioFile instanceof AudioBuffer) return audioFile;
+            else await this.audioEngine.decodeAudio(audioFile);
+        } else return await this.audioEngine.decodeAudio(data);
     }
 }
 

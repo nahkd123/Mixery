@@ -1,5 +1,5 @@
 export namespace MixeryConfigurations {
-    export const allowTestBox = true;
+    export const allowTestBox = false;
     export const exposeToGlobal = true;
     export const emulateElectronJS = false;
     export const showLogo = true;

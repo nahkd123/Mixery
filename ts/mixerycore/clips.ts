@@ -5,6 +5,8 @@ import MixerTrack from "../mixeryaudio/mixer/track.js";
 import CachedAudioBuffer from "../utils/cachedaudiobuffer.js";
 import AudioAutomation, { AutomationNode } from "../mixeryaudio/automations/automation.js";
 import RenderableAudioParam from "../mixeryaudio/automations/param.js";
+import { MixeryFileFormat } from "../fileformat/mixeryfile.js";
+import download from "../utils/downloader.js";
 
 export abstract class Clip {
     name: string = "Unnamed Clip";
@@ -13,6 +15,10 @@ export abstract class Clip {
 
     offset: number = 0;
     length: number = 2;
+
+    saveClip() {
+        throw "Method not implemented";
+    }
 }
 
 export class MIDIClip extends Clip {
@@ -31,6 +37,7 @@ export class MIDIClip extends Clip {
 
 export class AudioClip extends Clip {
     buffer: AudioBuffer;
+    orignal: ArrayBuffer;
     cached: CachedAudioBuffer;
     audioOffset: number = 0;
     mixer: MixerTrack;
@@ -48,6 +55,12 @@ export class AudioClip extends Clip {
         const color = ThemeColors.randomClipColor();
         this.bgcolor = color[0];
         this.fgcolor = color[1];
+    }
+
+    async saveClip() {
+        let stream = await MixeryFileFormat.Audio.convertToAudioFile(this.orignal !== undefined? this.orignal : this.buffer, this.name);
+        let blob = await stream.convertToBlob();
+        download(blob, this.name + ".mxyaudio");
     }
 }
 
