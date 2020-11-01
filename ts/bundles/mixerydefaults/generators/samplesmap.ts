@@ -145,7 +145,7 @@ export class SamplesMap extends AudioGenerator {
 
         // Events
         this.mapCanvas.addEventListener("wheel", event => {
-            this.scrolledNotes += event.deltaX / 10;
+            this.scrolledNotes += (event.shiftKey? event.deltaY : event.deltaX) / 10;
             if (this.scrolledNotes < 0) this.scrolledNotes = 0;
             this.renderMap();
         });
