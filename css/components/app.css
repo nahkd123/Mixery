@@ -2,8 +2,8 @@ div.appwrapper {
     position: absolute;
     top: 41px;
     left: 0;
-    width: 100vw;
-    height: calc(100vh - 41px);
+    width: var(--screenWidth);
+    height: calc(var(--screenHeight) - 41px);
 }
 div.appwrapper > div.app {
     position: relative;

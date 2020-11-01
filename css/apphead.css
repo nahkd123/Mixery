@@ -1,7 +1,10 @@
 html, body {
+    --screenWidth: 100vw;
+    --screenHeight: 100vh;
+
     margin: 0;
-    width: 100vw;
-    height: 100vh;
+    width: var(--screenWidth);
+    height: var(--screenHeight);
     overflow: hidden;
 
     overscroll-behavior-x: none; /* Prevent swipe to go back */
@@ -21,4 +24,11 @@ body {
 
 div::-webkit-scrollbar {
     display: none;
+}
+
+@media only screen and (hover: none) and (pointer: coarse) {
+    html, body {
+        --screenWidth: 110vw;
+        --screenHeight: 110vh;
+    }
 }

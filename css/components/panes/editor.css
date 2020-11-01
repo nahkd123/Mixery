@@ -7,7 +7,7 @@ div.pane.editor {
     position: absolute;
     top: 0;
     left: 302px;
-    width: calc(100% - 302px);
+    width: calc(var(--screenWidth) - 302px);
     height: 100%;
     transition:
         top 0.25s cubic-bezier(0.55, 0.14, 0.13, 1),
@@ -21,7 +21,10 @@ div.app.pluginsopen > div.pane.editor {
 div.editor > div.editorbar {
     background-color: rgb(33, 27, 55);
     border-bottom: 2px solid rgb(50, 44, 69);
+    height: 38px;
     padding: 8px;
+    overflow-x: scroll;
+    white-space: nowrap;
 }
 div.editorbar > div.editorbarentry {
     display: inline-block;

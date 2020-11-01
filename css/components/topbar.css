@@ -2,7 +2,7 @@ div.topbar {
     position: absolute;
     top: 0;
     left: 0;
-    width: calc(100vw - 24px);
+    width: calc(var(--screenWidth) - 24px);
 
     background-color: rgb(33, 27, 55);
     padding: 0 12px;

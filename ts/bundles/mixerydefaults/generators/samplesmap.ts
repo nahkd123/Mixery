@@ -1,6 +1,7 @@
 import ContextMenu, { ContextMenuEntry } from "../../../contextmenus/menu.js";
 import RenderableGainNode from "../../../mixeryaudio/nodes/gain.js";
 import { AudioGenerator } from "../../../mixerycore/generator.js";
+import { NotesConfiguration } from "../../../mixerycore/notes.js";
 import { Session } from "../../../mixerycore/session.js";
 import { GeneratorExplorerContent } from "../../../mixeryui/explorer.js";
 import { beatsToMS } from "../../../utils/msbeats.js";
@@ -297,6 +298,11 @@ export class SamplesMap extends AudioGenerator {
 
                 if (previousBlackKey) ctx.fillRect((i - 0.5) * noteWidth, keyboardY + blackKeysSize, noteWidth / 2, keyboardSize - blackKeysSize);
                 previousBlackKey = blackKeys.includes(octNoteIndex);
+
+                if (!blackKey) {
+                    ctx.fillStyle = "white";
+                    ctx.fillText(NotesConfiguration.NOTE_NAMING[octNoteIndex] + "", i * noteWidth + 2, canvas.height - keyboardSize - 3);
+                }
             }
         }
 
