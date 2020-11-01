@@ -15,6 +15,8 @@ export default class RenderableAudioBufferSourceNode extends RenderableAudioNode
 
         this.detune = new RenderableAudioParam(engine);
         this.detune.audioParam = this.audioNode.detune;
+
+        if (this.isRendering) this.beforeRender();
     }
 
     get buffer() {return this.audioNode.buffer;}
@@ -26,6 +28,12 @@ export default class RenderableAudioBufferSourceNode extends RenderableAudioNode
     beforeRender() {
         this.rendererNode = this.engine.renderer.createBufferSource();
         this.detune.rendererParam = this.rendererNode.detune;
+        this.rendererNode.buffer = this.audioNode.buffer;
+    }
+
+    afterRender() {
+        this.rendererNode = undefined;
+        this.detune.rendererParam = undefined;
     }
 
     /**

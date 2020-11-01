@@ -23,12 +23,20 @@ export default class RenderableOscillatorNode extends RenderableAudioNode {
 
         this.detune = new RenderableAudioParam(engine);
         this.detune.audioParam = this.audioNode.detune;
+
+        if (this.isRendering) this.beforeRender();
     }
 
     beforeRender() {
         this.rendererNode = this.audioContext.createOscillator();
         this.frequency.rendererParam = this.rendererNode.frequency;
         this.detune.rendererParam = this.rendererNode.frequency;
+    }
+
+    afterRender() {
+        this.rendererNode = undefined;
+        this.frequency.rendererParam = undefined;
+        this.detune.rendererParam = undefined;
     }
 
     start(time: number) {

@@ -2,7 +2,7 @@ import { MixeryFileFormat } from "../fileformat/mixeryfile.js";
 import AudioEncoder from "./encoder.js";
 
 export default class MixeryAudioEncoder extends AudioEncoder {
-    name = "Mixery Audio File Format (.mxyaudio)";
+    name = "Mixery Audio File Format";
     fileExt = "mxyaudio";
 
     async encodeAudio(buffer: AudioBuffer) {

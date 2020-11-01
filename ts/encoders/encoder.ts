@@ -17,4 +17,10 @@ export class AudioEncodersManager {
         this.encoderMap.set(encoder.name, encoder);
         this.encoderFileExt.set(encoder.fileExt, encoder);
     }
+
+    selectedEncoder: AudioEncoder;
+    async encodeAudio(buffer: AudioBuffer) {
+        if (this.selectedEncoder === undefined) throw "No encoder selected";
+        return await this.selectedEncoder.encodeAudio(buffer);
+    }
 }

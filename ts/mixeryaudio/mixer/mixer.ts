@@ -17,6 +17,10 @@ export default class Mixer {
         this.reconnectTracks();
     }
 
+    afterRender() {
+        this.reconnectTracks();
+    }
+
     addTrack(name?: string) {
         let track = new MixerTrack(this, name);
         this.tracks.push(track);

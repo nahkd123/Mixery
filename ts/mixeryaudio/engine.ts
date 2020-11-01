@@ -39,21 +39,29 @@ export default class MixeryAudioEngine {
     //#region Renderer
     beforeRender() {
         this.nodes.forEach(node => node.beforeRender());
-        this.mixer.beforeRender();
+        this.nodes.forEach(node => node.reconnectAll());
+        //this.mixer.beforeRender();
     }
 
-    prepareRenderer(length: number, sampleRate = AudioSampleRates.COMMON) {
+    prepareRenderer(length: number, channels: number = 2, sampleRate = AudioSampleRates.COMMON) {
         this.renderer = new OfflineAudioContext({
             length,
-            sampleRate
+            sampleRate,
+            numberOfChannels: channels
         });
         this.beforeRender();
     }
 
     async startRender() {
         let buffer = await this.renderer.startRendering();
-        // We'll add encoding thing in here soon...
+        this.renderer = undefined;
         return buffer;
+    }
+
+    afterRender() {
+        this.nodes.forEach(node => node.afterRender());
+        this.nodes.forEach(node => node.reconnectAll());
+        //this.mixer.afterRender();
     }
     //#endregion
 }

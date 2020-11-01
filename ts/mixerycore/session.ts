@@ -117,6 +117,7 @@ export class Session {
         this.encoders = new AudioEncodersManager();
         this.encoders.addEncoder(new MixeryAudioEncoder());
         this.encoders.addEncoder(new WaveFileAudioEncoder());
+        this.encoders.selectedEncoder = this.encoders.encoders[0];
 
         this.playlist = new Playlist(this);
         this.plugins = new GeneratorsPlugins(this);
@@ -154,7 +155,7 @@ export class Session {
 
     oldScrolledBeat: number;
     scheduledPlayTasks: number[] = [];
-    play() {
+    play(disableRealTimeRendering = false) {
         if (this.playing) return;
 
         let self = this;
@@ -170,7 +171,7 @@ export class Session {
                 track.clips.forEach(clip => {
                     if (clip.offset + clip.length < self.seeker) return;
                     
-                    if (self.settings.performance.realTimeRendering) {
+                    if (!disableRealTimeRendering && self.settings.performance.realTimeRendering) {
                         if (clip instanceof MIDIClip) {
                             clip.notes.forEach(note => {
                                 // Play note one by one
@@ -207,6 +208,7 @@ export class Session {
                             const playDuration = beatsToMS(clip.length, self.bpm) / 1000;
                             if (playDuration <= 0) return;
                             let gain = self.audioEngine.createGain();
+                            console.log(gain.rendererNode);
                             let source = self.audioEngine.createBufferSource(clip.buffer);
     
                             source.connect(gain);

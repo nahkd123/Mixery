@@ -16,12 +16,17 @@ export default abstract class RenderableAudioNode {
     }
 
     abstract beforeRender();
+    abstract afterRender();
 
+    // Connections
+    connectedNodes: RenderableAudioNode[] = [];
     connect(node: RenderableAudioNode) {
         if (node.engine !== this.engine) throw "Audio engine does not match";
 
         this.audioNode.connect(node.audioNode);
         if (this.isRendering) this.rendererNode.connect(node.rendererNode);
+
+        this.connectedNodes.push(node);
     }
 
     connectParam(param: RenderableAudioParam) {
@@ -32,5 +37,21 @@ export default abstract class RenderableAudioNode {
     disconnect(node?: RenderableAudioNode) {
         this.audioNode.disconnect(node !== undefined? node.audioNode : undefined);
         if (this.isRendering) this.rendererNode.disconnect(node !== undefined? node.rendererNode : undefined);
+
+        if (node === undefined) this.connectedNodes = [];
+        else this.connectedNodes.splice(this.connectedNodes.indexOf(node), 1);
+    }
+
+    reconnectAll() {
+        this.audioNode.disconnect();
+        if (this.isRendering) this.rendererNode?.disconnect();
+
+        this.connectedNodes.forEach(node => {
+            this.audioNode.connect(node.audioNode);
+            if (this.isRendering) {
+                this.rendererNode?.connect(node.rendererNode);
+                console.log(node);
+            }
+        });
     }
 }
