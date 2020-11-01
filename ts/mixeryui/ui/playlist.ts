@@ -326,7 +326,7 @@ export class PlaylistInterface {
             } else scrollLink = false;
         });
         this.tracksContainer.addEventListener("wheel", event => {
-            this.session.scrolledPixels += event.deltaX;
+            this.session.scrolledPixels += event.shiftKey? event.deltaY : event.deltaX;
             if (this.session.scrolledBeats < 0) this.session.scrolledBeats = 0;
             this.ui.canvasRenderUpdate();
         });

@@ -66,8 +66,8 @@ export class ClipEditorInterface {
                 if (this.session.clipEditor.verticalZoom > 350) this.session.clipEditor.verticalZoom = 350;
                 
                 event.preventDefault();
-            } else this.session.clipEditor.verticalScroll += event.deltaY;
-            this.session.scrolledPixels += event.deltaX;
+            } else this.session.clipEditor.verticalScroll += event.shiftKey? 0 : event.deltaY;
+            this.session.scrolledPixels += event.shiftKey? event.deltaY : event.deltaX;
             if (this.session.scrolledPixels < 0) this.session.scrolledPixels = 0;
             this.ui.canvasRenderUpdate();
         });
