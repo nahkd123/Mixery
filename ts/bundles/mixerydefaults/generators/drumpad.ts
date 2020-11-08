@@ -36,14 +36,6 @@ export class DrumPad extends AudioGenerator {
         this.session = session;
         this.output = output;
         this.initWindow();
-
-        // TODO: Test code, will remove soon
-        this.loadFromServer("../assets/test-assets/drum/Drum/35-Kick1Alt-5.wav", "Kick");
-        this.loadFromServer("../assets/test-assets/drum/Drum/37-Sidestick2-4.wav", "Sidestick");
-        this.loadFromServer("../assets/test-assets/drum/Drum/38-Snare-4.wav", "Snare");
-        this.loadFromServer("../assets/test-assets/drum/Drum/39-HandClap-4.wav", "Hand Clap");
-        this.loadFromServer("../assets/test-assets/drum/Drum/45-Tom-4.wav", "Tom");
-        this.loadFromServer("../assets/test-assets/drum/Drum/42-HiHatClosed-4.wav", "Hi Hat");
     }
 
     playNote(note: number, sensitivity: number, offset: number, duration: number) {
@@ -67,10 +59,46 @@ export class DrumPad extends AudioGenerator {
 
     initWindow() {
         this.window.width = 550;
-        this.window.height = 300;
+        this.window.height = 340;
         const view = this.pluginView;
         view.style.backgroundColor = "#150600";
         view.style.overflowX = "scroll";
+
+        let toolsBar = document.createElement("div");
+        toolsBar.style.backgroundColor = "#ffffff0d";
+        function createToolButton(img: string, listener: (event: MouseEvent) => void) {
+            let element = document.createElement("div");
+            element.style.width = "32px";
+            element.style.height = "32px";
+            element.style.display = "inline-block";
+            element.style.paddingTop = "3px";
+            element.style.marginLeft = "5px";
+
+            element.style.webkitMaskSize = "cover";
+            element.style.webkitMaskPosition = "center";
+            element.style.webkitMaskImage = `url(${img})`;
+            element.style.maskSize = "cover";
+            element.style.maskPosition = "center";
+            element.style.maskImage = `url(${img})`;
+            element.style.backgroundColor = "white";
+            toolsBar.appendChild(element);
+            element.addEventListener("click", event => {
+                listener(event);
+            });
+        }
+        createToolButton("../assets/icons/add-file.svg", () => {
+            let inputElement = document.createElement("input");
+            inputElement.type = "file";
+            inputElement.style.display = "none";
+            document.body.appendChild(inputElement);
+            inputElement.click();
+            inputElement.remove();
+
+            inputElement.addEventListener("change", async event => {
+                for (let i = 0; i < inputElement.files.length; i++) this.processFile(inputElement.files.item(i));
+            });
+        });
+        view.append(toolsBar);
 
         view.addEventListener("dragover", event => {
             event.preventDefault();

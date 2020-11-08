@@ -35,10 +35,10 @@ class OscillatorsType {
     }
 }
 namespace OscillatorsTypes {
-    export const SINE = new OscillatorsType("sine", "Sine", "/assets/icons/sinewave.svg", "/assets/icons/add-sinewave.svg");
-    export const SQUARE = new OscillatorsType("square", "Square", "/assets/icons/squarewave.svg", "/assets/icons/add-squarewave.svg");
-    export const SAWTOOTH = new OscillatorsType("sawtooth", "Sawtooth", "/assets/icons/squarewave.svg", "/assets/icons/add-squarewave.svg");
-    export const TRIANGLE = new OscillatorsType("triangle", "Triangle", "/assets/icons/squarewave.svg", "/assets/icons/add-squarewave.svg");
+    export const SINE = new OscillatorsType("sine", "Sine", "../assets/icons/sinewave.svg", "../assets/icons/add-sinewave.svg");
+    export const SQUARE = new OscillatorsType("square", "Square", "../assets/icons/squarewave.svg", "../assets/icons/add-squarewave.svg");
+    export const SAWTOOTH = new OscillatorsType("sawtooth", "Sawtooth", "../assets/icons/squarewave.svg", "../assets/icons/add-squarewave.svg");
+    export const TRIANGLE = new OscillatorsType("triangle", "Triangle", "../assets/icons/squarewave.svg", "../assets/icons/add-squarewave.svg");
 
     export const oscillators = [SINE, SQUARE, SAWTOOTH, TRIANGLE];
 }

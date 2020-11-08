@@ -56,6 +56,8 @@ copyDir("./bin", "./temp/production/bin");
 copyDir("./css", "./temp/production/css");
 copyDir("./assets", "./temp/production/assets");
 copy("./index.html", "./temp/production/index.html");
+console.log("[build/production] Removing test assets...");
+rmdir("./temp/production/assets/test-assets");
 copy("./LICENSE", "./temp/production/LICENSE");
 
 console.log("[build/production] Finished!");
