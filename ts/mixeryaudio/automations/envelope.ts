@@ -19,6 +19,7 @@ export default class EnvelopeAutomation {
     }
 
     measureNoteTimeInMS(ms: number, bpm: number = 120) {
+        if (!this.enabled) return ms;
         switch (this.unit) {
             case "seconds": return ms + this.releaseTime;
             case "bpm":     return ms + beatsToMS(this.releaseTime, bpm);
@@ -27,6 +28,7 @@ export default class EnvelopeAutomation {
     }
 
     measureNoteTimeInBeats(beats: number, bpm: number = 120) {
+        if (!this.enabled) return beats;
         switch (this.unit) {
             case "seconds": return beats + msToBeats(this.releaseTime, bpm);
             case "bpm":     return beats + this.releaseTime;

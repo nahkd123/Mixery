@@ -1,5 +1,5 @@
 import { Playlist } from "./playlist.js";
-import { GeneratorsPlugins } from "./plugins.js";
+import { GeneratorsPlugins, PluginsManager } from "./plugins.js";
 import { NotificationsManager } from "../notifications/notificationsmgr.js";
 import { beatsToMS, msToBeats } from "../utils/msbeats.js";
 import { AudioClip, AutomationClip, MIDIClip } from "./clips.js";
@@ -27,6 +27,7 @@ export class Session {
 
     playlist: Playlist;
     plugins: GeneratorsPlugins;
+    pluginsManager: PluginsManager;
     notifications: NotificationsManager;
 
     midi: MIDIManager;
@@ -121,6 +122,7 @@ export class Session {
 
         this.playlist = new Playlist(this);
         this.plugins = new GeneratorsPlugins(this);
+        this.pluginsManager = new PluginsManager();
         this.notifications = new NotificationsManager();
 
         this.statusBox = document.querySelector("div.topbarstatus");

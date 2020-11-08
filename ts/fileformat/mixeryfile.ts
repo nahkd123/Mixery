@@ -1,3 +1,5 @@
+import { AudioGenerator } from "../mixerycore/generator.js";
+import { PluginsManager } from "../mixerycore/plugins.js";
 import { Session } from "../mixerycore/session.js";
 import { ByteStream } from "./filestream.js";
 
@@ -40,8 +42,49 @@ export namespace MixeryFileFormat {
             metaChunk
         ]);
     }
-    export async function convertToGeneratorPresetFile() {}
-    
+
+    export namespace Generator {
+        export function writeGeneratorData(generator: AudioGenerator, stream: ByteStream.WriteableStream) {
+            stream.writeString(generator.name);
+            stream.writeString(generator.author[0] || "unknown author");
+            stream.writeString(generator.displayName);
+            generator.writePluginData(stream);
+        }
+        export function readGeneratorData(pluginsManager: PluginsManager, stream: ByteStream.ReadableStream) {
+            const name = stream.readString();
+            const primaryAuthor = stream.readString();
+            const displayName = stream.readString();
+            const generatorConstructor = pluginsManager.mapped.get(primaryAuthor)?.generators.get(name);
+            if (generatorConstructor) return undefined;
+
+            generatorConstructor.constructPlugin(stream);
+        }
+        export async function convertToGeneratorPresetFile(generator: AudioGenerator) {
+            let metaChunk = await Chunks.writeMetaData({
+                type: MixeryFileType.GENERATOR_PRESET,
+                name: generator.displayName,
+                description: "Description here...",
+                timeCreated: Date.now()
+            });
+
+            let stream = new ByteStream.WriteableStream();
+            writeGeneratorData(generator, stream);
+            let pluginChunk = <MixeryFileChunk> {
+                id: "GeneratorData",
+                data: await stream.convertToUint8Array()
+            };
+
+            return writeFile([
+                metaChunk,
+                pluginChunk
+            ]);
+        }
+        export function readGeneratorPresetFile(pluginsManager: PluginsManager, data: ArrayBuffer | ArrayLike<number>) {
+            let chunks = readFile(new ByteStream.ReadableStream(data));
+            let pluginDataChunk = chunks.find(value => value.id === "GeneratorData");
+            return readGeneratorData(pluginsManager, new ByteStream.ReadableStream(pluginDataChunk.data));
+        }
+    }
     export namespace Audio {
         /*
         Audio data:
@@ -120,7 +163,6 @@ export namespace MixeryFileFormat {
         }
         export function readAudioFile(data: ArrayBuffer | ArrayLike<number>) {
             let chunks = readFile(new ByteStream.ReadableStream(data));
-            console.log(chunks);
             let audioDataChunk = chunks.find(value => value.id === "AudioData");
             return readAudioData(new ByteStream.ReadableStream(audioDataChunk.data));
         }

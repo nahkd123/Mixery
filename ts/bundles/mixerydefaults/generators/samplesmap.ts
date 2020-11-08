@@ -426,6 +426,7 @@ export class SamplesMap extends AudioGenerator {
 
 export default class SamplesMapExplorerContent extends GeneratorExplorerContent {
     name = NAME;
+    author = AUTHORS;
 
     constructPlugin(preset: object) {
         let plugin = new SamplesMap(preset);

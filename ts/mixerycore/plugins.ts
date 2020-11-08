@@ -1,5 +1,32 @@
 import { Session } from "./session.js";
 import { AudioGenerator } from "./generator.js";
+import { GeneratorExplorerContent } from "../mixeryui/explorer.js";
+
+export class PluginsManager {
+    generators: GeneratorExplorerContent[] = [];
+
+    /**
+     * The mapped plugins thing. The top-level map key is the primary author's name, and the second-level
+     * map key is the plugin name.
+     */
+    mapped: Map<string, {
+        generators: Map<string, GeneratorExplorerContent>
+    }> = new Map();
+
+    constructor() {}
+    addEffect(generator: GeneratorExplorerContent) {
+        this.generators.push(generator);
+        let obj: {
+            generators: Map<string, GeneratorExplorerContent>
+        };
+        if (!this.mapped.has(generator.author[0] || "unknown author")) this.mapped.set(generator.author[0] || "unknown author", obj = {
+            generators: new Map()
+        });
+        else obj = this.mapped.get(generator.author[0] || "unknown author");
+
+        obj.generators.set(generator.name, generator);
+    }
+}
 
 export class GeneratorsPlugins {
     session: Session;

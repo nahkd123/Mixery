@@ -1,3 +1,4 @@
+import { ByteStream } from "../../../fileformat/filestream.js";
 import AudioAutomation from "../../../mixeryaudio/automations/automation.js";
 import RenderableGainNode from "../../../mixeryaudio/nodes/gain.js";
 import RenderableOscillatorNode from "../../../mixeryaudio/nodes/oscillator.js";
@@ -12,6 +13,7 @@ import { beatsToMS } from "../../../utils/msbeats.js";
 
 export default class OscNodesExplorerContent extends GeneratorExplorerContent {
     name = "OscNodes";
+    author = ["nahkd123"];
 
     constructPlugin(preset: object) {
         let plugin = new OscNodes();
@@ -35,8 +37,10 @@ class OscillatorsType {
 namespace OscillatorsTypes {
     export const SINE = new OscillatorsType("sine", "Sine", "/assets/icons/sinewave.svg", "/assets/icons/add-sinewave.svg");
     export const SQUARE = new OscillatorsType("square", "Square", "/assets/icons/squarewave.svg", "/assets/icons/add-squarewave.svg");
+    export const SAWTOOTH = new OscillatorsType("sawtooth", "Sawtooth", "/assets/icons/squarewave.svg", "/assets/icons/add-squarewave.svg");
+    export const TRIANGLE = new OscillatorsType("triangle", "Triangle", "/assets/icons/squarewave.svg", "/assets/icons/add-squarewave.svg");
 
-    export const oscillators = [SINE, SQUARE];
+    export const oscillators = [SINE, SQUARE, SAWTOOTH, TRIANGLE];
 }
 
 interface Oscillator {
@@ -215,19 +219,11 @@ export class OscNodes extends AudioGenerator {
         });
     }
 
-    getConfiguration() {
-        let outputOscillators = [];
-
+    writePluginData(stream: ByteStream.WriteableStream) {
+        stream.writeVarInt(this.oscillators.length);
         this.oscillators.forEach(osc => {
-            outputOscillators.push({
-                name: osc.name,
-                type: osc.type,
-                semitonesOffset: osc.semitonesOffset
-            });
+            stream.writeString(osc.name);
+            stream.writeString(osc.type.id);
         });
-
-        return {
-            oscillators: outputOscillators
-        };
     }
 }

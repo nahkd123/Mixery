@@ -1,7 +1,8 @@
 import ContextMenu, { ContextMenuEntry } from "../../contextmenus/menu.js";
+import { MixeryFileFormat } from "../../fileformat/mixeryfile.js";
 import { AudioGenerator, ExampleGenerator } from "../../mixerycore/generator.js";
 import { Session } from "../../mixerycore/session.js";
-import { downloadJSON } from "../../utils/downloader.js";
+import download, { downloadJSON } from "../../utils/downloader.js";
 import { UserInterface } from "../ui.js";
 
 export class PluginsInterface {
@@ -55,8 +56,11 @@ export class PluginsInterface {
             this.session.plugins.removeGenerator(generator);
             ele.remove();
         }));
-        ctxmenu.entries.push(new ContextMenuEntry("Export Plugin Preset", () => {
-            downloadJSON(generator.getPluginPreset(), generator.name + ".json");
+        ctxmenu.entries.push(new ContextMenuEntry("Export Plugin Preset", async () => {
+            // downloadJSON(generator.getPluginPreset(), generator.name + ".json");
+            let stream = await MixeryFileFormat.Generator.convertToGeneratorPresetFile(generator);
+            let blob = stream.convertToBlob();
+            download(blob, generator.displayName + ".mxypreset");
         }));
 
         let lastClickTime = 0;

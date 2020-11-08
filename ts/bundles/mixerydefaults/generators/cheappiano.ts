@@ -92,6 +92,7 @@ export class CheapPiano extends AudioGenerator {
 
 export default class CheapPianoExplorerContent extends GeneratorExplorerContent {
     name = NAME;
+    author = AUTHORS;
 
     constructPlugin(preset: object) {
         let plugin = new CheapPiano(preset);

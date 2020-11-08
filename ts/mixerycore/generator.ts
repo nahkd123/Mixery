@@ -10,10 +10,16 @@ import MIDIKeysListener from "../mididev/listener.js";
 import TabsContainer from "../mixeryui/tabs.js";
 import EnvelopeEditor from "../mixeryui/automations/envelope.js";
 import { updateCanvasSize } from "../mixeryui/ui.js";
+import { ByteStream } from "../fileformat/filestream.js";
 
 export abstract class AudioGenerator implements MIDIKeysListener {
     abstract name: string;
     abstract author: string[];
+
+    private _displayName: string;
+    get displayName() {return this._displayName || this.name;}
+    set displayName(val: string) {this._displayName = val;}
+    
     window = new MoveableWindow("name", 0, 0, 300, 250);
     tabs: TabsContainer;
     pluginView: HTMLDivElement;
@@ -25,6 +31,13 @@ export abstract class AudioGenerator implements MIDIKeysListener {
     envelopes = {
         gain: new EnvelopeAutomation(500, 250, 1, 500)
     };
+
+    /**
+     * Override note names (which is visible in Clip Editor)
+     * 
+     * By default it's `undefined`, so you'll have to create a map for it before doing manuplations
+     */
+    noteNamesOverride: Map<number, string>;
 
     beforeLoad(session: Session) {
         this.window.title.textContent = this.name;
@@ -93,20 +106,7 @@ export abstract class AudioGenerator implements MIDIKeysListener {
     /**
      * Get the plugin current configuration. It can be used to save plugin preset for later use.
      */
-    getConfiguration() {
-        return {};
-    }
-
-    /**
-     * Get the plugin preset, includes the current configuration
-     */
-    getPluginPreset() {
-        return {
-            type: "generator",
-            name: this.name,
-            configuration: this.getConfiguration()
-        };
-    }
+    writePluginData(stream: ByteStream.WriteableStream) {}
 }
 
 export class ExampleGenerator extends AudioGenerator {

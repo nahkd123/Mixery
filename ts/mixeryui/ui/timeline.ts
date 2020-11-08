@@ -55,6 +55,7 @@ export class TimelineBar {
                 function touchMove(event: TouchEvent) {
                     // self.session.seeker = Math.max(oldSeeker + (event.touches[0].pageX - oldX) / self.session.pxPerBeat, 0);
                     self.session.seeker = snap(Math.max(self.session.scrolledBeats + (event.touches[0].pageX - self.canvas.getBoundingClientRect().x) / self.session.pxPerBeat, 0), ...BeatSnapPreset);
+                    if (self.session.playing) self.session.stopAndThenPlay();
                     self.ui.canvasRenderUpdate();
                 }
                 function touchEnd(event: TouchEvent) {
@@ -77,7 +78,6 @@ export class TimelineBar {
                     self.session.scrolledPixels -= (deltaLastMove = event.touches[0].pageX - oldX);
                     if (self.session.scrolledPixels < 0) self.session.scrolledPixels = 0;
                     oldX = event.touches[0].pageX;
-                    if (self.session.playing) self.session.stopAndThenPlay();
                     self.ui.canvasRenderUpdate();
                 }
                 function touchEnd(event: TouchEvent) {

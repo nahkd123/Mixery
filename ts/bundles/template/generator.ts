@@ -41,6 +41,7 @@ export class ExampleGenerator extends AudioGenerator {
 
 export default class ExampleExplorerContent extends GeneratorExplorerContent {
     name = NAME;
+    author = AUTHORS;
 
     constructPlugin(preset: object) {
         let plugin = new ExampleGenerator(preset);

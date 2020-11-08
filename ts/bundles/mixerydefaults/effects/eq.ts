@@ -5,6 +5,7 @@ import { updateCanvasSize } from "../../../mixeryui/ui.js";
 
 export default class EQExplorerContent extends EffectExplorerContent {
     name = "EQ";
+    author = ["nahkd123"];
 
     constructPlugin(preset: object) {
         return new EQ();

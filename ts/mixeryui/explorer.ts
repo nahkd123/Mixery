@@ -1,3 +1,4 @@
+import { ByteStream } from "../fileformat/filestream.js";
 import MixeryAudioEngine from "../mixeryaudio/engine.js";
 import { AudioClip } from "../mixerycore/clips.js";
 import { AudioEffect } from "../mixerycore/effect.js";
@@ -79,13 +80,14 @@ export class ExplorerSection {
 
 export abstract class ExplorerContent {
     abstract name: string;
+    abstract author: string[];
     abstract color: string;
     element: HTMLDivElement;
 }
 
 export abstract class GeneratorExplorerContent extends ExplorerContent {
     color = "rgb(252, 186, 12)";
-    abstract constructPlugin(preset?: object): AudioGenerator;
+    abstract constructPlugin(stream?: ByteStream.ReadableStream): AudioGenerator;
 }
 export abstract class EffectExplorerContent extends ExplorerContent {
     color = "rgb(245, 54, 137)";
@@ -93,19 +95,21 @@ export abstract class EffectExplorerContent extends ExplorerContent {
 }
 export class GeneratorPresetExplorerContent extends ExplorerContent {
     name: string;
+    author: string[]
     color = "rgb(252, 232, 100)";
     generator: GeneratorExplorerContent;
-    preset: object;
+    preset: Uint8Array;
 
-    constructor(name: string, generator: GeneratorExplorerContent, preset: object) {
+    constructor(name: string, author: string[], generator: GeneratorExplorerContent, preset: Uint8Array) {
         super();
         this.name = name;
+        this.author = author;
         this.generator = generator;
         this.preset = preset;
     }
 
     constructPlugin() {
-        return this.generator.constructPlugin(this.preset);
+        return this.generator.constructPlugin(new ByteStream.ReadableStream(this.preset));
     }
 }
 export abstract class MIDIClipExplorerContent extends ExplorerContent {
@@ -113,6 +117,7 @@ export abstract class MIDIClipExplorerContent extends ExplorerContent {
 }
 export class AudioClipExplorerContent extends ExplorerContent {
     name: string;
+    author: string[] = [];
     color = "rgb(87, 250, 93)";
     bufferUrl: string;
     buffer: AudioBuffer;
