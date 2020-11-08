@@ -28,7 +28,7 @@ div::-webkit-scrollbar {
 
 @media only screen and (hover: none) and (pointer: coarse) {
     html, body {
-        --screenWidth: 110vw;
-        --screenHeight: 110vh;
+        --screenWidth: 100vw;
+        --screenHeight: 100vh;
     }
 }
