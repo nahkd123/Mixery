@@ -31,12 +31,6 @@ export class DrumPad extends AudioGenerator {
         this.session = session;
         this.output = output;
         this.initWindow();
-        this.loadFromServer("../assets/test-assets/drum/Drum/35-Kick1Alt-5.wav", "Kick");
-        this.loadFromServer("../assets/test-assets/drum/Drum/37-Sidestick2-4.wav", "Sidestick");
-        this.loadFromServer("../assets/test-assets/drum/Drum/38-Snare-4.wav", "Snare");
-        this.loadFromServer("../assets/test-assets/drum/Drum/39-HandClap-4.wav", "Hand Clap");
-        this.loadFromServer("../assets/test-assets/drum/Drum/45-Tom-4.wav", "Tom");
-        this.loadFromServer("../assets/test-assets/drum/Drum/42-HiHatClosed-4.wav", "Hi Hat");
     }
     playNote(note, sensitivity, offset, duration) {
         if (this.drumSamples[note - this.startNote] === undefined)
