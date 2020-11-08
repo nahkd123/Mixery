@@ -1,0 +1,37 @@
+{
+  "name": "mixery-web",
+  "version": "1.0.0",
+  "description": "An open source Digital Audio Workspace",
+  "main": "index.js",
+  "type": "module",
+  "directories": {
+    "lib": "lib"
+  },
+  "scripts": {
+    "test": "tsc --watch",
+    "cleanWindows": "del .\\bin && del .\\temp\\tsbuild.json",
+    "clean": "rmdir -r ./bin && rm ./temp/tsbuild.json",
+    "build": "tsc -b && node ./bin/nodejs/productionbuild.js",
+    "ghpages": "tsc -b && node ./bin/nodejs/productionbuild.js && node ./bin/nodejs/ghpages.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/nahkd123/Mixery.git"
+  },
+  "keywords": [
+    "daw",
+    "audio",
+    "html5"
+  ],
+  "author": "nahkd123",
+  "license": "GPL-3.0-or-later",
+  "bugs": {
+    "url": "https://github.com/nahkd123/Mixery/issues"
+  },
+  "homepage": "https://github.com/nahkd123/Mixery#readme",
+  "dependencies": {
+    "@types/node": "^14.14.6",
+    "gh-pages": "^3.1.0",
+    "typescript": "^4.0.5"
+  }
+}
