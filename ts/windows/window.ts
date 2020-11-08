@@ -81,6 +81,36 @@ export default class MoveableWindow {
             document.addEventListener("mousemove", mouseMove);
             document.addEventListener("mouseup", mouseUp);
         });
+
+        //#region Touch screen
+        this.title.addEventListener("touchstart", event => {
+            if (event.touches.length === 1) {
+                const finger = event.touches[0];
+                const touchX = finger.pageX;
+                const touchY = finger.pageY;
+                const oldX = self.x;
+                const oldY = self.y;
+
+                function touchMove(event: TouchEvent) {
+                    if (event.touches.length === 1) {
+                        self.x = oldX + event.touches[0].pageX - touchX;
+                        self.y = oldY + event.touches[0].pageY - touchY;
+                    }
+                }
+                function touchEnd(event: TouchEvent) {
+                    document.removeEventListener("touchmove", touchMove);
+                    document.removeEventListener("touchend", touchEnd);
+                }
+                document.addEventListener("touchmove", touchMove);
+                document.addEventListener("touchend", touchEnd);
+            } else if (event.touches.length === 2) {
+                // Simulate right click
+                event.preventDefault();
+                this.menu.openMenu(event.touches[0].pageX, event.touches[0].pageY);
+            }
+        });
+        //#endregion
+
         this.title.addEventListener("contextmenu", event => {
             event.preventDefault();
             this.menu.openMenu(event.pageX, event.pageY);

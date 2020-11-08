@@ -10,7 +10,13 @@ div.pane.clipeditor {
 
     transition:
         bottom 0.25s cubic-bezier(0.55, 0.14, 0.13, 1),
-        height 0.25s cubic-bezier(0.55, 0.14, 0.13, 1);
+        height 0.25s cubic-bezier(0.55, 0.14, 0.13, 1),
+        left 0.5s cubic-bezier(0.6, 0.38, 0, 1.01),
+        width 0.5s cubic-bezier(0.6, 0.38, 0, 1.01);
+}
+div.app.leftbarhide > div.pane.clipeditor {
+    left: 39px;
+    width: calc(100% - 39px);
 }
 div.app.clipeditoropen > div.pane.clipeditor {
     bottom: 0;

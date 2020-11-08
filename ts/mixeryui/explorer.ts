@@ -43,6 +43,32 @@ export class ExplorerSection {
             document.addEventListener("mouseup", mouseUp);
         });
 
+        ele.addEventListener("touchstart", event => {
+            if (event.touches.length === 1) {
+                event.preventDefault();
+                let touch = event.touches[0];
+                this.pane.ui.dragMode = true;
+                this.pane.draggingContent = content;
+
+                let self = this;
+                function touchMove(event: TouchEvent) {
+                    if (event.touches.length === 1) touch = event.touches[0];
+                }
+                function touchEnd(event: TouchEvent) {
+                    self.pane.ui.dragMode = false;
+                    const consumer = self.pane.contentsConsumers.get(document.elementFromPoint(touch.pageX, touch.pageY));
+                    console.log(consumer);
+                    if (consumer !== undefined) consumer(content);
+
+                    document.removeEventListener("touchmove", touchMove);
+                    document.removeEventListener("touchend", touchEnd);
+                    self.pane.draggingContent = undefined;
+                }
+                document.addEventListener("touchmove", touchMove);
+                document.addEventListener("touchend", touchEnd);
+            }
+        });
+
         this.contents.push(content);
     }
 

@@ -32,3 +32,42 @@ div::-webkit-scrollbar {
         --screenHeight: 100vh;
     }
 }
+@media only screen and (orientation: portrait) {
+    div.rotatedevice {
+        display: block;
+    }
+}
+@media only screen and (orientation: landscape) {
+    div.rotatedevice {
+        display: none;
+    }
+}
+
+div.rotatedevice {
+    position: absolute;
+    top: 0; left: 0;
+    z-index: 1;
+    width: 100vw; height: 100vh;
+    background-color: #cecece;
+    color: black;
+}
+div.rotatedevice > span {
+    position: absolute;
+    font-size: 5vw;
+    bottom: 25vh; left: 10vw;
+    width: 80vw;
+}
+div.rotatedevice > img.rotatingdevice {
+    position: absolute;
+    width: 50vw; height: 50vw;
+    top: 25vh; left: 25vw;
+    animation: 2s ease rotating infinite;
+}
+@keyframes rotating {
+    0%   { transform: rotate(0deg); }
+    10%  { transform: rotate(10deg); }
+    30%  { transform: rotate(-100deg); }
+    50%  { transform: rotate(-90deg); }
+    75%  { transform: rotate(0deg); }
+    100% { transform: rotate(0deg); }
+}

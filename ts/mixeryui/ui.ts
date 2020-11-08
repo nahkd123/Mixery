@@ -134,4 +134,18 @@ export class UserInterface {
         if (val) this.element.classList.add("dragmode");
         else this.element.classList.remove("dragmode");
     }
+
+    get leftBarMode(): LeftBarMode {
+        return this.element.classList.contains("leftbarexplorer")? "explorer" :
+            this.element.classList.contains("leftbarsettings")? "settings" :
+            this.element.classList.contains("leftbarhide")? "hide" : "hide";
+    }
+    set leftBarMode(val: LeftBarMode) {
+        this.element.classList.remove("leftbarexplorer");
+        this.element.classList.remove("leftbarsettings");
+        this.element.classList.remove("leftbarhide");
+        this.element.classList.add("leftbar" + val);
+    }
 }
+
+export type LeftBarMode = "hide" | "explorer" | "settings";
