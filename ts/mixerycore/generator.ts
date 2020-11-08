@@ -37,7 +37,7 @@ export abstract class AudioGenerator implements MIDIKeysListener {
      * 
      * By default it's `undefined`, so you'll have to create a map for it before doing manuplations
      */
-    noteNamesOverride: Map<number, string>;
+    noteNamesOverride: Map<number, [string, string]>;
 
     beforeLoad(session: Session) {
         this.window.title.textContent = this.name;

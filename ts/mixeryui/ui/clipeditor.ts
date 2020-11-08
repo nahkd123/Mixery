@@ -390,16 +390,20 @@ export class ClipEditorInterface {
         const hoveringBeat = snap((this.mouse.x - ClipEditorInterface.SIDEBAR_WIDTH + this.session.scrolledPixels) / this.session.pxPerBeat, ...this.session.clipEditor.availableLengths);
 
         // MIDI Sidebar
-        ctx.fillStyle = "white";
+        ctx.fillStyle = clip.generator.noteNamesOverride? "#7a7a7a" : "white";
         ctx.fillRect(0, 0, ClipEditorInterface.SIDEBAR_WIDTH, this.canvas.height);
         const halfSidebarWidth = ClipEditorInterface.SIDEBAR_WIDTH / 2;
 
         for (let i = NotesConfiguration.NOTE_TO; i >= NotesConfiguration.NOTE_FROM; i--) {
             const drawY = (NotesConfiguration.NOTE_TO - i) * zoom - scroll;
             if (drawY + zoom < 0 || drawY > this.canvas.height) continue;
-            const noteName = notesName[i] + " (" + i + ")";
+            const noteName = clip.generator.noteNamesOverride?.get(i)?.[0] || (notesName[i] + " (" + i + ")");
             // const octIndex = parseInt(noteName.replace(/([A-Z]|#)/g, ""));
 
+            if (clip.generator.noteNamesOverride?.has(i)) {
+                ctx.fillStyle = clip.generator.noteNamesOverride?.get(i)?.[1] || "white";
+                ctx.fillRect(0, drawY, ClipEditorInterface.SIDEBAR_WIDTH, zoom);
+            }
             if (noteName.includes("#")) {
                 if (hoveringNote === i) {
                     ctx.fillStyle = "#2c2c2c";
