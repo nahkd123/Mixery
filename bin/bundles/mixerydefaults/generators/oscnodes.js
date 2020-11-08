@@ -24,10 +24,10 @@ class OscillatorsType {
 }
 var OscillatorsTypes;
 (function (OscillatorsTypes) {
-    OscillatorsTypes.SINE = new OscillatorsType("sine", "Sine", "/assets/icons/sinewave.svg", "/assets/icons/add-sinewave.svg");
-    OscillatorsTypes.SQUARE = new OscillatorsType("square", "Square", "/assets/icons/squarewave.svg", "/assets/icons/add-squarewave.svg");
-    OscillatorsTypes.SAWTOOTH = new OscillatorsType("sawtooth", "Sawtooth", "/assets/icons/squarewave.svg", "/assets/icons/add-squarewave.svg");
-    OscillatorsTypes.TRIANGLE = new OscillatorsType("triangle", "Triangle", "/assets/icons/squarewave.svg", "/assets/icons/add-squarewave.svg");
+    OscillatorsTypes.SINE = new OscillatorsType("sine", "Sine", "../assets/icons/sinewave.svg", "../assets/icons/add-sinewave.svg");
+    OscillatorsTypes.SQUARE = new OscillatorsType("square", "Square", "../assets/icons/squarewave.svg", "../assets/icons/add-squarewave.svg");
+    OscillatorsTypes.SAWTOOTH = new OscillatorsType("sawtooth", "Sawtooth", "../assets/icons/squarewave.svg", "../assets/icons/add-squarewave.svg");
+    OscillatorsTypes.TRIANGLE = new OscillatorsType("triangle", "Triangle", "../assets/icons/squarewave.svg", "../assets/icons/add-squarewave.svg");
     OscillatorsTypes.oscillators = [OscillatorsTypes.SINE, OscillatorsTypes.SQUARE, OscillatorsTypes.SAWTOOTH, OscillatorsTypes.TRIANGLE];
 })(OscillatorsTypes || (OscillatorsTypes = {}));
 export class OscNodes extends AudioGenerator {
