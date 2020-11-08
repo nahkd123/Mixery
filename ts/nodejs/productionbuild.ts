@@ -44,7 +44,7 @@ function mkdir(path: string) {
     if (!fs.existsSync(path)) fs.mkdirSync(path, {recursive: true});
 }
 function rmdir(path: string) {
-    if (fs.existsSync(path)) fs.rmSync(path, {recursive: true});
+    if (fs.existsSync(path)) fs.rmdirSync(path, {recursive: true});
 }
 
 console.log("[build/production] Now performing production build...");
