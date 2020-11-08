@@ -4,9 +4,13 @@
 An open source Digital Audio Workspace. Mixery uses Web Audio API to render audio in realtime, as well as rendering it to audio file.
 
 ## Try Mixery
-You can either try Mixery now by clicking [here](https://mixery-web.herokuapp.com/) (yes it's Heroku app)
+You can either try Mixery now by clicking [here](https://nahkd123.github.io/Mixery/app)
 
-You can also download [Mixery Electron](https://github.com/nahkd123/Mixery-Electron) by clicking [here](https://github.com/nahkd123/Mixery-Electron/releases), or build this project and host it on your HTTP server.
+Other ways to try Mixery:
+- [GitHub Pages](https://nahkd123.github.io/Mixery/app)
+- [Heroku app (slow server start time)](https://mixery-web.herokuapp.com/)
+- Mixery Electron [(source code)](https://github.com/nahkd123/Mixery-Electron) [(releases)](https://github.com/nahkd123/Mixery-Electron/releases)
+- Build and host it yourself (see below)
 
 ## How to build? (starting from 11/08/2020)
 0. Install [NodeJS](https://nodejs.org/en/) and npm. For Windows users, npm is already included in NodeJS installer. For Linux users, you'll need to install it via package manager (For Debian based, it's ``sudo apt install npm``)
