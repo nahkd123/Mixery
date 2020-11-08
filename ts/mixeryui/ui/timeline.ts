@@ -77,7 +77,7 @@ export class TimelineBar {
                     self.session.scrolledPixels -= (deltaLastMove = event.touches[0].pageX - oldX);
                     if (self.session.scrolledPixels < 0) self.session.scrolledPixels = 0;
                     oldX = event.touches[0].pageX;
-                    if (self.session.playing) this.session.stopAndThenPlay();
+                    if (self.session.playing) self.session.stopAndThenPlay();
                     self.ui.canvasRenderUpdate();
                 }
                 function touchEnd(event: TouchEvent) {
