@@ -51,10 +51,54 @@ export var MixeryFileFormat;
         });
     }
     MixeryFileFormat.convertToProjectFile = convertToProjectFile;
-    function convertToGeneratorPresetFile() {
-        return __awaiter(this, void 0, void 0, function* () { });
-    }
-    MixeryFileFormat.convertToGeneratorPresetFile = convertToGeneratorPresetFile;
+    let Generator;
+    (function (Generator) {
+        function writeGeneratorData(generator, stream) {
+            stream.writeString(generator.name);
+            stream.writeString(generator.author[0] || "unknown author");
+            stream.writeString(generator.displayName);
+            generator.writePluginData(stream);
+        }
+        Generator.writeGeneratorData = writeGeneratorData;
+        function readGeneratorData(pluginsManager, stream) {
+            var _a;
+            const name = stream.readString();
+            const primaryAuthor = stream.readString();
+            const displayName = stream.readString();
+            const generatorConstructor = (_a = pluginsManager.mapped.get(primaryAuthor)) === null || _a === void 0 ? void 0 : _a.generators.get(name);
+            if (generatorConstructor)
+                return undefined;
+            generatorConstructor.constructPlugin(stream);
+        }
+        Generator.readGeneratorData = readGeneratorData;
+        function convertToGeneratorPresetFile(generator) {
+            return __awaiter(this, void 0, void 0, function* () {
+                let metaChunk = yield Chunks.writeMetaData({
+                    type: MixeryFileType.GENERATOR_PRESET,
+                    name: generator.displayName,
+                    description: "Description here...",
+                    timeCreated: Date.now()
+                });
+                let stream = new ByteStream.WriteableStream();
+                writeGeneratorData(generator, stream);
+                let pluginChunk = {
+                    id: "GeneratorData",
+                    data: yield stream.convertToUint8Array()
+                };
+                return writeFile([
+                    metaChunk,
+                    pluginChunk
+                ]);
+            });
+        }
+        Generator.convertToGeneratorPresetFile = convertToGeneratorPresetFile;
+        function readGeneratorPresetFile(pluginsManager, data) {
+            let chunks = readFile(new ByteStream.ReadableStream(data));
+            let pluginDataChunk = chunks.find(value => value.id === "GeneratorData");
+            return readGeneratorData(pluginsManager, new ByteStream.ReadableStream(pluginDataChunk.data));
+        }
+        Generator.readGeneratorPresetFile = readGeneratorPresetFile;
+    })(Generator = MixeryFileFormat.Generator || (MixeryFileFormat.Generator = {}));
     let Audio;
     (function (Audio) {
         /*
@@ -136,7 +180,6 @@ export var MixeryFileFormat;
         Audio.convertToAudioFile = convertToAudioFile;
         function readAudioFile(data) {
             let chunks = readFile(new ByteStream.ReadableStream(data));
-            console.log(chunks);
             let audioDataChunk = chunks.find(value => value.id === "AudioData");
             return readAudioData(new ByteStream.ReadableStream(audioDataChunk.data));
         }

@@ -5,6 +5,7 @@ export default class EQExplorerContent extends EffectExplorerContent {
     constructor() {
         super(...arguments);
         this.name = "EQ";
+        this.author = ["nahkd123"];
     }
     constructPlugin(preset) {
         return new EQ();

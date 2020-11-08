@@ -395,6 +395,7 @@ export default class SamplesMapExplorerContent extends GeneratorExplorerContent 
     constructor() {
         super(...arguments);
         this.name = NAME;
+        this.author = AUTHORS;
     }
     constructPlugin(preset) {
         let plugin = new SamplesMap(preset);

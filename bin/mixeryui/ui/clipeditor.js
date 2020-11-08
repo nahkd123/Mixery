@@ -338,6 +338,7 @@ export class ClipEditorInterface {
         this.ctx.closePath();
     }
     renderMIDIClip(clip) {
+        var _a, _b, _c, _d, _e;
         const allNotesHeight = this.session.clipEditor.verticalZoom * (NotesConfiguration.NOTE_TO - NotesConfiguration.NOTE_FROM + 1) - this.canvas.height;
         if (this.session.clipEditor.verticalScroll > allNotesHeight)
             this.session.clipEditor.verticalScroll = allNotesHeight;
@@ -346,14 +347,18 @@ export class ClipEditorInterface {
         let zoom = this.session.clipEditor.verticalZoom;
         const hoveringNote = NotesConfiguration.NOTE_TO - Math.floor((this.mouse.y + scroll) / zoom);
         const hoveringBeat = snap((this.mouse.x - ClipEditorInterface.SIDEBAR_WIDTH + this.session.scrolledPixels) / this.session.pxPerBeat, ...this.session.clipEditor.availableLengths);
-        ctx.fillStyle = "white";
+        ctx.fillStyle = clip.generator.noteNamesOverride ? "#7a7a7a" : "white";
         ctx.fillRect(0, 0, ClipEditorInterface.SIDEBAR_WIDTH, this.canvas.height);
         const halfSidebarWidth = ClipEditorInterface.SIDEBAR_WIDTH / 2;
         for (let i = NotesConfiguration.NOTE_TO; i >= NotesConfiguration.NOTE_FROM; i--) {
             const drawY = (NotesConfiguration.NOTE_TO - i) * zoom - scroll;
             if (drawY + zoom < 0 || drawY > this.canvas.height)
                 continue;
-            const noteName = notesName[i] + " (" + i + ")";
+            const noteName = ((_b = (_a = clip.generator.noteNamesOverride) === null || _a === void 0 ? void 0 : _a.get(i)) === null || _b === void 0 ? void 0 : _b[0]) || (notesName[i] + " (" + i + ")");
+            if ((_c = clip.generator.noteNamesOverride) === null || _c === void 0 ? void 0 : _c.has(i)) {
+                ctx.fillStyle = ((_e = (_d = clip.generator.noteNamesOverride) === null || _d === void 0 ? void 0 : _d.get(i)) === null || _e === void 0 ? void 0 : _e[1]) || "white";
+                ctx.fillRect(0, drawY, ClipEditorInterface.SIDEBAR_WIDTH, zoom);
+            }
             if (noteName.includes("#")) {
                 if (hoveringNote === i) {
                     ctx.fillStyle = "#2c2c2c";

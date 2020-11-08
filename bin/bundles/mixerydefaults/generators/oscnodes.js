@@ -7,6 +7,7 @@ export default class OscNodesExplorerContent extends GeneratorExplorerContent {
     constructor() {
         super(...arguments);
         this.name = "OscNodes";
+        this.author = ["nahkd123"];
     }
     constructPlugin(preset) {
         let plugin = new OscNodes();
@@ -25,7 +26,9 @@ var OscillatorsTypes;
 (function (OscillatorsTypes) {
     OscillatorsTypes.SINE = new OscillatorsType("sine", "Sine", "/assets/icons/sinewave.svg", "/assets/icons/add-sinewave.svg");
     OscillatorsTypes.SQUARE = new OscillatorsType("square", "Square", "/assets/icons/squarewave.svg", "/assets/icons/add-squarewave.svg");
-    OscillatorsTypes.oscillators = [OscillatorsTypes.SINE, OscillatorsTypes.SQUARE];
+    OscillatorsTypes.SAWTOOTH = new OscillatorsType("sawtooth", "Sawtooth", "/assets/icons/squarewave.svg", "/assets/icons/add-squarewave.svg");
+    OscillatorsTypes.TRIANGLE = new OscillatorsType("triangle", "Triangle", "/assets/icons/squarewave.svg", "/assets/icons/add-squarewave.svg");
+    OscillatorsTypes.oscillators = [OscillatorsTypes.SINE, OscillatorsTypes.SQUARE, OscillatorsTypes.SAWTOOTH, OscillatorsTypes.TRIANGLE];
 })(OscillatorsTypes || (OscillatorsTypes = {}));
 export class OscNodes extends AudioGenerator {
     constructor() {
@@ -161,17 +164,11 @@ export class OscNodes extends AudioGenerator {
             note.osc.disconnect();
         });
     }
-    getConfiguration() {
-        let outputOscillators = [];
+    writePluginData(stream) {
+        stream.writeVarInt(this.oscillators.length);
         this.oscillators.forEach(osc => {
-            outputOscillators.push({
-                name: osc.name,
-                type: osc.type,
-                semitonesOffset: osc.semitonesOffset
-            });
+            stream.writeString(osc.name);
+            stream.writeString(osc.type.id);
         });
-        return {
-            oscillators: outputOscillators
-        };
     }
 }

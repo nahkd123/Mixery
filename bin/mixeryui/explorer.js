@@ -7,6 +7,7 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
         step((generator = generator.apply(thisArg, _arguments || [])).next());
     });
 };
+import { ByteStream } from "../fileformat/filestream.js";
 import { AudioClip } from "../mixerycore/clips.js";
 import { msToBeats } from "../utils/msbeats.js";
 export class ExplorerSection {
@@ -81,15 +82,16 @@ export class EffectExplorerContent extends ExplorerContent {
     }
 }
 export class GeneratorPresetExplorerContent extends ExplorerContent {
-    constructor(name, generator, preset) {
+    constructor(name, author, generator, preset) {
         super();
         this.color = "rgb(252, 232, 100)";
         this.name = name;
+        this.author = author;
         this.generator = generator;
         this.preset = preset;
     }
     constructPlugin() {
-        return this.generator.constructPlugin(this.preset);
+        return this.generator.constructPlugin(new ByteStream.ReadableStream(this.preset));
     }
 }
 export class MIDIClipExplorerContent extends ExplorerContent {
@@ -101,6 +103,7 @@ export class MIDIClipExplorerContent extends ExplorerContent {
 export class AudioClipExplorerContent extends ExplorerContent {
     constructor(name, buffer) {
         super();
+        this.author = [];
         this.color = "rgb(87, 250, 93)";
         this.bufferLoaded = false;
         this.name = name;

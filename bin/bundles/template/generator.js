@@ -31,6 +31,7 @@ export default class ExampleExplorerContent extends GeneratorExplorerContent {
     constructor() {
         super(...arguments);
         this.name = NAME;
+        this.author = AUTHORS;
     }
     constructPlugin(preset) {
         let plugin = new ExampleGenerator(preset);

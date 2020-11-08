@@ -6,6 +6,7 @@ export var MixeryGenerators;
         constructor() {
             super(...arguments);
             this.name = "Example Generator";
+            this.author = ["nahkd123"];
             this.color = "rgb(252, 186, 3)";
         }
         constructPlugin(preset) {

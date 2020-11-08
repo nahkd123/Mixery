@@ -1,3 +1,24 @@
+export class PluginsManager {
+    constructor() {
+        this.generators = [];
+        /**
+         * The mapped plugins thing. The top-level map key is the primary author's name, and the second-level
+         * map key is the plugin name.
+         */
+        this.mapped = new Map();
+    }
+    addEffect(generator) {
+        this.generators.push(generator);
+        let obj;
+        if (!this.mapped.has(generator.author[0] || "unknown author"))
+            this.mapped.set(generator.author[0] || "unknown author", obj = {
+                generators: new Map()
+            });
+        else
+            obj = this.mapped.get(generator.author[0] || "unknown author");
+        obj.generators.set(generator.name, generator);
+    }
+}
 export class GeneratorsPlugins {
     constructor(session) {
         this.generators = [];

@@ -10,6 +10,8 @@ export class AudioGenerator {
             gain: new EnvelopeAutomation(500, 250, 1, 500)
         };
     }
+    get displayName() { return this._displayName || this.name; }
+    set displayName(val) { this._displayName = val; }
     beforeLoad(session) {
         this.window.title.textContent = this.name;
         this.tabs = new TabsContainer(this.window.innerElement);
@@ -63,19 +65,7 @@ export class AudioGenerator {
     /**
      * Get the plugin current configuration. It can be used to save plugin preset for later use.
      */
-    getConfiguration() {
-        return {};
-    }
-    /**
-     * Get the plugin preset, includes the current configuration
-     */
-    getPluginPreset() {
-        return {
-            type: "generator",
-            name: this.name,
-            configuration: this.getConfiguration()
-        };
-    }
+    writePluginData(stream) { }
 }
 export class ExampleGenerator extends AudioGenerator {
     constructor() {

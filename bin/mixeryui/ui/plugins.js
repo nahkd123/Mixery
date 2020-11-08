@@ -1,6 +1,16 @@
+var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, generator) {
+    function adopt(value) { return value instanceof P ? value : new P(function (resolve) { resolve(value); }); }
+    return new (P || (P = Promise))(function (resolve, reject) {
+        function fulfilled(value) { try { step(generator.next(value)); } catch (e) { reject(e); } }
+        function rejected(value) { try { step(generator["throw"](value)); } catch (e) { reject(e); } }
+        function step(result) { result.done ? resolve(result.value) : adopt(result.value).then(fulfilled, rejected); }
+        step((generator = generator.apply(thisArg, _arguments || [])).next());
+    });
+};
 import ContextMenu, { ContextMenuEntry } from "../../contextmenus/menu.js";
+import { MixeryFileFormat } from "../../fileformat/mixeryfile.js";
 import { ExampleGenerator } from "../../mixerycore/generator.js";
-import { downloadJSON } from "../../utils/downloader.js";
+import download from "../../utils/downloader.js";
 export class PluginsInterface {
     constructor(ui) {
         this.ui = ui;
@@ -36,9 +46,11 @@ export class PluginsInterface {
             this.session.plugins.removeGenerator(generator);
             ele.remove();
         }));
-        ctxmenu.entries.push(new ContextMenuEntry("Export Plugin Preset", () => {
-            downloadJSON(generator.getPluginPreset(), generator.name + ".json");
-        }));
+        ctxmenu.entries.push(new ContextMenuEntry("Export Plugin Preset", () => __awaiter(this, void 0, void 0, function* () {
+            let stream = yield MixeryFileFormat.Generator.convertToGeneratorPresetFile(generator);
+            let blob = stream.convertToBlob();
+            download(blob, generator.displayName + ".mxypreset");
+        })));
         let lastClickTime = 0;
         ele.addEventListener("click", event => {
             entry.selected = !entry.selected;
