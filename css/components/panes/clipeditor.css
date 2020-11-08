@@ -1,0 +1,38 @@
+div.pane.clipeditor {
+    position: absolute;
+    background: rgb(33, 27, 55);
+    border-top: 2px solid rgb(50, 44, 69);
+
+    left: 302px;
+    width: calc(100% - 302px);
+    height: calc(85% - 58px - 39px);
+    bottom: calc(-100% - 56px);
+
+    transition:
+        bottom 0.25s cubic-bezier(0.55, 0.14, 0.13, 1),
+        height 0.25s cubic-bezier(0.55, 0.14, 0.13, 1);
+}
+div.app.clipeditoropen > div.pane.clipeditor {
+    bottom: 0;
+}
+div.app.pluginsopen > div.pane.clipeditor {
+    height: calc(85% - 306px - 39px);
+}
+
+div.pane.clipeditor > canvas {
+    width: 100%;
+    height: 100%;
+}
+
+div.icon.options {
+    width: 19px;
+    height: 19px;
+    display: inline-block;
+    background-color: white;
+
+    -webkit-mask-image: url("../../../assets/ionicons/options-outline.svg");
+    mask-image: url("../../../assets/ionicons/options-outline.svg");
+
+    position: absolute;
+    bottom: 15px; right: 15px;
+}

@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset='utf-8'>
+    <meta http-equiv='X-UA-Compatible' content='IE=edge'>
+    <title>Mixery v1.0 by nahkd123</title>
+    <meta name='viewport' content='width=device-width, initial-scale=1'>
+    <link rel='stylesheet' type='text/css' media='screen' href='../css/index.css'>
+</head>
+<body>
+    <div class="topbar">
+        <div class="topbarbutton" id="file">File</div><!--
+        --><div class="topbarbutton">Edit</div><!--
+        --><div class="topbarbutton" id="tools">Tools</div><!--
+        --><div class="topbarbutton" id="help">Help</div><!--
+        --><div class="topbarstatus">Waiting...</div>
+    </div>
+    <div class="appwrapper">
+        <div class="app">
+            <div class="pane explorer">
+                <div class="panetitle">Explorer</div>
+                <div class="searchbar" placeholder="Search" contenteditable></div>
+                <div class="explorercontents">
+                    <div class="endoflist">¯\_(ツ)_/¯</div>
+                </div>
+            </div>
+
+            <div class="pane plugins">
+                <div class="sidebar pluginslisting">
+                    <div class="pluginadd">
+                        <div class="addicon"></div><div class="label">Add Generator</div>
+                    </div>
+                </div><div class="mixer"></div><div class="sidebar mixerplugins">
+                    <div class="pluginadd">
+                        <div class="addicon"></div><div class="label">Add Effect</div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="pane editor">
+                <div class="editorbar">
+                    <div class="editorbarentry button plugins">
+                        <div class="label">Plugins & Mixer</div>
+                    </div><div class="editorbarentry button clipedit">
+                        <div class="label">Edit</div>
+                    </div><div class="editorbarentry toolsrack">
+                        <div class="tools nothing selected"></div>
+                        <div class="tools pencil"></div>
+                        <div class="tools move"></div>
+                    </div><div class="editorbarentry time">
+                        <div class="timecode">00:00:00.000</div>
+                        <div class="timeunit">Seconds</div>
+                    </div><div class="editorbarentry playback">
+                        <div class="playbackbutton seekstart"></div>
+                        <div class="playbackbutton seekback"></div>
+                        <div class="playbackbutton play"></div>
+                        <div class="playbackbutton seekforw"></div>
+                    </div><div class="editorbarentry tempo">
+                        <div class="value">120.00</div>
+                        <div class="label">Tempo</div>
+                    </div>
+                </div>
+
+                <div class="timeline">
+                    <div class="sidebar">Timeline</div><canvas class="seekbar"></canvas>
+                </div>
+                <div class="sidebar tracks">
+                    <div class="bartrackadd">
+                        <div class="addicon"></div><div class="label">Add track</div>
+                    </div>
+                </div><div class="trackscontainer">
+                    <div class="emptythinglolok" style="width: 100%; height: 39px;"></div>
+                </div>
+            </div>
+
+            <div class="pane clipeditor">
+                <canvas></canvas><div class="icon options"></div>
+            </div>
+        </div>
+    </div>
+
+    <script type="module" src="../bin/app/index.js"></script>
+</body>
+</html>

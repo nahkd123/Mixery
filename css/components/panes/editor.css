@@ -1,0 +1,188 @@
+@import url("./editoricons.css");
+@import url("./timeline.css");
+@import url("./sidebars.css");
+@import url("./clip.css");
+
+div.pane.editor {
+    position: absolute;
+    top: 0;
+    left: 302px;
+    width: calc(var(--screenWidth) - 302px);
+    height: 100%;
+    transition:
+        top 0.25s cubic-bezier(0.55, 0.14, 0.13, 1),
+        height 0.25s cubic-bezier(0.55, 0.14, 0.13, 1);
+}
+div.app.pluginsopen > div.pane.editor {
+    top: 250px;
+    height: calc(100% - 250px);
+}
+
+div.editor > div.editorbar {
+    background-color: rgb(33, 27, 55);
+    border-bottom: 2px solid rgb(50, 44, 69);
+    height: 38px;
+    padding: 8px;
+    overflow-x: scroll;
+    white-space: nowrap;
+}
+div.editorbar > div.editorbarentry {
+    display: inline-block;
+    border-right: 2px solid rgb(50, 44, 69);
+    height: 38px;
+    vertical-align: top;
+}
+div.editorbar > div.editorbarentry:last-child {
+    border-right: none;
+}
+
+div.editorbarentry.button > div.label {
+    border: 2px solid rgb(50, 44, 69);
+    margin: 7px 12px;
+    padding: 0 12px;
+    color: white;
+}
+div.editorbarentry.button.plugins {
+    transition: background 0.35s ease, border-color 0.35s ease, color 0.35s ease;
+}
+div.app.dragmode div.editorbarentry.button.plugins {
+    background: white;
+}
+div.app.dragmode div.editorbarentry.button.plugins > div.label {
+    border-style: dashed;
+    border-color: rgb(0, 180, 69);
+    color: rgb(0, 0, 0);
+}
+
+div.editorbarentry.time, div.editorbarentry.tempo {text-align: center;}
+div.editorbar > div.editorbarentry.time {width: 120px;}
+div.editorbar > div.editorbarentry.tempo {width: 70px;}
+
+div.editorbar > div.editorbarentry.time > div.timecode, div.editorbar > div.editorbarentry > div.value {
+    cursor: grab;
+}
+div.editorbar > div.editorbarentry.time > div.timeunit, div.editorbar > div.editorbarentry.tempo > div.label {
+    color: rgb(134, 134, 134);
+}
+
+div.editorbarentry.playback {
+    padding: 0 7px;
+}
+
+div.playbackbutton {
+    width: 16px; height: 16px;
+    display: inline-block;
+    vertical-align: middle;
+    padding: 5px;
+    margin: 6px 5px;
+    
+    -webkit-mask-size: cover;
+    -webkit-mask-position: center;
+    -webkit-mask-repeat: none;
+    mask-size: cover;
+    mask-position: center;
+    mask-repeat: none;
+
+    background-color: rgb(255, 255, 255);
+}
+
+div.editorbarentry.toolsrack {}
+div.editorbarentry.toolsrack > div.tools {
+    width: 16px;
+    height: 16px;
+    padding: 3px;
+    margin: 8px 6px;
+}
+div.editorbarentry.toolsrack > div.tools:first-child {
+    margin-left: 12px;
+}
+div.editorbarentry.toolsrack > div.tools:last-child {
+    margin-right: 12px;
+}
+
+div.sidebar.tracks {
+    width: 240px;
+    height: calc(100% - 95px);
+    padding: 0;
+
+    overflow-y: scroll;
+}
+div.bartrackentry, div.bartrackadd {
+    padding: 10px 20px;
+}
+div.addicon {
+    display: inline-block;
+    width: 19px;
+    height: 19px;
+    margin-right: 8px;
+
+    -webkit-mask-size: cover;
+    -webkit-mask-position: center;
+    -webkit-mask-repeat: none;
+    mask-size: cover;
+    mask-position: center;
+    mask-repeat: none;
+
+    -webkit-mask-image: url("../../../assets/ionicons/add.svg");
+    mask-image: url("../../../assets/ionicons/add.svg");
+    background-color: rgb(86, 227, 198);
+}
+div.bartrackentry > *, div.bartrackadd > * {
+    vertical-align: top;
+}
+div.bartrackentry > div.volumetoggle {
+    width: 19px;
+    height: 19px;
+    margin-right: 8px;
+    display: inline-block;
+
+    -webkit-mask-size: cover;
+    -webkit-mask-position: center;
+    -webkit-mask-repeat: none;
+    mask-size: cover;
+    mask-position: center;
+    mask-repeat: none;
+}
+div.bartrackentry > div.label, div.bartrackadd > div.label {
+    display: inline-block;
+}
+div.bartrackentry > div.label {
+    color: rgb(134, 134, 134);
+}
+div.bartrackentry.on > div.label {
+    color: white;
+}
+div.bartrackentry.on > div.volumetoggle {
+    -webkit-mask-image: url("../../../assets/ionicons/volume-low-outline.svg");
+    mask-image: url("../../../assets/ionicons/volume-low-outline.svg");
+    background-color: rgb(86, 227, 198);
+}
+div.bartrackentry > div.volumetoggle {
+    -webkit-mask-image: url("../../../assets/ionicons/volume-off-outline.svg");
+    mask-image: url("../../../assets/ionicons/volume-off-outline.svg");
+    background-color: rgb(65, 56, 97);
+}
+
+div.trackscontainer {
+    vertical-align: top;
+    display: inline-block;
+    width: calc(100% - 242px);
+    height: calc(100% - 95px);
+    position: relative;
+
+    overflow-y: scroll;
+}
+canvas.track {
+    width: 100%;
+    height: 39px;
+    background: rgb(18, 12, 42);
+    position: relative;
+    display: block;
+}
+canvas.track:nth-child(even) {
+    background: rgb(14, 10, 34);
+}
+
+div.sidebar.tracks::-webkit-scrollbar, div.trackscontainer::-webkit-scrollbar {
+    display: none;
+}

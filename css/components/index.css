@@ -1,0 +1,12 @@
+@import url("./topbar.css");
+@import url("./app.css");
+@import url("./panes/index.css");
+@import url("./endoflist.css");
+@import url("./tools.css");
+@import url("./notifications.css");
+@import url("./contextmenus.css");
+@import url("./windows.css");
+@import url("./paramcontrols/index.css");
+@import url("./tabs.css");
+
+@import url("./other.css");

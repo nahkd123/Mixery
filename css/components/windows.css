@@ -1,0 +1,29 @@
+div.moveablewindow {
+    position: absolute;
+    background-color: white;
+    color: black;
+    box-shadow: 0 0 5px black;
+}
+div.moveablewindow::before {
+    content: '';
+    display: block;
+    width: 100%; height: 2px;
+    background-color: #7c7c7c;
+}
+div.moveablewindow.hidden {
+    display: none;
+}
+
+div.moveablewindow > div.moveablewindowtitle {
+    cursor: grab;
+    background-color: #3f3f3f;
+    color: white;
+    padding: 5px 12px;
+    padding-top: 3px;
+}
+
+div.moveablewindow > div.moveablewindowcontainer {
+    width: 100%;
+    height: calc(100% - 29px);
+    background-color: white;
+}

@@ -1,0 +1,87 @@
+div.pane.explorer {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 300px;
+    height: 100%;
+
+    border-right: 2px solid rgb(50, 44, 69);
+}
+div.pane.explorer > div.panetitle {
+    background: rgb(29, 23, 53);
+    width: calc(100% - 24px);
+    padding: 7px 12px;
+    text-align: center;
+}
+div.pane.explorer > div.searchbar {
+    width: calc(100% - 24px);
+    padding: 10px 12px;
+
+    -webkit-user-modify: read-write;
+    outline: none;
+    position: relative;
+}
+div.searchbar[placeholder]:empty:after {
+    content: attr(placeholder);
+    position: absolute;
+    color: rgb(134, 134, 134);
+    background-color: transparent;
+}
+div.searchbar:before {
+    content: '';
+    position: absolute;
+    top: 85%; left: 7px;
+    width: calc(100% - 14px); height: 2px;
+    background: rgb(50, 44, 69);
+}
+
+div.pane.explorer > div.explorercontents {
+    position: relative;
+    width: 100%;
+    height: calc(100% - 72px);
+    overflow-y: auto;
+}
+div.explorercontents::-webkit-scrollbar {
+    display: none;
+}
+
+div.explorercontents > details {
+    border-bottom: 2px solid rgb(25, 20, 41);
+}
+div.explorercontents > details > summary {
+    background: rgb(33, 27, 55);
+    padding: 10px 28px;
+    color: rgb(156, 156, 156);
+    outline: none;
+    position: relative;
+}
+div.explorercontents > details > summary::-webkit-details-marker {
+    display: none;
+}
+div.explorercontents > details > summary::before {
+    content: '';
+    position: absolute;
+    top: 9px; left: 8px;
+    width: 20px; height: 20px;
+    background: url("../../../assets/arrow-solid-right.svg");
+    background-size: cover;
+    transition: transform 0.45s cubic-bezier(0, 0, 0.05, 1.01);
+}
+div.explorercontents > details[open] > summary::before {
+    transform: rotate(90deg);
+}
+div.explorercontents > details > div.explorerentry {
+    position: relative;
+    padding: 10px 12px;
+    padding-left: 20px;
+    cursor: grab;
+}
+div.explorerentry:before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 5px;
+    height: 100%;
+    background: var(--color);
+}

@@ -1,0 +1,16 @@
+div.paramcontrol.slider {
+    background-color: #272727;
+    box-shadow: inset 0 0 3px black;
+    position: relative;
+    border-radius: 100px;
+}
+div.paramcontrol.slider.horizontal::before {
+    content: '';
+    background-color: var(--color);
+    display: inline-block;
+    position: absolute;
+    top: 0; left: 0;
+    width: var(--progress);
+    height: 100%;
+    border-radius: 100px;
+}

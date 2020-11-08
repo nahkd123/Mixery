@@ -1,0 +1,59 @@
+div.mixer {
+    display: inline-block;
+    width: calc(100% - 242px - 242px);
+    height: 100%;
+
+    overflow-y: scroll;
+}
+div.mixer::-webkit-scrollbar {
+    display: none;
+}
+
+div.sidebar.mixerplugins {
+    display: inline-block;
+    width: 240px;
+    height: 100%;
+    border-left: 2px solid rgb(50, 44, 69);
+    border-right: 0;
+    padding: 0;
+
+    vertical-align: top;
+}
+
+div.mixer > div.mixertrack {
+    display: inline-block;
+    width: 100%;
+}
+div.mixer > div.mixertrack.selected {
+    background: rgb(33, 27, 55);
+}
+
+div.mixertrack > div.label {
+    display: inline-block;
+    width: 150px;
+    padding: 10px 20px;
+
+    overflow: hidden;
+    vertical-align: top;
+}
+div.mixertrack > div.slider {
+    display: inline-block;
+    width: calc(100% - 190px);
+    height: 39px;
+    vertical-align: top;
+    position: relative;
+    background: rgb(50, 44, 69);
+}
+div.slider > div.sliderthumb {
+    position: absolute;
+    top: 0; left: 0;
+    width: 20px; height: 39px;
+    background-color: rgb(86, 227, 198);
+}
+div.slider > div.sliderthumb.loud {
+    background-color: rgb(227, 131, 86);
+}
+div.slider.automated > div.sliderthumb {
+    background-color: rgb(203, 248, 239);
+    width: 100%;
+}

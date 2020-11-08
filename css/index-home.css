@@ -1,0 +1,73 @@
+@import url('https://fonts.googleapis.com/css2?family=Nunito+Sans:wght@300;400&display=swap');
+
+* {
+    font-family: "Nunito Sans", "Segoe UI", sans-serif;
+}
+
+body {
+    margin: 0;
+}
+
+h1, h2, h3, h4, h5, h6 {
+    font-weight: lighter;
+    margin: 0;
+}
+h2 {
+    margin: 0;
+}
+button {
+    background: rgb(23, 19, 45);
+    color: white;
+}
+
+/*
+    font-size: 5vw;*/
+@media only screen and (orientation: landscape) {
+    div.section {
+        width: calc(100vw - 40mm);
+        padding: 10mm 20mm;
+    }
+    div.section.full {
+        height: calc(100vh - 20mm);
+    }
+
+    h1, h2, h3, h4, h5, h6 {}
+    h1 { font-size: 20mm; }
+    h2 { font-size: 7mm; }
+
+    button {
+        border: 0.7mm solid rgb(50, 44, 69);
+        padding: 1mm 3mm;
+        font-size: 4mm;
+        margin-right: 5mm;
+    }
+
+    .portraitonly {display: none;}
+}
+@media only screen and (orientation: portrait) {
+    div.section {
+        width: calc(100vw - 10mm);
+        padding: 3mm 5mm;
+    }
+    div.section.full {
+        height: calc(100vh - 6mm);
+    }
+
+    h1, h2, h3, h4, h5, h6 {
+        text-align: center;
+    }
+    h1 { font-size: 15mm; }
+    h2 { font-size: 5mm; }
+    
+    button {
+        border: 0.7mm solid rgb(50, 44, 69);
+        padding: 1mm 3mm;
+        font-size: 3.5mm;
+        margin-left: calc(50vw - 6mm + 1.4mm);
+        margin-bottom: 2mm;
+        transform: translateX(-50%);
+        display: block;
+    }
+
+    .landscapeonly {display: none;}
+}

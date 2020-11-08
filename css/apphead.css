@@ -1,0 +1,34 @@
+html, body {
+    --screenWidth: 100vw;
+    --screenHeight: 100vh;
+
+    margin: 0;
+    width: var(--screenWidth);
+    height: var(--screenHeight);
+    overflow: hidden;
+
+    overscroll-behavior-x: none; /* Prevent swipe to go back */
+
+    font-family: 'Nunito Sans', 'Noto Sans', 'Ubuntu', Calibri, sans-serif;
+    font-size: 14px;
+    letter-spacing: 0.5px;
+
+    user-select: none;
+    cursor: url("../assets/cursor.cur"), auto;
+}
+
+body {
+    background: rgb(23, 19, 45);
+    color: white;
+}
+
+div::-webkit-scrollbar {
+    display: none;
+}
+
+@media only screen and (hover: none) and (pointer: coarse) {
+    html, body {
+        --screenWidth: 110vw;
+        --screenHeight: 110vh;
+    }
+}
