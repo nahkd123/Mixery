@@ -7,7 +7,13 @@ div.pane.plugins {
     border-bottom: 2px solid rgb(50, 44, 69);
 
     margin-top: -250px;
-    transition: margin-top 0.25s cubic-bezier(0.55, 0.14, 0.13, 1);
+    transition: margin-top 0.25s cubic-bezier(0.55, 0.14, 0.13, 1),
+        left 0.5s cubic-bezier(0.6, 0.38, 0, 1.01),
+        width 0.5s cubic-bezier(0.6, 0.38, 0, 1.01);
+}
+div.app.leftbarhide > div.pane.plugins {
+    left: 39px;
+    width: calc(100% - 39px);
 }
 
 div.app.pluginsopen > div.pane.plugins {

@@ -1,6 +1,7 @@
 export default class RenderableAudioNode {
     constructor(engine) {
         this.connectedNodes = [];
+        this.connectedParams = [];
         this.engine = engine;
         engine.nodes.push(this);
     }
@@ -19,6 +20,7 @@ export default class RenderableAudioNode {
         this.audioNode.connect(param.audioParam);
         if (this.isRendering)
             this.audioNode.connect(param.rendererParam);
+        this.connectedParams.push(param);
     }
     disconnect(node) {
         this.audioNode.disconnect(node !== undefined ? node.audioNode : undefined);
@@ -29,6 +31,12 @@ export default class RenderableAudioNode {
         else
             this.connectedNodes.splice(this.connectedNodes.indexOf(node), 1);
     }
+    disconnectParam(param) {
+        this.audioNode.disconnect(param.audioParam);
+        if (this.isRendering)
+            this.rendererNode.disconnect(param.rendererParam);
+        this.connectedParams.splice(this.connectedParams.indexOf(param), 1);
+    }
     reconnectAll() {
         var _a;
         this.audioNode.disconnect();
@@ -37,10 +45,14 @@ export default class RenderableAudioNode {
         this.connectedNodes.forEach(node => {
             var _a;
             this.audioNode.connect(node.audioNode);
-            if (this.isRendering) {
+            if (this.isRendering)
                 (_a = this.rendererNode) === null || _a === void 0 ? void 0 : _a.connect(node.rendererNode);
-                console.log(node);
-            }
+        });
+        this.connectedParams.forEach(param => {
+            var _a;
+            this.audioNode.connect(param.audioParam);
+            if (this.isRendering)
+                (_a = this.rendererNode) === null || _a === void 0 ? void 0 : _a.connect(param.rendererParam);
         });
     }
 }

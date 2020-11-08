@@ -22,37 +22,65 @@ export class TimelineBar {
             }
             this.ui.canvasRenderUpdate();
         });
-        let mouseDown = false;
-        let seekBeat = 0;
-        let move = false;
         this.canvas.addEventListener("mousedown", event => {
-            mouseDown = true;
-            seekBeat = this.session.seeker;
-            move = false;
-        });
-        this.canvas.addEventListener("mousemove", event => {
-            if (mouseDown) {
-                move = move || (event.movementX !== 0 || event.movementY !== 0);
-                seekBeat += event.movementX / this.session.pxPerBeat;
-                if (seekBeat < 0)
-                    seekBeat = 0;
-                this.session.seeker = snap(seekBeat, ...BeatSnapPreset);
-                if (this.session.playing)
-                    this.session.stopAndThenPlay();
-                const seekerPos = this.session.seeker * this.session.pxPerBeat - this.session.scrolledPixels;
-                if ((seekerPos >= this.canvas.offsetWidth - 100) || (seekerPos <= 100 && this.session.scrolledPixels > 0))
-                    this.session.scrolledPixels += event.movementX;
-                if (this.session.scrolledPixels < 0)
-                    this.session.scrolledPixels = 0;
-                this.ui.canvasRenderUpdate();
+            let self = this;
+            self.session.seeker = snap(Math.max(self.session.scrolledBeats + (event.pageX - self.canvas.getBoundingClientRect().x) / self.session.pxPerBeat, 0), ...BeatSnapPreset);
+            self.ui.canvasRenderUpdate();
+            function mouseMove(event) {
+                self.session.seeker = snap(Math.max(self.session.scrolledBeats + (event.pageX - self.canvas.getBoundingClientRect().x) / self.session.pxPerBeat, 0), ...BeatSnapPreset);
+                self.ui.canvasRenderUpdate();
             }
-        });
-        this.canvas.addEventListener("mouseup", event => {
-            mouseDown = false;
-            if (!move) {
-                this.session.seeker = snap((event.offsetX / this.session.pxPerBeat) + this.session.scrolledBeats, ...BeatSnapPreset);
-                this.ui.canvasRenderUpdate();
+            function mouseUp(event) {
+                document.removeEventListener("mousemove", mouseMove);
+                document.removeEventListener("mouseup", mouseUp);
             }
+            document.addEventListener("mousemove", mouseMove);
+            document.addEventListener("mouseup", mouseUp);
+        });
+        let touchTimeoutTask = -1;
+        this.canvas.addEventListener("touchstart", event => {
+            let self = this;
+            if (event.touches.length === 1) {
+                const oldX = event.touches[0].pageX;
+                const oldSeeker = self.session.seeker;
+                function touchMove(event) {
+                    self.session.seeker = snap(Math.max(self.session.scrolledBeats + (event.touches[0].pageX - self.canvas.getBoundingClientRect().x) / self.session.pxPerBeat, 0), ...BeatSnapPreset);
+                    self.ui.canvasRenderUpdate();
+                }
+                function touchEnd(event) {
+                    document.removeEventListener("touchend", touchEnd);
+                    document.removeEventListener("touchmove", touchMove);
+                }
+                touchTimeoutTask = setTimeout(() => {
+                    document.addEventListener("touchend", touchEnd);
+                    document.addEventListener("touchmove", touchMove);
+                }, 20);
+            }
+            else if (event.touches.length === 2) {
+                let oldX = event.touches[0].pageX;
+                let deltaLastMove = 0;
+                if (touchTimeoutTask !== -1) {
+                    clearTimeout(touchTimeoutTask);
+                    touchTimeoutTask = -1;
+                }
+                function touchMove(event) {
+                    self.session.scrolledPixels -= (deltaLastMove = event.touches[0].pageX - oldX);
+                    if (self.session.scrolledPixels < 0)
+                        self.session.scrolledPixels = 0;
+                    oldX = event.touches[0].pageX;
+                    if (this.session.playing)
+                        this.session.stopAndThenPlay();
+                    self.ui.canvasRenderUpdate();
+                }
+                function touchEnd(event) {
+                    self.session.scrollFriction = -deltaLastMove * 2;
+                    document.removeEventListener("touchend", touchEnd);
+                    document.removeEventListener("touchmove", touchMove);
+                }
+                document.addEventListener("touchend", touchEnd);
+                document.addEventListener("touchmove", touchMove);
+            }
+            ;
         });
     }
     render() {
