@@ -4,5 +4,5 @@ div.endoflist {
     padding-top: 80%;
     text-align: center;
     font-size: 35px;
-    color: rgb(134, 134, 134);
+    color: var(--off-color);
 }

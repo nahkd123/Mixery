@@ -6,13 +6,13 @@ div.pane.explorer {
     height: 100%;
     transition: 0.5s cubic-bezier(0.6, 0.38, 0, 1.01) left;
 
-    border-right: 2px solid rgb(50, 44, 69);
+    border-right: 2px solid var(--border-color);
 }
 div.app.leftbarexplorer > div.pane.explorer {
     left: 0px;
 }
 div.pane.explorer > div.panetitle {
-    background: rgb(29, 23, 53);
+    background: var(--second-background);
     width: calc(100% - 24px);
     padding: 7px 12px;
     text-align: center;
@@ -28,7 +28,7 @@ div.pane.explorer > div.searchbar {
 div.searchbar[placeholder]:empty:after {
     content: attr(placeholder);
     position: absolute;
-    color: rgb(134, 134, 134);
+    color: var(--off-color);
     background-color: transparent;
 }
 div.searchbar:before {
@@ -36,7 +36,7 @@ div.searchbar:before {
     position: absolute;
     top: 85%; left: 7px;
     width: calc(100% - 14px); height: 2px;
-    background: rgb(50, 44, 69);
+    background: var(--border-color);
 }
 
 div.pane.explorer > div.explorercontents {
@@ -50,12 +50,12 @@ div.explorercontents::-webkit-scrollbar {
 }
 
 div.explorercontents > details {
-    border-bottom: 2px solid rgb(25, 20, 41);
+    border-bottom: 2px solid var(--background);
 }
 div.explorercontents > details > summary {
-    background: rgb(33, 27, 55);
+    background: var(--second-background);
     padding: 10px 28px;
-    color: rgb(156, 156, 156);
+    color: var(--dim-color);
     outline: none;
     position: relative;
 }

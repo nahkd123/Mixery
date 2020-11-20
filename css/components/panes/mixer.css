@@ -13,7 +13,7 @@ div.sidebar.mixerplugins {
     display: inline-block;
     width: 240px;
     height: 100%;
-    border-left: 2px solid rgb(50, 44, 69);
+    border-left: 2px solid var(--border-color);
     border-right: 0;
     padding: 0;
 
@@ -25,7 +25,7 @@ div.mixer > div.mixertrack {
     width: 100%;
 }
 div.mixer > div.mixertrack.selected {
-    background: rgb(33, 27, 55);
+    background: var(--second-background);
 }
 
 div.mixertrack > div.label {
@@ -42,18 +42,18 @@ div.mixertrack > div.slider {
     height: 39px;
     vertical-align: top;
     position: relative;
-    background: rgb(50, 44, 69);
+    background: var(--slider-body-color);
 }
 div.slider > div.sliderthumb {
     position: absolute;
     top: 0; left: 0;
     width: 20px; height: 39px;
-    background-color: rgb(86, 227, 198);
+    background-color: var(--slider-thumb-normal-color);
 }
 div.slider > div.sliderthumb.loud {
-    background-color: rgb(227, 131, 86);
+    background-color: var(--slider-thumb-loud-color);
 }
 div.slider.automated > div.sliderthumb {
-    background-color: rgb(203, 248, 239);
+    background-color: var(--slider-thumb-auto-color);
     width: 100%;
 }

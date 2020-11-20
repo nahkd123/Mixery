@@ -8,10 +8,10 @@ div.tools {
     mask-position: center;
     mask-repeat: none;
 
-    background: rgb(120, 120, 120);
+    background: var(--tools-unselected);
 }
 div.tools.selected {
-    background: rgb(255, 255, 255);
+    background: var(--tools-selected);
 }
 
 div.tools.nothing {

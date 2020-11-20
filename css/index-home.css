@@ -1,7 +1,8 @@
 @import url('https://fonts.googleapis.com/css2?family=Nunito+Sans:wght@300;400&display=swap');
+@import url('./themes/default.css');
 
 * {
-    font-family: "Nunito Sans", "Segoe UI", sans-serif;
+    font-family: var(--font);
 }
 
 body {
@@ -16,7 +17,7 @@ h2 {
     margin: 0;
 }
 button {
-    background: rgb(23, 19, 45);
+    background: var(--background);
     color: white;
 }
 

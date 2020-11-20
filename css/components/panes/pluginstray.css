@@ -4,7 +4,7 @@ div.pane.plugins {
     left: 302px;
     width: calc(100% - 302px);
     height: 248px;
-    border-bottom: 2px solid rgb(50, 44, 69);
+    border-bottom: 2px solid var(--border-color);
 
     margin-top: -250px;
     transition: margin-top 0.25s cubic-bezier(0.55, 0.14, 0.13, 1),
@@ -46,5 +46,5 @@ div.pluginlistingentry {
     padding: 10px 20px;
 }
 div.pluginlistingentry.selected {
-    background: rgb(23, 19, 45);
+    background: var(--plugintray-selected);
 }
