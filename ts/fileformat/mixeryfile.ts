@@ -1,5 +1,7 @@
 import { AudioGenerator } from "../mixerycore/generator.js";
+import { MIDINoteInfo } from "../mixerycore/midi.js";
 import { PluginsManager } from "../mixerycore/plugins.js";
+import { Resources } from "../mixerycore/resources.js";
 import { Session } from "../mixerycore/session.js";
 import { ByteStream } from "./filestream.js";
 
@@ -38,9 +40,31 @@ export namespace MixeryFileFormat {
             timeCreated: session.projectCreationTime
         });
 
+        let resourcesChunk = await session.resources.createFileChunk();
+
         return writeFile([
-            metaChunk
+            metaChunk,
+            resourcesChunk
         ]);
+    }
+    export async function convertFromProjectFile(stream: ByteStream.ReadableStream, session: Session) {
+        session.resetSession();
+
+        let chunks = readFile(stream);
+        chunks.forEach(chunk => {
+            switch (chunk.id) {
+                case "MetaData":
+                    let metadata = Chunks.readMetaData(chunk);
+                    session.projectName = metadata.name;
+                    session.projectDesc = metadata.description;
+                    session.projectCreationTime = metadata.timeCreated;
+                    break;
+                case "ResourceStore":
+                    session.resources.readFileChunk(chunk, session);
+                    break;
+                default: break;
+            }
+        });
     }
 
     export namespace Generator {
@@ -185,6 +209,70 @@ export namespace MixeryFileFormat {
             stream.writeString(meta.description);
             stream.writeUint48(meta.timeCreated);
             return <MixeryFileChunk> {id: "MetaData", data: await stream.convertToUint8Array()};
+        }
+    }
+    export namespace MIDIs {
+        export function writeMIDIData(notes: MIDINoteInfo[], stream: ByteStream.WriteableStream) {
+            stream.writeVarInt(notes.length);
+            for (let i = 0; i < notes.length; i++) {
+                const note = notes[i];
+                stream.writeVarInt(note.note);
+                stream.writeFloat32(note.start);
+                stream.writeFloat32(note.duration);
+                stream.writeFloat32(note.sensitivity);
+            }
+        }
+        export function readMIDIData(stream: ByteStream.ReadableStream) {
+            const notesCount = stream.readVarInt();
+            let notes: MIDINoteInfo[] = [];
+            for (let i = 0 ; i < notesCount; i++) {
+                const note = stream.readVarInt();
+                const start = stream.readFloat32();
+                const duration = stream.readFloat32();
+                const sensitivity = stream.readFloat32();
+                notes.push({
+                    note, start, duration, sensitivity
+                });
+            }
+            return notes;
+        }
+    }
+    export namespace Resource {
+        export function writeResourceData(res: Resources.Resource, stream: ByteStream.WriteableStream) {
+            stream.writeString(res.name);
+            if (res instanceof Resources.MIDIResource) {
+                stream.writeUint8(0);
+                MIDIs.writeMIDIData(res.notes, stream);
+            } else if (res instanceof Resources.AudioResource) {
+                stream.writeUint8(1);
+                Audio.writeAudioData(res.orignal || res.decoded, stream);
+            }
+        }
+        export function readResourceData(stream: ByteStream.ReadableStream, session?: Session) {
+            const name = stream.readString();
+            const typeNo = stream.readUint8();
+            if (typeNo === 0) {
+                const notes = MIDIs.readMIDIData(stream);
+                let res = new Resources.MIDIResource(name);
+                res.notes = notes;
+                return res;
+            } else if (typeNo === 1) {
+                const audioData = Audio.readAudioData(stream);
+                if (audioData instanceof ArrayBuffer) {
+                    // Decode is required
+                    if (session === undefined) throw "Session info is required to decode audio";
+                    return new Promise<Resources.AudioResource>((resolve, reject) => {
+                        session.decodeAudio(audioData, name).then(audioBuff => {
+                            let res = new Resources.AudioResource(name, audioBuff);
+                            resolve(res);
+                        });
+                    });
+                }
+                else if (audioData instanceof AudioBuffer) {
+                    let res = new Resources.AudioResource(name, audioData);
+                    return res;
+                }
+            }
         }
     }
 }

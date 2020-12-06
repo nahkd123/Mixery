@@ -64,4 +64,14 @@ export default class MixeryAudioEngine {
         //this.mixer.afterRender();
     }
     //#endregion
+    
+    resetAll() {
+        this.audio.suspend();
+        this.nodes = [];
+
+        this.audio = new AudioContext();
+        this.renderer = undefined;
+        this.destination = new RenderableDestinationNode(this);
+        this.mixer.resetAll();
+    }
 }

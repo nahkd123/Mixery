@@ -20,6 +20,8 @@ import MixeryAudioEncoder from "../encoders/mixeryaudio.js";
 import WaveFileAudioEncoder from "../encoders/wavefile.js";
 import { InternalAppPlugins } from "./appplugins/appplugins.js";
 import ResourcesStore from "./resources.js";
+import { upload } from "../utils/uploader.js";
+import { ByteStream } from "../fileformat/filestream.js";
 
 export class Session {
     audioEngine: MixeryAudioEngine;
@@ -27,7 +29,7 @@ export class Session {
     appPlugins: InternalAppPlugins.AppPluginsManager;
 
     appControls = new SessionControls();
-    menus = new SessionMenus();
+    menus: SessionMenus;
 
     playlist: Playlist;
     plugins: GeneratorsPlugins;
@@ -118,6 +120,8 @@ export class Session {
     constructor() {
         this.audioEngine = new MixeryAudioEngine();
         this.appPlugins = new InternalAppPlugins.AppPluginsManager(this);
+
+        this.menus = new SessionMenus(this);
 
         this.midi = new MIDIManager(this);
         
@@ -314,6 +318,26 @@ export class Session {
             else await this.audioEngine.decodeAudio(audioFile);
         } else return await this.audioEngine.decodeAudio(data);
     }
+
+    /**
+     * Reset session, including resources store and playlists, but not loaded plugins and
+     * installed bundles
+     */
+    resetSession() {
+        this.playlist.resetAll();
+        this.resources.resetAll();
+        while (this.ui.mixer.mixerTracks.element.firstChild) this.ui.mixer.mixerTracks.element.firstChild.remove();
+        while ((<HTMLDivElement> this.ui.mixer.mixerTrackPlugins.element.firstChild).className !== "pluginadd") this.ui.mixer.mixerTrackPlugins.element.firstChild.remove();
+        this.audioEngine.resetAll();
+        this.ui.mixer.mixerTracks.addMixerTrackElement(this.audioEngine.mixer.master);
+        while ((<HTMLDivElement> this.ui.plugins.pluginsListing.firstChild).className !== "pluginadd") this.ui.plugins.pluginsListing.firstChild.remove();
+
+        this.projectName = "Untitled Project";
+        this.projectDesc = "Write some text here...";
+        this.projectCreationTime = Date.now();
+
+        this.ui.canvasRenderUpdate();
+    }
 }
 
 export class SessionControls {
@@ -321,7 +345,7 @@ export class SessionControls {
      * Close current app. Only works in Electron BrowserWindow
      */
     close() {
-        // TODO we should ask for discarding any changes in here
+        // TODO: we should ask for discarding any changes in here
         close();
     }
 }
@@ -340,12 +364,30 @@ export class SessionMenus {
         }
     };
 
-    constructor() {
+    constructor(session: Session) {
         // this.windows.file.export;
-        this.file.entries.push(new ContextMenuEntry("Open", () => {}));
+        this.file.entries.push(new ContextMenuEntry("Open", () => {
+            let asyncFunc = async function() {
+                let files = await upload("*.mxyproj");
+                if (files.length === 0) return;
+
+                let file = files.item(0);
+                MixeryFileFormat.convertFromProjectFile(new ByteStream.ReadableStream(await file.arrayBuffer()), session);
+            };
+            asyncFunc();
+        }));
         this.file.entries.push(new ContextMenuEntry("Import", () => {}));
         this.file.entries.push(new ContextMenuEntry("Export", () => {
             this.windows.file.export.show();
+        }));
+        this.file.entries.push(new ContextMenuEntry("Save", () => {
+            let asyncFunc = async function() {
+                download((await MixeryFileFormat.convertToProjectFile(session)).convertToBlob(), session.projectName + ".mxyproj");
+            }
+            asyncFunc();
+        }));
+        this.file.entries.push(new ContextMenuEntry("Erase Everything!", () => {
+            session.resetSession();
         }));
 
         this.tools.entries.push(new ContextMenuEntry("BPM Tapping", () => {

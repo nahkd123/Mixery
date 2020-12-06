@@ -1,10 +1,13 @@
+import { ByteStream } from "../fileformat/filestream.js";
+import { MixeryFileChunk, MixeryFileFormat } from "../fileformat/mixeryfile.js";
 import { ResourceElement, ResourcesPane } from "../mixeryui/ui/resources.js";
 import { MIDINoteInfo } from "./midi.js";
+import { Session } from "./session.js";
 
 export namespace Resources {
     export abstract class Resource {
         _name: string;
-        get name() {return this.name;}
+        get name() {return this._name;}
         set name(val: string) {
             this._name = val;
             if (this.linkedElement) this.linkedElement.element.querySelector("div.resname").textContent = val;
@@ -112,5 +115,42 @@ export default class ResourcesStore {
         this.currentDir.push(res);
         if (this.linkedPane) this.linkedPane.addElement(res);
         return res;
+    }
+
+    async createFileChunk() {
+        let stream = new ByteStream.WriteableStream();
+        stream.writeVarInt(this.resources.length);
+        for (let i = 0 ; i < this.resources.length; i++) {
+            const res = this.resources[i];
+            MixeryFileFormat.Resource.writeResourceData(res, stream);
+        }
+
+        let chunk: MixeryFileChunk = {
+            id: "ResourceStore",
+            data: await stream.convertToUint8Array()
+        };
+        return chunk;
+    }
+
+    async readFileChunk(chunk: MixeryFileChunk, session?: Session) {
+        let stream = new ByteStream.ReadableStream(chunk.data);
+        const resourcesCount = stream.readVarInt();
+
+        for (let i = 0; i < resourcesCount; i++) {
+            let resp = MixeryFileFormat.Resource.readResourceData(stream, session);
+            if (resp instanceof Promise) resp = await resp;
+
+            this.addResource(resp);
+        }
+    }
+
+    resetAll() {
+        // Delete stuffs and GUI components
+        this.resources.forEach(res => {
+            res.linkedElement?.element.remove();
+        });
+        this.resources = [];
+        this.currentDirScope = [];
+        this.selectedResource = undefined;
     }
 }
