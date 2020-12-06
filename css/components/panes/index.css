@@ -7,4 +7,5 @@
 
 div.pane {
     display: inline-block;
+    transition: 0.2s linear opacity;
 }
