@@ -1,0 +1,26 @@
+div.pane.resources {
+    position: absolute;
+    top: 0;
+    left: -309px;
+    width: 300px;
+    height: 100%;
+    transition: 0.5s cubic-bezier(0.6, 0.38, 0, 1.01) left;
+    z-index: -1;
+
+    border-right: 2px solid var(--border-color);
+}
+div.app.leftbarresources > div.pane.resources {
+    left: 39px;
+}
+
+div.pane.resources > div.panetitle {
+    background: var(--second-background);
+    width: calc(100% - 24px);
+    padding: 7px 12px;
+    text-align: center;
+}
+div.pane.resources > div.addressbar {
+    width: calc(100% - 24px);
+    padding: 10px 12px;
+    position: relative;
+}

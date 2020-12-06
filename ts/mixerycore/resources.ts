@@ -1,3 +1,4 @@
+import { ResourcesPane } from "../mixeryui/ui/resources.js";
 import { MIDINoteInfo } from "./midi.js";
 
 export namespace Resources {
@@ -40,6 +41,7 @@ export default class ResourcesStore {
     // Temporary Data
     currentDirScope: string[] = [];
     selectedResource: Resources.Resource = undefined;
+    linkedPane: ResourcesPane;
 
     // Data (will be saved)
     resources: Resources.Resource[] = [];
