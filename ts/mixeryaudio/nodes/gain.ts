@@ -15,7 +15,6 @@ export default class RenderableGainNode extends RenderableAudioNode {
         this.gain = new RenderableAudioParam(engine);
         this.gain.audioParam = this.audioNode.gain;
 
-        console.log(engine);
         if (this.isRendering) this.beforeRender();
     }
 

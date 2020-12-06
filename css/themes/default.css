@@ -1,0 +1,68 @@
+/*
+ * Title:        Mixery Default Theme
+ * Author:       nahkd123
+ * Description:  The default theme for Mixery
+ *               You can clone this file and create your own theme
+ *               Make sure to change current theme by editing in /css/index.css
+ */
+
+/* General Styling */
+body {
+    --font: 'Nunito Sans', 'Noto Sans', 'Segoe UI', 'Ubuntu', Calibri, sans-serif;
+
+    --background:                       #17132d;
+    --accent:                           #56e3c6;
+    --color:                            #ffffff;
+    --dim-color:                        #aaaaaa;
+    --dim2-color:                       #a0a0a0;
+    --off-color:                        #868686;
+    --second-background:                #211b37;
+    --border-color:                     #322c45;
+
+    --topbar-background:                #211b37;
+    --topbar-border:                    #191431;
+    --topbar-button-hover:              #312c46;
+    --topbar-status:                    #312c46;
+
+    --tools-unselected:                 #787878;
+    --tools-selected:                   #ffffff;
+
+    --windows-background:               #ffffff;
+    --windows-accent:                   #7c7c7c;
+    --windows-title-background:         #3f3f3f;
+    --windows-title-color:              #ffffff;
+
+    --tabs-background:                  #272727;
+    --tabs-color:                       #ffffff;
+
+    --contextmenu-background:           #efefef;
+    --contextmenu-color:                #000000;
+    --contextmenu-accent:               #7c7c7c;
+    --contextmenu-hover:                #dfdfdf;
+
+    --playback-button:                  #ffffff;
+    --icon-color:                       #ffffff;
+    --icon-accent-color:                var(--accent);
+    --icon-off-color:                   #413861;
+
+    --playlist-track-odd:               #120c2a;
+    --playlist-track-even:              #0e0a22;
+
+    --slider-body-color:                #322c45;
+    --slider-thumb-normal-color:        var(--accent);
+    --slider-thumb-loud-color:          #e38356;
+    --slider-thumb-auto-color:          #cbf8ef;
+
+    --plugintray-selected:              #17132d;
+
+    --timeline-sidebar:                 #1d1730;
+    --timeline-sidebar-color:           #94929d;
+}
+
+/* Drag Mode */
+body {
+    --dragmode-border-style:            dashed;
+    --dragmode-border-color:            #00b445;
+    --dragmode-background:              #ffffff;
+    --dragmode-color:                   #000000;
+}

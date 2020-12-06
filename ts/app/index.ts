@@ -183,6 +183,11 @@ if (MixeryConfigurations.allowTestBox && MixeryConfigurations.exposeToGlobal) {
     });
 }
 
+// Finalize part
+if (config.exposeToGlobal || globalThis.electronjs === undefined) session.appPlugins.loadFromRemoteList().then(() => {
+    console.log("[main] Loaded all plugins from remote list");
+});
+
 declare global {
     const app: undefined | {
         session: Session,

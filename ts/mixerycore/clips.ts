@@ -7,6 +7,7 @@ import AudioAutomation, { AutomationNode } from "../mixeryaudio/automations/auto
 import RenderableAudioParam from "../mixeryaudio/automations/param.js";
 import { MixeryFileFormat } from "../fileformat/mixeryfile.js";
 import download from "../utils/downloader.js";
+import { Resources } from "./resources.js";
 
 export abstract class Clip {
     name: string = "Unnamed Clip";
@@ -22,11 +23,13 @@ export abstract class Clip {
 }
 
 export class MIDIClip extends Clip {
-    notes: MIDINoteInfo[] = [];
+    midi: Resources.MIDIResource;
+    get notes() {return this.midi.notes;}
     generator: AudioGenerator;
 
-    constructor(generator: AudioGenerator) {
+    constructor(midi: Resources.MIDIResource, generator: AudioGenerator) {
         super();
+        this.midi = midi;
         this.generator = generator;
 
         const color = ThemeColors.randomClipColor();

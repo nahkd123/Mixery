@@ -3,8 +3,8 @@ div.pane.clipeditor {
     background: var(--second-background);
     border-top: 2px solid var(--border-color);
 
-    left: 302px;
-    width: calc(100% - 302px);
+    left: 341px;
+    width: calc(100% - 341px);
     height: calc(85% - 58px - 39px);
     bottom: calc(-100% - 56px);
 

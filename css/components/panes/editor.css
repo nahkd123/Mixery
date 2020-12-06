@@ -6,8 +6,8 @@
 div.pane.editor {
     position: absolute;
     top: 0;
-    left: 302px;
-    width: calc(var(--screenWidth) - 302px);
+    left: 341px;
+    width: calc(var(--screenWidth) - 341px);
     height: 100%;
     transition:
         top 0.25s cubic-bezier(0.55, 0.14, 0.13, 1),

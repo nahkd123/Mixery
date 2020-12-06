@@ -18,9 +18,13 @@ import download from "../utils/downloader.js";
 import { AudioEncodersManager } from "../encoders/encoder.js";
 import MixeryAudioEncoder from "../encoders/mixeryaudio.js";
 import WaveFileAudioEncoder from "../encoders/wavefile.js";
+import { InternalAppPlugins } from "./appplugins/appplugins.js";
+import ResourcesStore from "./resources.js";
 
 export class Session {
     audioEngine: MixeryAudioEngine;
+
+    appPlugins: InternalAppPlugins.AppPluginsManager;
 
     appControls = new SessionControls();
     menus = new SessionMenus();
@@ -38,6 +42,7 @@ export class Session {
     projectDesc: string = "Write some text here...";
     projectCreationTime = Date.now();
     bpm: number = 120;
+    resources: ResourcesStore;
 
     // Views
     ui: UserInterface;
@@ -112,6 +117,7 @@ export class Session {
 
     constructor() {
         this.audioEngine = new MixeryAudioEngine();
+        this.appPlugins = new InternalAppPlugins.AppPluginsManager(this);
 
         this.midi = new MIDIManager(this);
         
@@ -119,6 +125,8 @@ export class Session {
         this.encoders.addEncoder(new MixeryAudioEncoder());
         this.encoders.addEncoder(new WaveFileAudioEncoder());
         this.encoders.selectedEncoder = this.encoders.encoders[0];
+
+        this.resources = new ResourcesStore();
 
         this.playlist = new Playlist(this);
         this.plugins = new GeneratorsPlugins(this);

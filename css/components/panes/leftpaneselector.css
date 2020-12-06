@@ -1,0 +1,48 @@
+/* leftpaneselector */
+div.pane.leftpaneselector {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 37px;
+    border-right: 2px solid var(--border-color);
+    height: 100%;
+    background-color: var(--topbar-background);
+}
+
+div.pane.leftpaneselector > div.button {
+    background-color: var(--tools-unselected);
+    width: 25px;
+    height: 25px;
+    margin-top: 5px;
+    margin-bottom: 10px;
+    margin-left: 6px;
+
+    -webkit-mask-size: cover;
+    -webkit-mask-position: center;
+    -webkit-mask-repeat: none;
+    mask-size: cover;
+    mask-position: center;
+    mask-repeat: none;
+}
+
+div.pane.leftpaneselector > div.button.hide {
+    -webkit-mask-image: url("../../../assets/ionicons/chevron-back-outline.svg");
+    mask-image: url("../../../assets/ionicons/chevron-back-outline.svg");
+}
+
+div.pane.leftpaneselector > div.button.explorer {
+    -webkit-mask-image: url("../../../assets/ionicons/file-tray-stacked-outline.svg");
+    mask-image: url("../../../assets/ionicons/file-tray-stacked-outline.svg");
+}
+
+div.pane.leftpaneselector > div.button.settings {
+    -webkit-mask-image: url("../../../assets/ionicons/settings-outline.svg");
+    mask-image: url("../../../assets/ionicons/settings-outline.svg");
+}
+
+
+div.app.leftbarhide > div.pane.leftpaneselector > div.button.hide,
+div.app.leftbarexplorer > div.pane.leftpaneselector > div.button.explorer,
+div.app.leftbarsettings > div.pane.leftpaneselector > div.button.settings {
+    background-color: var(--tools-selected);
+}

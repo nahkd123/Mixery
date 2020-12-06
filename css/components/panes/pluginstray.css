@@ -1,8 +1,8 @@
 div.pane.plugins {
     position: absolute;
     top: 0;
-    left: 302px;
-    width: calc(100% - 302px);
+    left: 341px;
+    width: calc(100% - 341px);
     height: 248px;
     border-bottom: 2px solid var(--border-color);
 

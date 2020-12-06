@@ -1,15 +1,16 @@
 div.pane.explorer {
     position: absolute;
     top: 0;
-    left: -302px;
+    left: 39px;
+    opacity: 0;
     width: 300px;
     height: 100%;
-    transition: 0.5s cubic-bezier(0.6, 0.38, 0, 1.01) left;
+    transition: 0.5s cubic-bezier(0.6, 0.38, 0, 1.01) left, 0.5s linear opacity;
 
     border-right: 2px solid var(--border-color);
 }
 div.app.leftbarexplorer > div.pane.explorer {
-    left: 0px;
+    opacity: 1;
 }
 div.pane.explorer > div.panetitle {
     background: var(--second-background);

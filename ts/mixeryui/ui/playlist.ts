@@ -1,5 +1,6 @@
 import MIDIFile from "../../mididev/midifile.js";
 import { AudioClip, MIDIClip } from "../../mixerycore/clips.js";
+import { Resources } from "../../mixerycore/resources.js";
 import { Session } from "../../mixerycore/session.js";
 import { Tools } from "../../mixerycore/tools.js";
 import { ArrayBufferLoader, AudioBufferLoader } from "../../utils/loader.js";
@@ -181,7 +182,10 @@ export class PlaylistInterface {
                         let clipLength = cursorBeat - beginBeat || 1;
                         if (clipLength <= 0) return;
 
-                        let clip = new MIDIClip(targetPlugin.generator);
+                        let midi = this.session.resources.selectedResource instanceof Resources.MIDIResource?
+                            this.session.resources.selectedResource :
+                            this.session.resources.newMIDIResource();
+                        let clip = new MIDIClip(midi, targetPlugin.generator);
                         clip.name = targetPlugin.name;
                         clip.offset = beginBeat;
                         clip.length = clipLength;
@@ -244,9 +248,11 @@ export class PlaylistInterface {
                         
                         file.arrayBuffer().then(buffer => {
                             let midi = new MIDIFile(new Uint8Array(buffer));
-                            let clip = new MIDIClip(targetPlugin.generator);
+                            let res = midi.toResource(file.name);
+                            this.session.resources.currentDir.push(res);
+                            this.session.resources.selectedResource = res;
+                            let clip = new MIDIClip(res, targetPlugin.generator);
                             if (midi.header.format === "doubleTracks") {
-                                clip.notes = midi.tracks[1].notes;
                                 clip.length = midi.tracks[1].trackLength;
                             }
                             

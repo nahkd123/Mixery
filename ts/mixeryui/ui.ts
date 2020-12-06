@@ -7,6 +7,7 @@ import { ClipEditorInterface } from "./ui/clipeditor.js";
 import { PluginsInterface } from "./ui/plugins.js";
 import { tbWindowsProcess } from "./ui/tbwindows.js";
 import { MixerInterface } from "./ui/mixer.js";
+import { LeftPaneSelector } from "./ui/leftpaneselector.js";
 
 let canvasSizeDynamicUpdate: Map<HTMLCanvasElement, (canvas: HTMLCanvasElement) => void> = new Map();
 export function updateCanvasSize(canvas: HTMLCanvasElement, onResize?: (canvas: HTMLCanvasElement) => void) {
@@ -46,6 +47,7 @@ export class UserInterface {
     playlist: PlaylistInterface;
     plugins: PluginsInterface;
     clipEditor: ClipEditorInterface;
+    leftpaneSelector: LeftPaneSelector;
     explorer: ExplorerPane;
     mixer: MixerInterface;
 
@@ -54,6 +56,7 @@ export class UserInterface {
         this.playlist = new PlaylistInterface(this);
         this.plugins = new PluginsInterface(this);
         this.clipEditor = new ClipEditorInterface(this);
+        this.leftpaneSelector = new LeftPaneSelector(this);
         this.mixer = new MixerInterface(this);
 
         tbWindowsProcess(session);
@@ -71,6 +74,9 @@ export class UserInterface {
 
         this.clipEditor.element = this.element.querySelector("div.pane.clipeditor");
         this.clipEditor.applyUpdate();
+
+        this.leftpaneSelector.element = this.element.querySelector("div.pane.leftpaneselector");
+        this.leftpaneSelector.applyUpdate();
 
         this.mixer.applyUpdate();
 
@@ -137,15 +143,17 @@ export class UserInterface {
 
     get leftBarMode(): LeftBarMode {
         return this.element.classList.contains("leftbarexplorer")? "explorer" :
+            this.element.classList.contains("leftbarresources")? "resources" :
             this.element.classList.contains("leftbarsettings")? "settings" :
             this.element.classList.contains("leftbarhide")? "hide" : "hide";
     }
     set leftBarMode(val: LeftBarMode) {
         this.element.classList.remove("leftbarexplorer");
         this.element.classList.remove("leftbarsettings");
+        this.element.classList.remove("leftbarresources");
         this.element.classList.remove("leftbarhide");
         this.element.classList.add("leftbar" + val);
     }
 }
 
-export type LeftBarMode = "hide" | "explorer" | "settings";
+export type LeftBarMode = "hide" | "explorer" | "resources" | "settings";

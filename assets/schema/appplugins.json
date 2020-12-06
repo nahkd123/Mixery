@@ -1,0 +1,23 @@
+{
+    "$schema": "http://json-schema.org/schema",
+
+    "type": "object",
+    "properties": {
+        "available": {
+            "description": "List of available plugins. Will be used for web browser version.",
+            "type": "array",
+            "items": {
+                "type": "string"
+            }
+        },
+        "disabled": {
+            "description": "List of disabled plugins",
+            "type": "array",
+            "items": {
+                "type": "string"
+            }
+        }
+    },
+
+    "required": ["available", "disabled"]
+}

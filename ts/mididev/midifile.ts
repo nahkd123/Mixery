@@ -1,4 +1,5 @@
-import { MIDINoteInfo } from "../mixerycore/midi";
+import { MIDINoteInfo } from "../mixerycore/midi.js";
+import { Resources } from "../mixerycore/resources.js";
 
 namespace Chunks {
     export const HEADER = [0x4D, 0x54, 0x68, 0x64];
@@ -242,6 +243,14 @@ export default class MIDIFile extends ByteStream {
             track.trackLength = streamReplayTime / 128 + 10;
             this.tracks.push(track);
         });
+    }
+
+    toResource(name: string) {
+        if (this.header.format === "doubleTracks") {
+            let res = new Resources.MIDIResource(name);
+            res.notes = this.tracks[1].notes;
+            return res;
+        }
     }
 }
 
