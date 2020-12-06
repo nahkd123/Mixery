@@ -1,7 +1,6 @@
-bin
-lib
-*.js
-*.js.map
-temp
-node_modules
-assets/test-assets
+/bin/*/*.js
+/bin/*/*.js.map
+/assets/test-assets
+/lib
+/temp
+/node_modules
