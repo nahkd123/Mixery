@@ -1,3 +1,4 @@
+import { Resources } from "../mixerycore/resources.js";
 var Chunks;
 (function (Chunks) {
     Chunks.HEADER = [0x4D, 0x54, 0x68, 0x64];
@@ -244,6 +245,13 @@ export default class MIDIFile extends ByteStream {
             track.trackLength = streamReplayTime / 128 + 10;
             this.tracks.push(track);
         });
+    }
+    toResource(name) {
+        if (this.header.format === "doubleTracks") {
+            let res = new Resources.MIDIResource(name);
+            res.notes = this.tracks[1].notes;
+            return res;
+        }
     }
 }
 export class MIDIFileChunk extends ByteStream {

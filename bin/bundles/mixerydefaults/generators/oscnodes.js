@@ -149,9 +149,8 @@ export class OscNodes extends AudioGenerator {
         this.playingMIDINote[note] = oscs;
     }
     midiKeyUp(note) {
-        var _a;
         const decayTime = this.envelopes.gain.measureNoteTimeInMS(0, this.session.bpm) / 1000;
-        (_a = this.playingMIDINote[note]) === null || _a === void 0 ? void 0 : _a.forEach(osc => {
+        this.playingMIDINote[note]?.forEach(osc => {
             osc.osc.stop(this.session.audioEngine.liveTime + decayTime);
             osc.gain.gain.cancelAndHoldAtValue(this.session.audioEngine.liveTime);
             osc.gain.gain.linearRampToValueAtNextTime(decayTime, 0);

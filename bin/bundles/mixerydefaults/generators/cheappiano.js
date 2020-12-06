@@ -1,12 +1,3 @@
-var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, generator) {
-    function adopt(value) { return value instanceof P ? value : new P(function (resolve) { resolve(value); }); }
-    return new (P || (P = Promise))(function (resolve, reject) {
-        function fulfilled(value) { try { step(generator.next(value)); } catch (e) { reject(e); } }
-        function rejected(value) { try { step(generator["throw"](value)); } catch (e) { reject(e); } }
-        function step(result) { result.done ? resolve(result.value) : adopt(result.value).then(fulfilled, rejected); }
-        step((generator = generator.apply(thisArg, _arguments || [])).next());
-    });
-};
 import ContextMenu, { ContextMenuEntry } from "../../../contextmenus/menu.js";
 import { AudioGenerator } from "../../../mixerycore/generator.js";
 import { notesIndex } from "../../../mixerycore/notes.js";
@@ -64,17 +55,15 @@ export class CheapPiano extends AudioGenerator {
     }
     initSamples() {
         let self = this;
-        function fetchAndLoadSample(name, noteMapping = "A4") {
-            return __awaiter(this, void 0, void 0, function* () {
-                self.samplesNoteMapping[name] = typeof noteMapping === "number" ? noteMapping : notesIndex.get(noteMapping);
-                self.sampleSelectMenu.entries.push(new ContextMenuEntry(name, () => {
-                    self.selectedSample = name;
-                    self.sampleSelectButton.textContent = name;
-                }));
-                let fetchData = yield fetch("/assets/bundles/default/CheapPiano " + name + ".wav");
-                let arrayBuffer = yield fetchData.arrayBuffer();
-                self.samples.set(name, yield self.session.audioEngine.decodeAudio(arrayBuffer));
-            });
+        async function fetchAndLoadSample(name, noteMapping = "A4") {
+            self.samplesNoteMapping[name] = typeof noteMapping === "number" ? noteMapping : notesIndex.get(noteMapping);
+            self.sampleSelectMenu.entries.push(new ContextMenuEntry(name, () => {
+                self.selectedSample = name;
+                self.sampleSelectButton.textContent = name;
+            }));
+            let fetchData = await fetch("/assets/bundles/default/CheapPiano " + name + ".wav");
+            let arrayBuffer = await fetchData.arrayBuffer();
+            self.samples.set(name, await self.session.audioEngine.decodeAudio(arrayBuffer));
         }
         fetchAndLoadSample("Grand Piano", "C5");
         fetchAndLoadSample("Grand Piano (Short)");

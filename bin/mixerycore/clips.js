@@ -1,12 +1,3 @@
-var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, generator) {
-    function adopt(value) { return value instanceof P ? value : new P(function (resolve) { resolve(value); }); }
-    return new (P || (P = Promise))(function (resolve, reject) {
-        function fulfilled(value) { try { step(generator.next(value)); } catch (e) { reject(e); } }
-        function rejected(value) { try { step(generator["throw"](value)); } catch (e) { reject(e); } }
-        function step(result) { result.done ? resolve(result.value) : adopt(result.value).then(fulfilled, rejected); }
-        step((generator = generator.apply(thisArg, _arguments || [])).next());
-    });
-};
 import { ThemeColors } from "../utils/themecolors.js";
 import CachedAudioBuffer from "../utils/cachedaudiobuffer.js";
 import AudioAutomation from "../mixeryaudio/automations/automation.js";
@@ -23,33 +14,34 @@ export class Clip {
     }
 }
 export class MIDIClip extends Clip {
-    constructor(generator) {
+    constructor(midi, generator) {
         super();
-        this.notes = [];
+        this.midi = midi;
         this.generator = generator;
         const color = ThemeColors.randomClipColor();
         this.bgcolor = color[0];
         this.fgcolor = color[1];
     }
+    get notes() { return this.midi.notes; }
 }
 export class AudioClip extends Clip {
-    constructor(buffer, track) {
+    constructor(audio, track) {
         super();
         this.audioOffset = 0;
-        this.buffer = buffer;
-        this.cached = new CachedAudioBuffer(buffer);
+        this.audio = audio;
+        this.cached = new CachedAudioBuffer(this.buffer);
         this.mixer = track;
-        this.renderAudioClip = buffer.duration > 45 ? false : true;
+        this.renderAudioClip = this.buffer.duration > 45 ? false : true;
         const color = ThemeColors.randomClipColor();
         this.bgcolor = color[0];
         this.fgcolor = color[1];
     }
-    saveClip() {
-        return __awaiter(this, void 0, void 0, function* () {
-            let stream = yield MixeryFileFormat.Audio.convertToAudioFile(this.orignal !== undefined ? this.orignal : this.buffer, this.name);
-            let blob = yield stream.convertToBlob();
-            download(blob, this.name + ".mxyaudio");
-        });
+    get buffer() { return this.audio.decoded; }
+    get orignal() { return this.audio.orignal; }
+    async saveClip() {
+        let stream = await MixeryFileFormat.Audio.convertToAudioFile(this.orignal !== undefined ? this.orignal : this.buffer, this.name);
+        let blob = await stream.convertToBlob();
+        download(blob, this.name + ".mxyaudio");
     }
 }
 export class AutomationClip extends Clip {

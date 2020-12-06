@@ -1,0 +1,61 @@
+div.pane.resources {
+    position: absolute;
+    top: 0;
+    left: -309px;
+    width: 300px;
+    height: 100%;
+    transition: 0.5s cubic-bezier(0.6, 0.38, 0, 1.01) left;
+
+    border-right: 2px solid var(--border-color);
+}
+div.app.leftbarresources > div.pane.resources {
+    left: 39px;
+}
+
+div.pane.resources > div.panetitle {
+    background: var(--second-background);
+    width: calc(100% - 24px);
+    padding: 7px 12px;
+    text-align: center;
+}
+div.pane.resources > div.addressbar {
+    width: calc(100% - 24px);
+    padding: 7px 12px;
+    position: relative;
+}
+
+div.resentry {
+    margin: 7px;
+    border-radius: 4px;
+}
+div.resentry > div.resname {
+    font-size: 12px;
+    padding: 0 8px;
+    color: var(--resources-title);
+    border-radius: 4px 4px 0 0;
+}
+div.resentry > div.content {
+    width: 100%;
+    height: 40px;
+    position: relative;
+    border-radius: 0 0 4px 4px;
+}
+
+div.resentry.midi > div.resname {
+    background-color: var(--resources-midi);
+}
+div.resentry.midi > div.content {
+    background-color: var(--resources-midi-bg);
+}
+div.resentry.midi > div.content > div.note {
+    position: absolute;
+    background-color: var(--resources-midi);
+    border-radius: 2px;
+}
+
+div.resentry.audio > div.resname {
+    background-color: var(--resources-audio);
+}
+div.resentry.audio > div.content {
+    background-color: var(--resources-audio-bg);
+}

@@ -1,5 +1,6 @@
 import MIDIFile from "../../mididev/midifile.js";
 import { AudioClip, MIDIClip } from "../../mixerycore/clips.js";
+import { Resources } from "../../mixerycore/resources.js";
 import { Tools } from "../../mixerycore/tools.js";
 import { ArrayBufferLoader, AudioBufferLoader } from "../../utils/loader.js";
 import { msToBeats } from "../../utils/msbeats.js";
@@ -162,7 +163,10 @@ export class PlaylistInterface {
                         let clipLength = cursorBeat - beginBeat || 1;
                         if (clipLength <= 0)
                             return;
-                        let clip = new MIDIClip(targetPlugin.generator);
+                        let midi = this.session.resources.selectedResource instanceof Resources.MIDIResource ?
+                            this.session.resources.selectedResource :
+                            this.session.resources.newMIDIResource();
+                        let clip = new MIDIClip(midi, targetPlugin.generator);
                         clip.name = targetPlugin.name;
                         clip.offset = beginBeat;
                         clip.length = clipLength;
@@ -221,9 +225,11 @@ export class PlaylistInterface {
                         let targetPlugin = this.session.plugins.selected;
                         file.arrayBuffer().then(buffer => {
                             let midi = new MIDIFile(new Uint8Array(buffer));
-                            let clip = new MIDIClip(targetPlugin.generator);
+                            let res = midi.toResource(file.name);
+                            this.session.resources.addResource(res);
+                            this.session.resources.selectedResource = res;
+                            let clip = new MIDIClip(res, targetPlugin.generator);
                             if (midi.header.format === "doubleTracks") {
-                                clip.notes = midi.tracks[1].notes;
                                 clip.length = midi.tracks[1].trackLength;
                             }
                             clip.name = file.name;
@@ -252,7 +258,9 @@ export class PlaylistInterface {
                     new AudioBufferLoader(audio => {
                         let previousOffset = 0;
                         audio.forEach((buffer, index) => {
-                            let clip = new AudioClip(buffer, this.ui.mixer.mixerTracks.selected.track);
+                            let res = this.session.resources.newAudioResource(buffer);
+                            res.name = audioBuffersNames[index];
+                            let clip = new AudioClip(res, this.ui.mixer.mixerTracks.selected.track);
                             clip.length = msToBeats(buffer.duration * 1000, this.session.bpm);
                             clip.offset = this.session.seeker + previousOffset;
                             clip.name = audioBuffersNames[index];

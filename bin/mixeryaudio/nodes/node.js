@@ -38,21 +38,18 @@ export default class RenderableAudioNode {
         this.connectedParams.splice(this.connectedParams.indexOf(param), 1);
     }
     reconnectAll() {
-        var _a;
         this.audioNode.disconnect();
         if (this.isRendering)
-            (_a = this.rendererNode) === null || _a === void 0 ? void 0 : _a.disconnect();
+            this.rendererNode?.disconnect();
         this.connectedNodes.forEach(node => {
-            var _a;
             this.audioNode.connect(node.audioNode);
             if (this.isRendering)
-                (_a = this.rendererNode) === null || _a === void 0 ? void 0 : _a.connect(node.rendererNode);
+                this.rendererNode?.connect(node.rendererNode);
         });
         this.connectedParams.forEach(param => {
-            var _a;
             this.audioNode.connect(param.audioParam);
             if (this.isRendering)
-                (_a = this.rendererNode) === null || _a === void 0 ? void 0 : _a.connect(param.rendererParam);
+                this.rendererNode?.connect(param.rendererParam);
         });
     }
 }

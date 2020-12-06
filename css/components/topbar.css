@@ -4,10 +4,10 @@ div.topbar {
     left: 0;
     width: calc(var(--screenWidth) - 24px);
 
-    background-color: rgb(33, 27, 55);
+    background-color: var(--topbar-background);
     padding: 0 12px;
-    border-bottom: 2px solid rgb(25, 20, 49);
-    z-index: 1;
+    border-bottom: 2px solid var(--topbar-border);
+    z-index: 2;
 }
 
 div.topbar > div.topbarbutton {
@@ -17,11 +17,11 @@ div.topbar > div.topbarbutton {
     transition: background-color 0.08s linear;
 }
 div.topbar > div.topbarbutton:hover {
-    background-color: rgb(49, 44, 70);
+    background-color: var(--topbar-button-hover);
 }
 
 div.topbar > div.topbarstatus {
-    background-color: rgb(49, 44, 70);
+    background-color: var(--topbar-status);
     position: absolute;
     top: 0; right: 0;
     width: 200px; height: 32px;

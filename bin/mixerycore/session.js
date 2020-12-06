@@ -1,12 +1,3 @@
-var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, generator) {
-    function adopt(value) { return value instanceof P ? value : new P(function (resolve) { resolve(value); }); }
-    return new (P || (P = Promise))(function (resolve, reject) {
-        function fulfilled(value) { try { step(generator.next(value)); } catch (e) { reject(e); } }
-        function rejected(value) { try { step(generator["throw"](value)); } catch (e) { reject(e); } }
-        function step(result) { result.done ? resolve(result.value) : adopt(result.value).then(fulfilled, rejected); }
-        step((generator = generator.apply(thisArg, _arguments || [])).next());
-    });
-};
 import { Playlist } from "./playlist.js";
 import { GeneratorsPlugins, PluginsManager } from "./plugins.js";
 import { NotificationsManager } from "../notifications/notificationsmgr.js";
@@ -22,6 +13,8 @@ import download from "../utils/downloader.js";
 import { AudioEncodersManager } from "../encoders/encoder.js";
 import MixeryAudioEncoder from "../encoders/mixeryaudio.js";
 import WaveFileAudioEncoder from "../encoders/wavefile.js";
+import { InternalAppPlugins } from "./appplugins/appplugins.js";
+import ResourcesStore from "./resources.js";
 export class Session {
     constructor() {
         this.appControls = new SessionControls();
@@ -70,11 +63,13 @@ export class Session {
         this.isElectron = false;
         this.scheduledPlayTasks = [];
         this.audioEngine = new MixeryAudioEngine();
+        this.appPlugins = new InternalAppPlugins.AppPluginsManager(this);
         this.midi = new MIDIManager(this);
         this.encoders = new AudioEncodersManager();
         this.encoders.addEncoder(new MixeryAudioEncoder());
         this.encoders.addEncoder(new WaveFileAudioEncoder());
         this.encoders.selectedEncoder = this.encoders.encoders[0];
+        this.resources = new ResourcesStore();
         this.playlist = new Playlist(this);
         this.plugins = new GeneratorsPlugins(this);
         this.pluginsManager = new PluginsManager();
@@ -84,7 +79,7 @@ export class Session {
         this.midi.addConnectedDevices();
         document.addEventListener("keydown", event => {
             const keyStr = (event.ctrlKey ? "Ctrl + " : "") + (event.altKey ? "Alt + " : "") + (event.shiftKey ? "Shift + " : "") + event.code;
-            if (event.target.isContentEditable)
+            if (event.target.isContentEditable || event.target instanceof HTMLInputElement)
                 return;
             switch (keyStr) {
                 case "Ctrl + KeyR":
@@ -228,28 +223,24 @@ export class Session {
         }));
         console.log("Electron features enabled. It might cause some problem if you're trying to use Electron-only features.");
     }
-    saveProject(name = this.projectName + ".mxyproj") {
-        return __awaiter(this, void 0, void 0, function* () {
-            console.log("[main] Saving project...");
-            let stream = yield MixeryFileFormat.convertToProjectFile(this);
-            let blob = stream.convertToBlob();
-            download(blob, name);
-            console.log("[main] Saved project!");
-        });
+    async saveProject(name = this.projectName + ".mxyproj") {
+        console.log("[main] Saving project...");
+        let stream = await MixeryFileFormat.convertToProjectFile(this);
+        let blob = stream.convertToBlob();
+        download(blob, name);
+        console.log("[main] Saved project!");
     }
-    decodeAudio(input, name) {
-        return __awaiter(this, void 0, void 0, function* () {
-            let data = input instanceof ArrayBuffer ? input : yield input.arrayBuffer();
-            if (name.endsWith(".mxyaudio")) {
-                let audioFile = MixeryFileFormat.Audio.readAudioFile(data);
-                if (audioFile instanceof AudioBuffer)
-                    return audioFile;
-                else
-                    yield this.audioEngine.decodeAudio(audioFile);
-            }
+    async decodeAudio(input, name) {
+        let data = input instanceof ArrayBuffer ? input : await input.arrayBuffer();
+        if (name.endsWith(".mxyaudio")) {
+            let audioFile = MixeryFileFormat.Audio.readAudioFile(data);
+            if (audioFile instanceof AudioBuffer)
+                return audioFile;
             else
-                return yield this.audioEngine.decodeAudio(data);
-        });
+                await this.audioEngine.decodeAudio(audioFile);
+        }
+        else
+            return await this.audioEngine.decodeAudio(data);
     }
 }
 export class SessionControls {

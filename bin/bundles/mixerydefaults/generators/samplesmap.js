@@ -1,12 +1,3 @@
-var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, generator) {
-    function adopt(value) { return value instanceof P ? value : new P(function (resolve) { resolve(value); }); }
-    return new (P || (P = Promise))(function (resolve, reject) {
-        function fulfilled(value) { try { step(generator.next(value)); } catch (e) { reject(e); } }
-        function rejected(value) { try { step(generator["throw"](value)); } catch (e) { reject(e); } }
-        function step(result) { result.done ? resolve(result.value) : adopt(result.value).then(fulfilled, rejected); }
-        step((generator = generator.apply(thisArg, _arguments || [])).next());
-    });
-};
 import ContextMenu, { ContextMenuEntry } from "../../../contextmenus/menu.js";
 import { AudioGenerator } from "../../../mixerycore/generator.js";
 import { NotesConfiguration } from "../../../mixerycore/notes.js";
@@ -125,14 +116,14 @@ export class SamplesMap extends AudioGenerator {
             document.body.appendChild(element);
             element.click();
             element.remove();
-            element.addEventListener("change", (event) => __awaiter(this, void 0, void 0, function* () {
+            element.addEventListener("change", async (event) => {
                 if (element.files.length === 0)
                     return;
                 let file = element.files.item(0);
                 if (!file.name.endsWith(EXTENSION))
                     return;
-                this.importPluginPreset(yield file.arrayBuffer());
-            }));
+                this.importPluginPreset(await file.arrayBuffer());
+            });
         }));
         this.mapCanvas.addEventListener("wheel", event => {
             this.scrolledNotes += (event.shiftKey ? event.deltaY : event.deltaX) / 10;
@@ -182,18 +173,18 @@ export class SamplesMap extends AudioGenerator {
         this.mapCanvas.addEventListener("dragover", event => {
             event.preventDefault();
         });
-        this.mapCanvas.addEventListener("drop", (event) => __awaiter(this, void 0, void 0, function* () {
+        this.mapCanvas.addEventListener("drop", async (event) => {
             event.preventDefault();
             if (event.dataTransfer.files.length === 0)
                 return;
             let mainFile = event.dataTransfer.files.item(0);
-            let arrayBuffer = yield mainFile.arrayBuffer();
+            let arrayBuffer = await mainFile.arrayBuffer();
             if (mainFile.name.endsWith(EXTENSION)) {
                 this.importPluginPreset(arrayBuffer);
             }
             else {
                 let orignalBlob = new Blob([new Uint8Array(arrayBuffer)], { type: mainFile.type });
-                let audioBuffer = yield this.session.audioEngine.decodeAudio(arrayBuffer);
+                let audioBuffer = await this.session.audioEngine.decodeAudio(arrayBuffer);
                 let mapInfo = {
                     sample: audioBuffer,
                     orignal: orignalBlob,
@@ -210,7 +201,7 @@ export class SamplesMap extends AudioGenerator {
                 this.selectedSample = mapInfo;
                 this.renderMap();
             }
-        }));
+        });
     }
     renderMap() {
         const canvas = this.mapCanvas;
@@ -260,7 +251,7 @@ export class SamplesMap extends AudioGenerator {
                 const noteIndex = scrolledNotes + i;
                 const octNoteIndex = noteIndex % octave;
                 const blackKey = blackKeys.includes(octNoteIndex);
-                ctx.fillStyle = ((selectedSample === null || selectedSample === void 0 ? void 0 : selectedSample.baseNote) === noteIndex) ? "#ff7a7a" : blackKey ? "black" : "white";
+                ctx.fillStyle = (selectedSample?.baseNote === noteIndex) ? "#ff7a7a" : blackKey ? "black" : "white";
                 ctx.fillRect(i * noteWidth, keyboardY, noteWidth * (blackKeys.includes(octNoteIndex + 1) ? 1.5 : 1) - 1, blackKey ? blackKeysSize : keyboardSize);
                 if (octNoteIndex === 0) {
                     ctx.fillStyle = "black";
@@ -329,66 +320,62 @@ export class SamplesMap extends AudioGenerator {
         a.click();
         URL.revokeObjectURL(a.href);
     }
-    importPluginPreset(input) {
-        return __awaiter(this, void 0, void 0, function* () {
-            function createStream(input) {
-                return __awaiter(this, void 0, void 0, function* () {
-                    let stream = {
-                        buffer: new Uint8Array((input instanceof ArrayBuffer) ? input : yield input.arrayBuffer()),
-                        pos: 0,
-                        eof() { return stream.pos >= stream.buffer.length; },
-                        readUint32() {
-                            let val = (stream.buffer[stream.pos] << 24) + (stream.buffer[stream.pos + 1] << 16) + (stream.buffer[stream.pos + 2] << 8) + stream.buffer[stream.pos + 3];
-                            stream.pos += 4;
-                            return val;
-                        },
-                        readChunk(length) {
-                            let out = stream.buffer.slice(stream.pos, stream.pos + length);
-                            stream.pos += length;
-                            return out;
-                        },
-                        readLengthPrefixedChunk() {
-                            let length = stream.readUint32();
-                            return stream.readChunk(length);
-                        },
-                        readLengthPrefixedString() {
-                            let str = "";
-                            let data = stream.readLengthPrefixedChunk();
-                            console.log("string", data);
-                            for (let i = 0; i < data.length; i++)
-                                str += String.fromCharCode(data[i]);
-                            return str;
-                        }
-                    };
-                    return stream;
-                });
-            }
-            let fileStream = yield createStream(input);
-            console.log("file", fileStream.buffer);
-            while (!fileStream.eof()) {
-                let chunkStream = yield createStream(fileStream.readLengthPrefixedChunk().buffer);
-                console.log("chunk", chunkStream.buffer);
-                let json = chunkStream.readLengthPrefixedString();
-                let header = JSON.parse(json);
-                let data = chunkStream.readLengthPrefixedChunk();
-                let dataBlob = new Blob([data]);
-                let sample = yield this.session.audioEngine.decodeAudio(data.buffer);
-                let mapInfo = {
-                    sample,
-                    orignal: dataBlob,
-                    name: header.name,
-                    baseNote: header.baseNote,
-                    fromNote: header.fromNote,
-                    toNote: header.toNote,
-                    sensitivityFrom: header.sensitivityFrom,
-                    sensitivityTo: header.sensitivityTo,
-                    outputGainFrom: header.outputGainFrom,
-                    outputGainTo: header.outputGainT
-                };
-                this.addSample(mapInfo);
-            }
-            this.renderMap();
-        });
+    async importPluginPreset(input) {
+        async function createStream(input) {
+            let stream = {
+                buffer: new Uint8Array((input instanceof ArrayBuffer) ? input : await input.arrayBuffer()),
+                pos: 0,
+                eof() { return stream.pos >= stream.buffer.length; },
+                readUint32() {
+                    let val = (stream.buffer[stream.pos] << 24) + (stream.buffer[stream.pos + 1] << 16) + (stream.buffer[stream.pos + 2] << 8) + stream.buffer[stream.pos + 3];
+                    stream.pos += 4;
+                    return val;
+                },
+                readChunk(length) {
+                    let out = stream.buffer.slice(stream.pos, stream.pos + length);
+                    stream.pos += length;
+                    return out;
+                },
+                readLengthPrefixedChunk() {
+                    let length = stream.readUint32();
+                    return stream.readChunk(length);
+                },
+                readLengthPrefixedString() {
+                    let str = "";
+                    let data = stream.readLengthPrefixedChunk();
+                    console.log("string", data);
+                    for (let i = 0; i < data.length; i++)
+                        str += String.fromCharCode(data[i]);
+                    return str;
+                }
+            };
+            return stream;
+        }
+        let fileStream = await createStream(input);
+        console.log("file", fileStream.buffer);
+        while (!fileStream.eof()) {
+            let chunkStream = await createStream(fileStream.readLengthPrefixedChunk().buffer);
+            console.log("chunk", chunkStream.buffer);
+            let json = chunkStream.readLengthPrefixedString();
+            let header = JSON.parse(json);
+            let data = chunkStream.readLengthPrefixedChunk();
+            let dataBlob = new Blob([data]);
+            let sample = await this.session.audioEngine.decodeAudio(data.buffer);
+            let mapInfo = {
+                sample,
+                orignal: dataBlob,
+                name: header.name,
+                baseNote: header.baseNote,
+                fromNote: header.fromNote,
+                toNote: header.toNote,
+                sensitivityFrom: header.sensitivityFrom,
+                sensitivityTo: header.sensitivityTo,
+                outputGainFrom: header.outputGainFrom,
+                outputGainTo: header.outputGainT
+            };
+            this.addSample(mapInfo);
+        }
+        this.renderMap();
     }
 }
 export default class SamplesMapExplorerContent extends GeneratorExplorerContent {

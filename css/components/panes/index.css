@@ -3,7 +3,10 @@
 @import url("./pluginstray.css");
 @import url("./clipeditor.css");
 @import url("./mixer.css");
+@import url("./leftpaneselector.css");
+@import url("./resources.css");
 
 div.pane {
     display: inline-block;
+    transition: 0.2s linear opacity;
 }

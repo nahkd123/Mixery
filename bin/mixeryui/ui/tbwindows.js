@@ -1,12 +1,3 @@
-var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, generator) {
-    function adopt(value) { return value instanceof P ? value : new P(function (resolve) { resolve(value); }); }
-    return new (P || (P = Promise))(function (resolve, reject) {
-        function fulfilled(value) { try { step(generator.next(value)); } catch (e) { reject(e); } }
-        function rejected(value) { try { step(generator["throw"](value)); } catch (e) { reject(e); } }
-        function step(result) { result.done ? resolve(result.value) : adopt(result.value).then(fulfilled, rejected); }
-        step((generator = generator.apply(thisArg, _arguments || [])).next());
-    });
-};
 import ContextMenu, { ContextMenuEntry } from "../../contextmenus/menu.js";
 import { AudioSampleRates } from "../../mixeryaudio/samplerates.js";
 import download from "../../utils/downloader.js";
@@ -83,9 +74,9 @@ function processExportWindow(session) {
         session.audioEngine.prepareRenderer(AudioSampleRates.COMMON * 10, parseInt(channelsCount.value));
         console.log("[main] Rendering...");
         session.play(true);
-        session.audioEngine.startRender().then((audioBuffer) => __awaiter(this, void 0, void 0, function* () {
+        session.audioEngine.startRender().then(async (audioBuffer) => {
             console.log("[main] Encoding...");
-            let arrayBuffer = yield session.encoders.encodeAudio(audioBuffer);
+            let arrayBuffer = await session.encoders.encodeAudio(audioBuffer);
             console.log("[main] Converting to blob...");
             let blob = new Blob([arrayBuffer]);
             download(blob, fileName.value);
@@ -95,7 +86,7 @@ function processExportWindow(session) {
             session.seeker = oldSeeker;
             session.settings.performance.realTimeRendering = realTimeRendering;
             console.log("[main] Clearing renderer...");
-        }));
+        });
     });
     encodeButton.style.backgroundColor = "rgb(86, 227, 198)";
     encodeButton.style.color = "white";

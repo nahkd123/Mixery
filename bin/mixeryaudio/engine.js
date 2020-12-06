@@ -1,12 +1,3 @@
-var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, generator) {
-    function adopt(value) { return value instanceof P ? value : new P(function (resolve) { resolve(value); }); }
-    return new (P || (P = Promise))(function (resolve, reject) {
-        function fulfilled(value) { try { step(generator.next(value)); } catch (e) { reject(e); } }
-        function rejected(value) { try { step(generator["throw"](value)); } catch (e) { reject(e); } }
-        function step(result) { result.done ? resolve(result.value) : adopt(result.value).then(fulfilled, rejected); }
-        step((generator = generator.apply(thisArg, _arguments || [])).next());
-    });
-};
 import Mixer from "./mixer/mixer.js";
 import RenderableAudioBufferSourceNode from "./nodes/audiobuffer.js";
 import RenderableDestinationNode from "./nodes/destination.js";
@@ -30,10 +21,8 @@ export default class MixeryAudioEngine {
             source.buffer = buffer;
         return source;
     }
-    decodeAudio(data) {
-        return __awaiter(this, void 0, void 0, function* () {
-            return this.audio.decodeAudioData(data);
-        });
+    async decodeAudio(data) {
+        return this.audio.decodeAudioData(data);
     }
     beforeRender() {
         this.nodes.forEach(node => node.beforeRender());
@@ -47,12 +36,10 @@ export default class MixeryAudioEngine {
         });
         this.beforeRender();
     }
-    startRender() {
-        return __awaiter(this, void 0, void 0, function* () {
-            let buffer = yield this.renderer.startRendering();
-            this.renderer = undefined;
-            return buffer;
-        });
+    async startRender() {
+        let buffer = await this.renderer.startRendering();
+        this.renderer = undefined;
+        return buffer;
     }
     afterRender() {
         this.nodes.forEach(node => node.afterRender());

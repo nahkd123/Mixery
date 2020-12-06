@@ -6,6 +6,8 @@ import { ClipEditorInterface } from "./ui/clipeditor.js";
 import { PluginsInterface } from "./ui/plugins.js";
 import { tbWindowsProcess } from "./ui/tbwindows.js";
 import { MixerInterface } from "./ui/mixer.js";
+import { LeftPaneSelector } from "./ui/leftpaneselector.js";
+import { ResourcesPane } from "./ui/resources.js";
 let canvasSizeDynamicUpdate = new Map();
 export function updateCanvasSize(canvas, onResize) {
     document.addEventListener("resize", () => {
@@ -46,18 +48,22 @@ export class UserInterface {
         this.playlist = new PlaylistInterface(this);
         this.plugins = new PluginsInterface(this);
         this.clipEditor = new ClipEditorInterface(this);
+        this.leftpaneSelector = new LeftPaneSelector(this);
         this.mixer = new MixerInterface(this);
         tbWindowsProcess(session);
         this.session.ui = this;
     }
     applyUpdate() {
         this.explorer = new ExplorerPane(this, this.element.querySelector("div.pane.explorer"));
+        this.resources = new ResourcesPane(this, this.element.querySelector("div.pane.resources"));
         this.playlist.element = this.element.querySelector("div.pane.editor");
         this.playlist.applyUpdate();
         this.plugins.element = this.element.querySelector("div.pane.plugins");
         this.plugins.applyUpdate();
         this.clipEditor.element = this.element.querySelector("div.pane.clipeditor");
         this.clipEditor.applyUpdate();
+        this.leftpaneSelector.element = this.element.querySelector("div.pane.leftpaneselector");
+        this.leftpaneSelector.applyUpdate();
         this.mixer.applyUpdate();
         onCanvasSizesUpdate = () => {
             this.canvasRenderUpdate();
@@ -117,12 +123,14 @@ export class UserInterface {
     }
     get leftBarMode() {
         return this.element.classList.contains("leftbarexplorer") ? "explorer" :
-            this.element.classList.contains("leftbarsettings") ? "settings" :
-                this.element.classList.contains("leftbarhide") ? "hide" : "hide";
+            this.element.classList.contains("leftbarresources") ? "resources" :
+                this.element.classList.contains("leftbarsettings") ? "settings" :
+                    this.element.classList.contains("leftbarhide") ? "hide" : "hide";
     }
     set leftBarMode(val) {
         this.element.classList.remove("leftbarexplorer");
         this.element.classList.remove("leftbarsettings");
+        this.element.classList.remove("leftbarresources");
         this.element.classList.remove("leftbarhide");
         this.element.classList.add("leftbar" + val);
     }

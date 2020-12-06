@@ -1,12 +1,3 @@
-var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, generator) {
-    function adopt(value) { return value instanceof P ? value : new P(function (resolve) { resolve(value); }); }
-    return new (P || (P = Promise))(function (resolve, reject) {
-        function fulfilled(value) { try { step(generator.next(value)); } catch (e) { reject(e); } }
-        function rejected(value) { try { step(generator["throw"](value)); } catch (e) { reject(e); } }
-        function step(result) { result.done ? resolve(result.value) : adopt(result.value).then(fulfilled, rejected); }
-        step((generator = generator.apply(thisArg, _arguments || [])).next());
-    });
-};
 import { AudioGenerator } from "../../../mixerycore/generator.js";
 import { GeneratorExplorerContent } from "../../../mixeryui/explorer.js";
 import { beatsToMS } from "../../../utils/msbeats.js";
@@ -81,10 +72,10 @@ export class DrumPad extends AudioGenerator {
             document.body.appendChild(inputElement);
             inputElement.click();
             inputElement.remove();
-            inputElement.addEventListener("change", (event) => __awaiter(this, void 0, void 0, function* () {
+            inputElement.addEventListener("change", async (event) => {
                 for (let i = 0; i < inputElement.files.length; i++)
                     this.processFile(inputElement.files.item(i));
-            }));
+            });
         });
         view.append(toolsBar);
         view.addEventListener("dragover", event => {
@@ -96,30 +87,26 @@ export class DrumPad extends AudioGenerator {
                 this.processFile(event.dataTransfer.files.item(i));
         });
     }
-    loadFromServer(path, name) {
-        return __awaiter(this, void 0, void 0, function* () {
-            let fetchInfo = yield fetch(path);
-            let arrayBuffer = yield fetchInfo.arrayBuffer();
-            let audio = yield this.session.audioEngine.decodeAudio(arrayBuffer);
-            this.addPad({
-                name: name || path,
-                buffer: audio,
-                orignal: arrayBuffer,
-                padColor: PAD_COLORS[Math.floor(Math.random() * PAD_COLORS.length)]
-            });
+    async loadFromServer(path, name) {
+        let fetchInfo = await fetch(path);
+        let arrayBuffer = await fetchInfo.arrayBuffer();
+        let audio = await this.session.audioEngine.decodeAudio(arrayBuffer);
+        this.addPad({
+            name: name || path,
+            buffer: audio,
+            orignal: arrayBuffer,
+            padColor: PAD_COLORS[Math.floor(Math.random() * PAD_COLORS.length)]
         });
     }
-    processFile(file) {
-        return __awaiter(this, void 0, void 0, function* () {
-            const name = file.name;
-            const arrayBuffer = yield file.arrayBuffer();
-            const audioBuffer = yield this.session.audioEngine.decodeAudio(arrayBuffer);
-            this.addPad({
-                name,
-                buffer: audioBuffer,
-                orignal: arrayBuffer,
-                padColor: PAD_COLORS[Math.floor(Math.random() * PAD_COLORS.length)]
-            });
+    async processFile(file) {
+        const name = file.name;
+        const arrayBuffer = await file.arrayBuffer();
+        const audioBuffer = await this.session.audioEngine.decodeAudio(arrayBuffer);
+        this.addPad({
+            name,
+            buffer: audioBuffer,
+            orignal: arrayBuffer,
+            padColor: PAD_COLORS[Math.floor(Math.random() * PAD_COLORS.length)]
         });
     }
     addPad(sample) {

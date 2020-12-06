@@ -124,7 +124,7 @@ export class TimelineBar {
             ctx.closePath();
         }
         const seekPx = this.session.seeker * this.session.pxPerBeat - this.session.scrolledPixels;
-        this.ctx.fillStyle = "rgb(86, 227, 198)";
+        this.ctx.fillStyle = window.getComputedStyle(document.body).getPropertyValue("--accent");
         drawSeekerShape(this.ctx, seekPx);
         if (this.session.playing) {
             const seekPxPlaying = seekPx + msToBeats(this.session.playedLength, this.session.bpm) * this.session.pxPerBeat;

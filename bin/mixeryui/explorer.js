@@ -1,12 +1,3 @@
-var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, generator) {
-    function adopt(value) { return value instanceof P ? value : new P(function (resolve) { resolve(value); }); }
-    return new (P || (P = Promise))(function (resolve, reject) {
-        function fulfilled(value) { try { step(generator.next(value)); } catch (e) { reject(e); } }
-        function rejected(value) { try { step(generator["throw"](value)); } catch (e) { reject(e); } }
-        function step(result) { result.done ? resolve(result.value) : adopt(result.value).then(fulfilled, rejected); }
-        step((generator = generator.apply(thisArg, _arguments || [])).next());
-    });
-};
 import { ByteStream } from "../fileformat/filestream.js";
 import { AudioClip } from "../mixerycore/clips.js";
 import { msToBeats } from "../utils/msbeats.js";
@@ -115,21 +106,21 @@ export class AudioClipExplorerContent extends ExplorerContent {
             this.bufferLoaded = true;
         }
     }
-    loadBuffer(engine) {
-        return __awaiter(this, void 0, void 0, function* () {
-            let fetchInf = yield fetch(this.bufferUrl);
-            engine.audio.decodeAudioData(yield fetchInf.arrayBuffer(), (data) => {
-                this.buffer = data;
-                this.bufferLoaded = true;
-            }, (err) => {
-                console.error(err);
-            });
+    async loadBuffer(engine) {
+        let fetchInf = await fetch(this.bufferUrl);
+        engine.audio.decodeAudioData(await fetchInf.arrayBuffer(), (data) => {
+            this.buffer = data;
+            this.bufferLoaded = true;
+        }, (err) => {
+            console.error(err);
         });
     }
     createClip(session) {
         if (this.bufferLoaded === false)
             throw "Buffer is not loaded yet";
-        let clip = new AudioClip(this.buffer);
+        let res = session.resources.newAudioResource(this.buffer);
+        res.name = this.name;
+        let clip = new AudioClip(res);
         clip.name = this.name;
         clip.length = msToBeats(this.buffer.duration * 1000, session.bpm);
         return clip;

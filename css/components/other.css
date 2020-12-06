@@ -1,5 +1,5 @@
 input {
-    font-family: 'Nunito Sans', 'Noto Sans', 'Ubuntu', Calibri, sans-serif;
+    font-family: var(--font);
     font-size: 14px;
     letter-spacing: 0.5px;
 }

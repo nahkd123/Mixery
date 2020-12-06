@@ -9,5 +9,8 @@ Use this with main HTML document!
 @import url("./apphead.css");
 @import url("./components/index.css");
 
+/* Themes */
+@import url("./themes/default.css");
+
 /* Others */
 @import url("./bundles/index.css");

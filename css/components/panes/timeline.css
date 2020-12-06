@@ -1,15 +1,15 @@
 div.timeline {
-    background: rgb(33, 27, 55);
+    background: var(--second-background);
 }
 div.timeline > * {
     vertical-align: top;
 }
 div.timeline > div.sidebar {
-    background: rgb(29, 23, 48);
-    color: rgb(148, 146, 157);
+    background: var(--timeline-sidebar);
+    color: var(--timeline-sidebar-color);
 }
 div.timeline > canvas.seekbar {
-    border-top: 2px solid rgb(86, 227, 198);
+    border-top: 2px solid var(--accent);
     width: calc(100% - 242px);
     display: inline-block;
     height: 37px;
@@ -25,7 +25,7 @@ canvas.seekbar > div.seeker {
     width: 10px;
     height: 12px;
 
-    background: rgb(86, 227, 198);
+    background: var(--accent);
     transform: translateX(-50%);
 
     cursor: grab;
@@ -39,5 +39,5 @@ div.seeker:before {
     height: 0;
     border-left: 5px solid transparent;
     border-right: 5px solid transparent;
-    border-top: 5px solid rgb(86, 227, 198);
+    border-top: 5px solid var(--accent);
 }

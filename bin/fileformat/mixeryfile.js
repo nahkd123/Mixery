@@ -1,12 +1,3 @@
-var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, generator) {
-    function adopt(value) { return value instanceof P ? value : new P(function (resolve) { resolve(value); }); }
-    return new (P || (P = Promise))(function (resolve, reject) {
-        function fulfilled(value) { try { step(generator.next(value)); } catch (e) { reject(e); } }
-        function rejected(value) { try { step(generator["throw"](value)); } catch (e) { reject(e); } }
-        function step(result) { result.done ? resolve(result.value) : adopt(result.value).then(fulfilled, rejected); }
-        step((generator = generator.apply(thisArg, _arguments || [])).next());
-    });
-};
 import { ByteStream } from "./filestream.js";
 export var MixeryFileFormat;
 (function (MixeryFileFormat) {
@@ -37,18 +28,16 @@ export var MixeryFileFormat;
         return stream;
     }
     MixeryFileFormat.writeFile = writeFile;
-    function convertToProjectFile(session) {
-        return __awaiter(this, void 0, void 0, function* () {
-            let metaChunk = yield Chunks.writeMetaData({
-                type: MixeryFileType.PROJECT,
-                name: session.projectName,
-                description: session.projectDesc,
-                timeCreated: session.projectCreationTime
-            });
-            return writeFile([
-                metaChunk
-            ]);
+    async function convertToProjectFile(session) {
+        let metaChunk = await Chunks.writeMetaData({
+            type: MixeryFileType.PROJECT,
+            name: session.projectName,
+            description: session.projectDesc,
+            timeCreated: session.projectCreationTime
         });
+        return writeFile([
+            metaChunk
+        ]);
     }
     MixeryFileFormat.convertToProjectFile = convertToProjectFile;
     let Generator;
@@ -61,35 +50,32 @@ export var MixeryFileFormat;
         }
         Generator.writeGeneratorData = writeGeneratorData;
         function readGeneratorData(pluginsManager, stream) {
-            var _a;
             const name = stream.readString();
             const primaryAuthor = stream.readString();
             const displayName = stream.readString();
-            const generatorConstructor = (_a = pluginsManager.mapped.get(primaryAuthor)) === null || _a === void 0 ? void 0 : _a.generators.get(name);
+            const generatorConstructor = pluginsManager.mapped.get(primaryAuthor)?.generators.get(name);
             if (generatorConstructor)
                 return undefined;
             generatorConstructor.constructPlugin(stream);
         }
         Generator.readGeneratorData = readGeneratorData;
-        function convertToGeneratorPresetFile(generator) {
-            return __awaiter(this, void 0, void 0, function* () {
-                let metaChunk = yield Chunks.writeMetaData({
-                    type: MixeryFileType.GENERATOR_PRESET,
-                    name: generator.displayName,
-                    description: "Description here...",
-                    timeCreated: Date.now()
-                });
-                let stream = new ByteStream.WriteableStream();
-                writeGeneratorData(generator, stream);
-                let pluginChunk = {
-                    id: "GeneratorData",
-                    data: yield stream.convertToUint8Array()
-                };
-                return writeFile([
-                    metaChunk,
-                    pluginChunk
-                ]);
+        async function convertToGeneratorPresetFile(generator) {
+            let metaChunk = await Chunks.writeMetaData({
+                type: MixeryFileType.GENERATOR_PRESET,
+                name: generator.displayName,
+                description: "Description here...",
+                timeCreated: Date.now()
             });
+            let stream = new ByteStream.WriteableStream();
+            writeGeneratorData(generator, stream);
+            let pluginChunk = {
+                id: "GeneratorData",
+                data: await stream.convertToUint8Array()
+            };
+            return writeFile([
+                metaChunk,
+                pluginChunk
+            ]);
         }
         Generator.convertToGeneratorPresetFile = convertToGeneratorPresetFile;
         function readGeneratorPresetFile(pluginsManager, data) {
@@ -157,25 +143,23 @@ export var MixeryFileFormat;
             }
         }
         Audio.readAudioData = readAudioData;
-        function convertToAudioFile(buffer, name = "Unnamed Audio") {
-            return __awaiter(this, void 0, void 0, function* () {
-                let metaChunk = yield Chunks.writeMetaData({
-                    type: MixeryFileType.AUDIO_DATA,
-                    name,
-                    description: "Description here...",
-                    timeCreated: Date.now()
-                });
-                let stream = new ByteStream.WriteableStream();
-                writeAudioData(buffer, stream);
-                let audioChunk = {
-                    id: "AudioData",
-                    data: yield stream.convertToUint8Array()
-                };
-                return writeFile([
-                    metaChunk,
-                    audioChunk
-                ]);
+        async function convertToAudioFile(buffer, name = "Unnamed Audio") {
+            let metaChunk = await Chunks.writeMetaData({
+                type: MixeryFileType.AUDIO_DATA,
+                name,
+                description: "Description here...",
+                timeCreated: Date.now()
             });
+            let stream = new ByteStream.WriteableStream();
+            writeAudioData(buffer, stream);
+            let audioChunk = {
+                id: "AudioData",
+                data: await stream.convertToUint8Array()
+            };
+            return writeFile([
+                metaChunk,
+                audioChunk
+            ]);
         }
         Audio.convertToAudioFile = convertToAudioFile;
         function readAudioFile(data) {
@@ -197,15 +181,13 @@ export var MixeryFileFormat;
             return { type, name, description, timeCreated };
         }
         Chunks.readMetaData = readMetaData;
-        function writeMetaData(meta) {
-            return __awaiter(this, void 0, void 0, function* () {
-                let stream = new ByteStream.WriteableStream();
-                stream.writeUint8(meta.type);
-                stream.writeString(meta.name);
-                stream.writeString(meta.description);
-                stream.writeUint48(meta.timeCreated);
-                return { id: "MetaData", data: yield stream.convertToUint8Array() };
-            });
+        async function writeMetaData(meta) {
+            let stream = new ByteStream.WriteableStream();
+            stream.writeUint8(meta.type);
+            stream.writeString(meta.name);
+            stream.writeString(meta.description);
+            stream.writeUint48(meta.timeCreated);
+            return { id: "MetaData", data: await stream.convertToUint8Array() };
         }
         Chunks.writeMetaData = writeMetaData;
     })(Chunks = MixeryFileFormat.Chunks || (MixeryFileFormat.Chunks = {}));

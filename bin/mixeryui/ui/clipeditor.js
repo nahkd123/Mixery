@@ -32,12 +32,11 @@ export class ClipEditorInterface {
         this.ctx = this.canvas.getContext("2d");
         this.optionsButton = this.element.querySelector("div.icon.options");
         this.optionsButton.addEventListener("click", event => {
-            var _a, _b;
             let element;
             if (this.session.playlist.selectedClip instanceof MIDIClip)
-                element = (_a = this.midiClipOptions.openMenu()) === null || _a === void 0 ? void 0 : _a.element;
+                element = this.midiClipOptions.openMenu()?.element;
             else if (this.session.playlist.selectedClip instanceof AudioClip)
-                element = (_b = this.audioClipOptions.openMenu()) === null || _b === void 0 ? void 0 : _b.element;
+                element = this.audioClipOptions.openMenu()?.element;
             if (element === undefined)
                 return;
             element.style.top = element.style.left = "";
@@ -102,6 +101,7 @@ export class ClipEditorInterface {
                             const note = selectedClip.notes[i];
                             if (note.note === clickedNote && clickedBeat >= selectedClip.offset + note.start && clickedBeat <= selectedClip.offset + note.start + note.duration) {
                                 selectedClip.notes.splice(i, 1);
+                                selectedClip.midi.linkedElement.updateGraphics();
                                 break;
                             }
                         }
@@ -122,6 +122,7 @@ export class ClipEditorInterface {
                             duration: this.session.clipEditor.noteLength
                         });
                         selectedClip.notes.sort((a, b) => (a.start - b.start));
+                        selectedClip.midi.linkedElement.updateGraphics();
                     }
                 }
             }
@@ -201,6 +202,7 @@ export class ClipEditorInterface {
                                 (start <= note.start && startEnd > note.start))) {
                                 if (event.buttons === 2)
                                     selectedClip.notes.splice(i, 1);
+                                selectedClip.midi.linkedElement.updateGraphics();
                                 return;
                             }
                             ;
@@ -213,6 +215,7 @@ export class ClipEditorInterface {
                                 duration: this.session.clipEditor.noteLength
                             });
                             selectedClip.notes.sort((a, b) => (a.start - b.start));
+                            selectedClip.midi.linkedElement.updateGraphics();
                         }
                     }
                 }
@@ -245,6 +248,7 @@ export class ClipEditorInterface {
                         });
                         this.session.clipEditor.noteLength = clickedBeat - this.midiDrawInfo.noteStart;
                         selectedClip.notes.sort((a, b) => (a.start - b.start));
+                        selectedClip.midi.linkedElement.updateGraphics();
                     }
                 }
                 else if (selectedClip instanceof AutomationClip) {
@@ -338,7 +342,6 @@ export class ClipEditorInterface {
         this.ctx.closePath();
     }
     renderMIDIClip(clip) {
-        var _a, _b, _c, _d, _e;
         const allNotesHeight = this.session.clipEditor.verticalZoom * (NotesConfiguration.NOTE_TO - NotesConfiguration.NOTE_FROM + 1) - this.canvas.height;
         if (this.session.clipEditor.verticalScroll > allNotesHeight)
             this.session.clipEditor.verticalScroll = allNotesHeight;
@@ -354,9 +357,9 @@ export class ClipEditorInterface {
             const drawY = (NotesConfiguration.NOTE_TO - i) * zoom - scroll;
             if (drawY + zoom < 0 || drawY > this.canvas.height)
                 continue;
-            const noteName = ((_b = (_a = clip.generator.noteNamesOverride) === null || _a === void 0 ? void 0 : _a.get(i)) === null || _b === void 0 ? void 0 : _b[0]) || (notesName[i] + " (" + i + ")");
-            if ((_c = clip.generator.noteNamesOverride) === null || _c === void 0 ? void 0 : _c.has(i)) {
-                ctx.fillStyle = ((_e = (_d = clip.generator.noteNamesOverride) === null || _d === void 0 ? void 0 : _d.get(i)) === null || _e === void 0 ? void 0 : _e[1]) || "white";
+            const noteName = clip.generator.noteNamesOverride?.get(i)?.[0] || (notesName[i] + " (" + i + ")");
+            if (clip.generator.noteNamesOverride?.has(i)) {
+                ctx.fillStyle = clip.generator.noteNamesOverride?.get(i)?.[1] || "white";
                 ctx.fillRect(0, drawY, ClipEditorInterface.SIDEBAR_WIDTH, zoom);
             }
             if (noteName.includes("#")) {

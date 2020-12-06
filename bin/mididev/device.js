@@ -8,10 +8,9 @@ export class MIDIInputDevice extends MIDIDevice {
         this.routing = [];
     }
     keyDownMessage(channel, note, sensitivity) {
-        var _a;
         this.manager.session.statusBox.innerText = this.name + "\nNote On: " + notesName[note] + ", CH " + (channel + 1);
         if (this.routing.length === 0) {
-            (_a = this.manager.defaultKeysListener) === null || _a === void 0 ? void 0 : _a.midiKeyDown(note, sensitivity);
+            this.manager.defaultKeysListener?.midiKeyDown(note, sensitivity);
             return;
         }
         this.routing.forEach(route => {
@@ -20,10 +19,9 @@ export class MIDIInputDevice extends MIDIDevice {
         });
     }
     keyUpMessage(channel, note) {
-        var _a;
         this.manager.session.statusBox.innerText = this.name + "\nNote Off: " + notesName[note] + ", CH " + (channel + 1);
         if (this.routing.length === 0) {
-            (_a = this.manager.defaultKeysListener) === null || _a === void 0 ? void 0 : _a.midiKeyUp(note);
+            this.manager.defaultKeysListener?.midiKeyUp(note);
             return;
         }
         this.routing.forEach(route => {

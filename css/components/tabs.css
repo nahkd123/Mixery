@@ -6,8 +6,8 @@ div.tabs.content.hidden {
     display: none;
 }
 div.tabs.buttonscontainer {
-    background-color: #272727;
-    color: white;
+    background-color: var(--tabs-background);
+    color: var(--tabs-color);
 }
 div.tabs.button {
     display: inline-block;
