@@ -29,12 +29,14 @@ div.pane.leftpaneselector > div.button.hide {
     -webkit-mask-image: url("../../../assets/ionicons/chevron-back-outline.svg");
     mask-image: url("../../../assets/ionicons/chevron-back-outline.svg");
 }
-
 div.pane.leftpaneselector > div.button.explorer {
     -webkit-mask-image: url("../../../assets/ionicons/file-tray-stacked-outline.svg");
     mask-image: url("../../../assets/ionicons/file-tray-stacked-outline.svg");
 }
-
+div.pane.leftpaneselector > div.button.resources {
+    -webkit-mask-image: url("../../../assets/ionicons/document-outline.svg");
+    mask-image: url("../../../assets/ionicons/document-outline.svg");
+}
 div.pane.leftpaneselector > div.button.settings {
     -webkit-mask-image: url("../../../assets/ionicons/settings-outline.svg");
     mask-image: url("../../../assets/ionicons/settings-outline.svg");
@@ -43,6 +45,7 @@ div.pane.leftpaneselector > div.button.settings {
 
 div.app.leftbarhide > div.pane.leftpaneselector > div.button.hide,
 div.app.leftbarexplorer > div.pane.leftpaneselector > div.button.explorer,
+div.app.leftbarresources > div.pane.leftpaneselector > div.button.resources,
 div.app.leftbarsettings > div.pane.leftpaneselector > div.button.settings {
     background-color: var(--tools-selected);
 }
