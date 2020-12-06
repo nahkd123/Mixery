@@ -111,6 +111,7 @@ export class ClipEditorInterface {
                             const note = selectedClip.notes[i];
                             if (note.note === clickedNote && clickedBeat >= selectedClip.offset + note.start && clickedBeat <= selectedClip.offset + note.start + note.duration) {
                                 selectedClip.notes.splice(i, 1);
+                                selectedClip.midi.linkedElement.updateGraphics();
                                 break;
                             }
                         }
@@ -132,6 +133,7 @@ export class ClipEditorInterface {
                             duration: this.session.clipEditor.noteLength
                         });
                         selectedClip.notes.sort((a, b) => (a.start - b.start));
+                        selectedClip.midi.linkedElement.updateGraphics();
                     }
                 }
             } else if (selectedClip instanceof AudioClip) {
@@ -212,6 +214,7 @@ export class ClipEditorInterface {
                                 (start <= note.start && startEnd > note.start)
                             )) {
                                 if (event.buttons === 2) selectedClip.notes.splice(i, 1);
+                                selectedClip.midi.linkedElement.updateGraphics();
                                 return;
                             };
                         }
@@ -224,6 +227,7 @@ export class ClipEditorInterface {
                                 duration: this.session.clipEditor.noteLength
                             });
                             selectedClip.notes.sort((a, b) => (a.start - b.start));
+                            selectedClip.midi.linkedElement.updateGraphics();
                         }
                     }
                 } else if (selectedTool === Tools.MOVE) {
@@ -257,7 +261,8 @@ export class ClipEditorInterface {
                         });
                         this.session.clipEditor.noteLength = clickedBeat - this.midiDrawInfo.noteStart;
                         // console.log(selectedClip.notes);
-                        selectedClip.notes.sort((a, b) => (a.start - b.start))
+                        selectedClip.notes.sort((a, b) => (a.start - b.start));
+                        selectedClip.midi.linkedElement.updateGraphics();
                     }
                 } else if (selectedClip instanceof AutomationClip) {
                     selectedClip.automation.rearrange();

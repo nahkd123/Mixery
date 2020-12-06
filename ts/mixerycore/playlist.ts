@@ -5,6 +5,7 @@ import { Tools } from "./tools.js";
 import drawAudioBuffer from "../utils/audiobufferdraw.js";
 import { beatsToMS } from "../utils/msbeats.js";
 import drawAutomation from "../utils/automationdraw.js";
+import { Resources } from "./resources.js";
 
 export class PlaylistTrack {
     playlist: Playlist;
@@ -127,6 +128,10 @@ export class PlaylistTrack {
                 }
             });
         }
+    }
+
+    removeBasedOnResource(res: Resources.Resource) {
+        if (res instanceof Resources.MIDIResource) this.clips = this.clips.filter((val) => !(val instanceof MIDIClip && val.midi === res));
     }
 }
 

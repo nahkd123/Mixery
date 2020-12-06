@@ -146,7 +146,9 @@ export class AudioClipExplorerContent extends ExplorerContent {
 
     createClip(session: Session) {
         if (this.bufferLoaded === false) throw "Buffer is not loaded yet";
-        let clip = new AudioClip(this.buffer);
+        let res = session.resources.newAudioResource(this.buffer);
+        res.name = this.name;
+        let clip = new AudioClip(res);
         clip.name = this.name;
         clip.length = msToBeats(this.buffer.duration * 1000, session.bpm);
         return clip;

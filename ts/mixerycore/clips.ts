@@ -39,21 +39,22 @@ export class MIDIClip extends Clip {
 }
 
 export class AudioClip extends Clip {
-    buffer: AudioBuffer;
-    orignal: ArrayBuffer;
+    audio: Resources.AudioResource;
+    get buffer() {return this.audio.decoded;}
+    get orignal() {return this.audio.orignal;}
     cached: CachedAudioBuffer;
     audioOffset: number = 0;
     mixer: MixerTrack;
 
     renderAudioClip: boolean;
 
-    constructor(buffer: AudioBuffer, track?: MixerTrack) {
+    constructor(audio: Resources.AudioResource, track?: MixerTrack) {
         super();
-        this.buffer = buffer;
-        this.cached = new CachedAudioBuffer(buffer);
+        this.audio = audio;
+        this.cached = new CachedAudioBuffer(this.buffer);
         this.mixer = track;
 
-        this.renderAudioClip = buffer.duration > 45? false : true;
+        this.renderAudioClip = this.buffer.duration > 45? false : true;
 
         const color = ThemeColors.randomClipColor();
         this.bgcolor = color[0];

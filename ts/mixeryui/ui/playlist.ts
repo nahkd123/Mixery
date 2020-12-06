@@ -249,7 +249,7 @@ export class PlaylistInterface {
                         file.arrayBuffer().then(buffer => {
                             let midi = new MIDIFile(new Uint8Array(buffer));
                             let res = midi.toResource(file.name);
-                            this.session.resources.currentDir.push(res);
+                            this.session.resources.addResource(res);
                             this.session.resources.selectedResource = res;
                             let clip = new MIDIClip(res, targetPlugin.generator);
                             if (midi.header.format === "doubleTracks") {
@@ -289,7 +289,9 @@ export class PlaylistInterface {
                         let previousOffset = 0;
 
                         audio.forEach((buffer, index) => {
-                            let clip = new AudioClip(buffer, this.ui.mixer.mixerTracks.selected.track);
+                            let res = this.session.resources.newAudioResource(buffer);
+                            res.name = audioBuffersNames[index];
+                            let clip = new AudioClip(res, this.ui.mixer.mixerTracks.selected.track);
                             clip.length = msToBeats(buffer.duration * 1000, this.session.bpm);
                             clip.offset = this.session.seeker + previousOffset;
                             clip.name = audioBuffersNames[index];

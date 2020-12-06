@@ -66,3 +66,14 @@ body {
     --dragmode-background:              #ffffff;
     --dragmode-color:                   #000000;
 }
+
+/* Resources Colors */
+body {
+    --resources-compound:               #666666;
+    --resources-compound-bg:            #3d3d3d;
+    --resources-midi:                   #fcba03;
+    --resources-midi-bg:                #fcba0340;
+    --resources-audio:                  #54ff82;
+    --resources-audio-bg:               #54ff8240;
+    --resources-title:                  #000000;
+}

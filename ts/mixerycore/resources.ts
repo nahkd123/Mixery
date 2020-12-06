@@ -1,12 +1,19 @@
-import { ResourcesPane } from "../mixeryui/ui/resources.js";
+import { ResourceElement, ResourcesPane } from "../mixeryui/ui/resources.js";
 import { MIDINoteInfo } from "./midi.js";
 
 export namespace Resources {
     export abstract class Resource {
-        name: string;
+        _name: string;
+        get name() {return this.name;}
+        set name(val: string) {
+            this._name = val;
+            if (this.linkedElement) this.linkedElement.element.querySelector("div.resname").textContent = val;
+        }
+
+        linkedElement?: ResourceElement;
 
         constructor(name: string) {
-            this.name = name;
+            this._name = name;
         }
     }
 
@@ -26,11 +33,27 @@ export namespace Resources {
 
     export class MIDIResource extends Resource {
         notes: MIDINoteInfo[] = [];
+        get actualLength() {
+            if (this.notes.length === 0) return 0;
+
+            this.notes.sort((a, b) => a.start - b.start);
+            let targetNote = this.notes[this.notes.length - 1];
+            return targetNote.start + targetNote.duration;
+        }
+        get noteRange() {
+            let min = -1;
+            let max = -1;
+            this.notes.forEach(note => {
+                if (min === -1 || note.note < min) min = note.note;
+                if (max === -1 || note.note > max) max = note.note;
+            });
+            return [min, max];
+        }
     }
 }
 
 function search(resources: Resources.Resource[], kwd: string) {
-    for (let i = 0; i < resources.length; i++) if (resources[i].name === kwd) return resources[i];
+    for (let i = 0; i < resources.length; i++) if (resources[i]._name === kwd) return resources[i];
     return undefined;
 }
 
@@ -72,8 +95,22 @@ export default class ResourcesStore {
     newMIDIResource() {
         let currentDir = this.currentDir;
         let res = new Resources.MIDIResource("MIDI Clip #" + (currentDir.length + 1));
-        currentDir.push(res);
         this.selectedResource = res;
+        return <Resources.MIDIResource> this.addResource(res);
+    }
+
+    newAudioResource(decoded: AudioBuffer, orignal?: ArrayBuffer) {
+        let currentDir = this.currentDir;
+        let res = new Resources.AudioResource("Audio Clip #" + (currentDir.length + 1), decoded);
+        res.orignal = orignal;
+        this.currentDir.push(res);
+        this.linkedPane.addElement(res);
+        return res;
+    }
+
+    addResource(res: Resources.Resource) {
+        this.currentDir.push(res);
+        if (this.linkedPane) this.linkedPane.addElement(res);
         return res;
     }
 }
