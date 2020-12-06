@@ -141,7 +141,7 @@ export class Session {
         // Also add keyboard events
         document.addEventListener("keydown", event => {
             const keyStr = (event.ctrlKey? "Ctrl + " : "") + (event.altKey? "Alt + " : "") + (event.shiftKey? "Shift + " : "") + event.code;
-            if ((event.target as HTMLDivElement).isContentEditable) return;
+            if ((event.target as HTMLDivElement).isContentEditable || event.target instanceof HTMLInputElement) return;
             
             switch (keyStr) {
                 case "Ctrl + KeyR": this.notifications.push({
