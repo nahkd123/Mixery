@@ -45,4 +45,12 @@ export default class MixeryAudioEngine {
         this.nodes.forEach(node => node.afterRender());
         this.nodes.forEach(node => node.reconnectAll());
     }
+    resetAll() {
+        this.audio.suspend();
+        this.nodes = [];
+        this.audio = new AudioContext();
+        this.renderer = undefined;
+        this.destination = new RenderableDestinationNode(this);
+        this.mixer.resetAll();
+    }
 }

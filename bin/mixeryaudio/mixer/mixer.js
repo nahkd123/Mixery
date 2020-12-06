@@ -35,4 +35,10 @@ export default class Mixer {
         });
         this.master.output.connect(this.engine.destination);
     }
+    resetAll() {
+        this.tracks = [];
+        this.master = undefined;
+        this.master = this.addTrack("Master");
+        this.master.output.connect(this.engine.destination);
+    }
 }

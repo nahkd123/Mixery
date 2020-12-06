@@ -133,4 +133,12 @@ export class Playlist {
             return track;
         }
     }
+    resetAll() {
+        this.tracks.forEach(track => {
+            track.sidebarElement.remove();
+            track.viewCanvas.remove();
+        });
+        this.tracks = [];
+        this.selectedClip = undefined;
+    }
 }

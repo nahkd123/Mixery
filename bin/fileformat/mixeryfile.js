@@ -1,3 +1,4 @@
+import { Resources } from "../mixerycore/resources.js";
 import { ByteStream } from "./filestream.js";
 export var MixeryFileFormat;
 (function (MixeryFileFormat) {
@@ -35,11 +36,32 @@ export var MixeryFileFormat;
             description: session.projectDesc,
             timeCreated: session.projectCreationTime
         });
+        let resourcesChunk = await session.resources.createFileChunk();
         return writeFile([
-            metaChunk
+            metaChunk,
+            resourcesChunk
         ]);
     }
     MixeryFileFormat.convertToProjectFile = convertToProjectFile;
+    async function convertFromProjectFile(stream, session) {
+        session.resetSession();
+        let chunks = readFile(stream);
+        chunks.forEach(chunk => {
+            switch (chunk.id) {
+                case "MetaData":
+                    let metadata = Chunks.readMetaData(chunk);
+                    session.projectName = metadata.name;
+                    session.projectDesc = metadata.description;
+                    session.projectCreationTime = metadata.timeCreated;
+                    break;
+                case "ResourceStore":
+                    session.resources.readFileChunk(chunk, session);
+                    break;
+                default: break;
+            }
+        });
+    }
+    MixeryFileFormat.convertFromProjectFile = convertFromProjectFile;
     let Generator;
     (function (Generator) {
         function writeGeneratorData(generator, stream) {
@@ -191,6 +213,78 @@ export var MixeryFileFormat;
         }
         Chunks.writeMetaData = writeMetaData;
     })(Chunks = MixeryFileFormat.Chunks || (MixeryFileFormat.Chunks = {}));
+    let MIDIs;
+    (function (MIDIs) {
+        function writeMIDIData(notes, stream) {
+            stream.writeVarInt(notes.length);
+            for (let i = 0; i < notes.length; i++) {
+                const note = notes[i];
+                stream.writeVarInt(note.note);
+                stream.writeFloat32(note.start);
+                stream.writeFloat32(note.duration);
+                stream.writeFloat32(note.sensitivity);
+            }
+        }
+        MIDIs.writeMIDIData = writeMIDIData;
+        function readMIDIData(stream) {
+            const notesCount = stream.readVarInt();
+            let notes = [];
+            for (let i = 0; i < notesCount; i++) {
+                const note = stream.readVarInt();
+                const start = stream.readFloat32();
+                const duration = stream.readFloat32();
+                const sensitivity = stream.readFloat32();
+                notes.push({
+                    note, start, duration, sensitivity
+                });
+            }
+            return notes;
+        }
+        MIDIs.readMIDIData = readMIDIData;
+    })(MIDIs = MixeryFileFormat.MIDIs || (MixeryFileFormat.MIDIs = {}));
+    let Resource;
+    (function (Resource) {
+        function writeResourceData(res, stream) {
+            stream.writeString(res.name);
+            if (res instanceof Resources.MIDIResource) {
+                stream.writeUint8(0);
+                MIDIs.writeMIDIData(res.notes, stream);
+            }
+            else if (res instanceof Resources.AudioResource) {
+                stream.writeUint8(1);
+                Audio.writeAudioData(res.orignal || res.decoded, stream);
+            }
+        }
+        Resource.writeResourceData = writeResourceData;
+        function readResourceData(stream, session) {
+            const name = stream.readString();
+            const typeNo = stream.readUint8();
+            if (typeNo === 0) {
+                const notes = MIDIs.readMIDIData(stream);
+                let res = new Resources.MIDIResource(name);
+                res.notes = notes;
+                return res;
+            }
+            else if (typeNo === 1) {
+                const audioData = Audio.readAudioData(stream);
+                if (audioData instanceof ArrayBuffer) {
+                    if (session === undefined)
+                        throw "Session info is required to decode audio";
+                    return new Promise((resolve, reject) => {
+                        session.decodeAudio(audioData, name).then(audioBuff => {
+                            let res = new Resources.AudioResource(name, audioBuff);
+                            resolve(res);
+                        });
+                    });
+                }
+                else if (audioData instanceof AudioBuffer) {
+                    let res = new Resources.AudioResource(name, audioData);
+                    return res;
+                }
+            }
+        }
+        Resource.readResourceData = readResourceData;
+    })(Resource = MixeryFileFormat.Resource || (MixeryFileFormat.Resource = {}));
 })(MixeryFileFormat || (MixeryFileFormat = {}));
 export var MixeryFileType;
 (function (MixeryFileType) {

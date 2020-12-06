@@ -1,10 +1,12 @@
+import { ByteStream } from "../fileformat/filestream.js";
+import { MixeryFileFormat } from "../fileformat/mixeryfile.js";
 export var Resources;
 (function (Resources) {
     class Resource {
         constructor(name) {
             this._name = name;
         }
-        get name() { return this.name; }
+        get name() { return this._name; }
         set name(val) {
             this._name = val;
             if (this.linkedElement)
@@ -105,6 +107,37 @@ export default class ResourcesStore {
         if (this.linkedPane)
             this.linkedPane.addElement(res);
         return res;
+    }
+    async createFileChunk() {
+        let stream = new ByteStream.WriteableStream();
+        stream.writeVarInt(this.resources.length);
+        for (let i = 0; i < this.resources.length; i++) {
+            const res = this.resources[i];
+            MixeryFileFormat.Resource.writeResourceData(res, stream);
+        }
+        let chunk = {
+            id: "ResourceStore",
+            data: await stream.convertToUint8Array()
+        };
+        return chunk;
+    }
+    async readFileChunk(chunk, session) {
+        let stream = new ByteStream.ReadableStream(chunk.data);
+        const resourcesCount = stream.readVarInt();
+        for (let i = 0; i < resourcesCount; i++) {
+            let resp = MixeryFileFormat.Resource.readResourceData(stream, session);
+            if (resp instanceof Promise)
+                resp = await resp;
+            this.addResource(resp);
+        }
+    }
+    resetAll() {
+        this.resources.forEach(res => {
+            res.linkedElement?.element.remove();
+        });
+        this.resources = [];
+        this.currentDirScope = [];
+        this.selectedResource = undefined;
     }
 }
 ResourcesStore.SEPARATOR = "/";

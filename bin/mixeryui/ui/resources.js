@@ -80,18 +80,55 @@ export class ResourceElement {
             this.element.append(this.divContent);
             this.updateGraphics();
         }
-        this.element.addEventListener("click", event => {
-            if (this.linked instanceof Resources.CompoundResource)
+        let dragMouseDown = false;
+        let drag = false;
+        this.element.addEventListener("mousedown", event => {
+            if (event.buttons === 2) {
+                event.preventDefault();
                 return;
-            if (this.pane.resourcesStore.selectedResource === this.linked) {
-                this.pane.resourcesStore.selectedResource = undefined;
             }
-            else
-                this.pane.resourcesStore.selectedResource = this.linked;
-            for (let i = 0; i < this.pane.resParentElement.children.length; i++) {
-                this.pane.resParentElement.children[i].style.boxShadow = "";
-            }
-            this.updateGraphics();
+            dragMouseDown = true;
+            drag = false;
+            let moveListener;
+            let upListener;
+            document.addEventListener("mousemove", moveListener = event => {
+                if (dragMouseDown) {
+                    if (drag === false) {
+                        let dragginE = this.draggingElement = this.element.cloneNode(true);
+                        document.body.append(dragginE);
+                        dragginE.style.position = "absolute";
+                        dragginE.style.left = event.pageX + "px";
+                        dragginE.style.top = event.pageY + "px";
+                        dragginE.style.opacity = "0.5";
+                        dragginE.style.boxShadow = "";
+                        pane.dragging = this;
+                    }
+                    drag = true;
+                    this.draggingElement.style.left = event.pageX + "px";
+                    this.draggingElement.style.top = event.pageY + "px";
+                }
+            });
+            document.addEventListener("mouseup", upListener = event => {
+                dragMouseDown = false;
+                if (!drag) {
+                    if (this.linked instanceof Resources.CompoundResource)
+                        return;
+                    if (this.pane.resourcesStore.selectedResource === this.linked) {
+                        this.pane.resourcesStore.selectedResource = undefined;
+                    }
+                    else
+                        this.pane.resourcesStore.selectedResource = this.linked;
+                    for (let i = 0; i < this.pane.resParentElement.children.length; i++) {
+                        this.pane.resParentElement.children[i].style.boxShadow = "";
+                    }
+                    this.updateGraphics();
+                }
+                else {
+                    this.draggingElement.remove();
+                }
+                document.removeEventListener("mousemove", moveListener);
+                document.removeEventListener("mouseup", upListener);
+            });
         });
         this.element.addEventListener("contextmenu", event => {
             event.preventDefault();

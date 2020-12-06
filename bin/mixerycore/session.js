@@ -15,10 +15,11 @@ import MixeryAudioEncoder from "../encoders/mixeryaudio.js";
 import WaveFileAudioEncoder from "../encoders/wavefile.js";
 import { InternalAppPlugins } from "./appplugins/appplugins.js";
 import ResourcesStore from "./resources.js";
+import { upload } from "../utils/uploader.js";
+import { ByteStream } from "../fileformat/filestream.js";
 export class Session {
     constructor() {
         this.appControls = new SessionControls();
-        this.menus = new SessionMenus();
         this.projectName = "Untitled Project";
         this.projectDesc = "Write some text here...";
         this.projectCreationTime = Date.now();
@@ -64,6 +65,7 @@ export class Session {
         this.scheduledPlayTasks = [];
         this.audioEngine = new MixeryAudioEngine();
         this.appPlugins = new InternalAppPlugins.AppPluginsManager(this);
+        this.menus = new SessionMenus(this);
         this.midi = new MIDIManager(this);
         this.encoders = new AudioEncodersManager();
         this.encoders.addEncoder(new MixeryAudioEncoder());
@@ -242,6 +244,26 @@ export class Session {
         else
             return await this.audioEngine.decodeAudio(data);
     }
+    /**
+     * Reset session, including resources store and playlists, but not loaded plugins and
+     * installed bundles
+     */
+    resetSession() {
+        this.playlist.resetAll();
+        this.resources.resetAll();
+        while (this.ui.mixer.mixerTracks.element.firstChild)
+            this.ui.mixer.mixerTracks.element.firstChild.remove();
+        while (this.ui.mixer.mixerTrackPlugins.element.firstChild.className !== "pluginadd")
+            this.ui.mixer.mixerTrackPlugins.element.firstChild.remove();
+        this.audioEngine.resetAll();
+        this.ui.mixer.mixerTracks.addMixerTrackElement(this.audioEngine.mixer.master);
+        while (this.ui.plugins.pluginsListing.firstChild.className !== "pluginadd")
+            this.ui.plugins.pluginsListing.firstChild.remove();
+        this.projectName = "Untitled Project";
+        this.projectDesc = "Write some text here...";
+        this.projectCreationTime = Date.now();
+        this.ui.canvasRenderUpdate();
+    }
 }
 export class SessionControls {
     /**
@@ -252,7 +274,7 @@ export class SessionControls {
     }
 }
 export class SessionMenus {
-    constructor() {
+    constructor(session) {
         this.file = new ContextMenu();
         this.tools = new ContextMenu();
         this.help = new ContextMenu();
@@ -264,10 +286,28 @@ export class SessionMenus {
                 bpmTapper: new MoveableWindow("BPM Tapper", 0, 0, 200, 250)
             }
         };
-        this.file.entries.push(new ContextMenuEntry("Open", () => { }));
+        this.file.entries.push(new ContextMenuEntry("Open", () => {
+            let asyncFunc = async function () {
+                let files = await upload("*.mxyproj");
+                if (files.length === 0)
+                    return;
+                let file = files.item(0);
+                MixeryFileFormat.convertFromProjectFile(new ByteStream.ReadableStream(await file.arrayBuffer()), session);
+            };
+            asyncFunc();
+        }));
         this.file.entries.push(new ContextMenuEntry("Import", () => { }));
         this.file.entries.push(new ContextMenuEntry("Export", () => {
             this.windows.file.export.show();
+        }));
+        this.file.entries.push(new ContextMenuEntry("Save", () => {
+            let asyncFunc = async function () {
+                download((await MixeryFileFormat.convertToProjectFile(session)).convertToBlob(), session.projectName + ".mxyproj");
+            };
+            asyncFunc();
+        }));
+        this.file.entries.push(new ContextMenuEntry("Erase Everything!", () => {
+            session.resetSession();
         }));
         this.tools.entries.push(new ContextMenuEntry("BPM Tapping", () => {
             this.windows.tools.bpmTapper.show();
