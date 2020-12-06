@@ -1,3 +1,4 @@
+import { EventEmitter } from "events";
 import ContextMenu, { ContextMenuEntry } from "../../contextmenus/menu.js";
 import { Resources } from "../../mixerycore/resources.js";
 import { upload } from "../../utils/uploader.js";
@@ -8,6 +9,8 @@ export class ResourcesPane {
     paneElement: HTMLDivElement;
     resParentElement: HTMLDivElement;
     ctxMenu: ContextMenu;
+
+    dragging: ResourceElement;
 
     get resourcesStore() {return this.ui.session.resources;}
 
@@ -59,6 +62,7 @@ export class ResourcesPane {
 export class ResourceElement {
     pane: ResourcesPane;
     element: HTMLDivElement;
+    draggingElement: HTMLDivElement;
     linked: Resources.Resource;
 
     divContent: HTMLDivElement;
@@ -108,17 +112,59 @@ export class ResourceElement {
             this.updateGraphics();
         }
 
-        this.element.addEventListener("click", event => {
-            if (this.linked instanceof Resources.CompoundResource) return;
-
-            if (this.pane.resourcesStore.selectedResource === this.linked) {
-                this.pane.resourcesStore.selectedResource = undefined;
-            } else this.pane.resourcesStore.selectedResource = this.linked;
-            for (let i = 0; i < this.pane.resParentElement.children.length; i++) {
-                (<HTMLDivElement> this.pane.resParentElement.children[i]).style.boxShadow = "";
+        let dragMouseDown = false;
+        let drag = false;
+        this.element.addEventListener("mousedown", event => {
+            if (event.buttons === 2) {
+                event.preventDefault();
+                return;
             }
-            this.updateGraphics();
+            dragMouseDown = true;
+            drag = false;
+
+            let moveListener: (event: MouseEvent) => void;
+            let upListener: (event: MouseEvent) => void;
+            document.addEventListener("mousemove", moveListener = event => {
+                if (dragMouseDown) {
+                    if (drag === false) {
+                        let dragginE = this.draggingElement = <HTMLDivElement> this.element.cloneNode(true);
+                        document.body.append(dragginE);
+                        dragginE.style.position = "absolute";
+                        dragginE.style.left = event.pageX + "px";
+                        dragginE.style.top = event.pageY + "px";
+                        dragginE.style.opacity = "0.5";
+                        dragginE.style.boxShadow = "";
+
+                        pane.dragging = this;
+                    }
+                    drag = true;
+
+                    this.draggingElement.style.left = event.pageX + "px";
+                    this.draggingElement.style.top = event.pageY + "px";
+                }
+            });
+            document.addEventListener("mouseup", upListener = event => {
+                dragMouseDown = false;
+
+                if (!drag) {
+                    if (this.linked instanceof Resources.CompoundResource) return;
+
+                    if (this.pane.resourcesStore.selectedResource === this.linked) {
+                        this.pane.resourcesStore.selectedResource = undefined;
+                    } else this.pane.resourcesStore.selectedResource = this.linked;
+                    for (let i = 0; i < this.pane.resParentElement.children.length; i++) {
+                        (<HTMLDivElement> this.pane.resParentElement.children[i]).style.boxShadow = "";
+                    }
+                    this.updateGraphics();
+                } else {
+                    this.draggingElement.remove();
+                }
+
+                document.removeEventListener("mousemove", moveListener);
+                document.removeEventListener("mouseup", upListener);
+            });
         });
+
         this.element.addEventListener("contextmenu", event => {
             event.preventDefault();
             if (
