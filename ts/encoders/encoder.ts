@@ -2,7 +2,7 @@ export default abstract class AudioEncoder {
     abstract name: string;
     abstract fileExt: string;
 
-    abstract async encodeAudio(buffer: AudioBuffer): Promise<ArrayBuffer>;
+    abstract encodeAudio(buffer: AudioBuffer): Promise<ArrayBuffer>;
 }
 
 export class AudioEncodersManager {
