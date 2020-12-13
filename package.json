@@ -8,11 +8,13 @@
     "lib": "lib"
   },
   "scripts": {
-    "test": "tsc --watch",
-    "cleanWindows": "del .\\bin && del .\\temp\\tsbuild.json",
-    "clean": "rmdir -r ./bin && rm ./temp/tsbuild.json",
-    "build": "tsc -b && node ./bin/nodejs/productionbuild.js",
-    "deploy": "tsc -b && node ./bin/nodejs/productionbuild.js && gh-pages --dist ./temp/production --message \"🦴 Auto-generated commit (deploy npm task)\""
+    "general.build": "tsc -b",
+    "general.productionbuild": "tsc -b && node ./bin/nodejs/productionbuild.js",
+    "general.watch": "tsc --watch",
+    "general.clean": "rmdir -r ./bin && rm ./temp/tsbuild.json",
+    "general.cleanWindows": "del .\\bin && del .\\temp\\tsbuild.json",
+
+    "github.deploypage": "tsc -b && node ./bin/nodejs/productionbuild.js && gh-pages --dist ./temp/production --message \"🦴 Auto-generated commit (deploy npm task)\""
   },
   "repository": {
     "type": "git",

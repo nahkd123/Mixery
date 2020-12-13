@@ -1,0 +1,13 @@
+{
+	"version": "2.0.0",
+	"tasks": [
+		{
+			"type": "npm",
+			"label": "Typescript Compile (watch)",
+			"script": "general.watch",
+			"isBackground": true,
+			"group": "build",
+			"problemMatcher": "$tsc-watch"
+		}
+	]
+}
