@@ -1,4 +1,5 @@
 import ContextMenu, { ContextMenuEntry } from "../../contextmenus/menu.js";
+import { ToolComponents } from "../../mixeryapi/toolcomponent.js";
 import { AudioClip, AutomationClip, MIDIClip } from "../../mixerycore/clips.js";
 import { NotesConfiguration, notesName } from "../../mixerycore/notes.js";
 import { Tools } from "../../mixerycore/tools.js";
@@ -24,6 +25,7 @@ export class ClipEditorInterface {
             noteStart: 0,
             noteEnd: 0
         };
+        this.selectedNotes = [];
         this.ui = ui;
         this.session = ui.session;
     }
@@ -90,41 +92,25 @@ export class ClipEditorInterface {
             if (this.mouse.x <= ClipEditorInterface.SIDEBAR_WIDTH)
                 return;
             let selectedClip = this.session.playlist.selectedClip;
-            const clickedBeat = snap((this.mouse.x - ClipEditorInterface.SIDEBAR_WIDTH + this.session.scrolledPixels) / this.session.pxPerBeat, ...this.session.clipEditor.availableLengths);
+            const clickedBeat = snap((this.mouse.x - ClipEditorInterface.SIDEBAR_WIDTH + this.session.scrolledPixels) / this.session.pxPerBeat, ...this.session.clipEditor.availableLengths) - selectedClip.offset;
             const selectedTool = this.session.playlist.selectedTool;
             if (selectedClip instanceof MIDIClip) {
+                if (clickedBeat < 0)
+                    return;
+                const selectedTool = this.ui.selectedTool;
+                if (!ToolComponents.instanceOf.MIDIClipTool(selectedTool))
+                    return;
                 const clickedNote = NotesConfiguration.NOTE_TO - Math.floor((this.mouse.y + this.session.clipEditor.verticalScroll) / this.session.clipEditor.verticalZoom);
-                if (selectedTool === Tools.NOTHING) {
-                    if (event.button === 2) {
-                        this.mouse.down = false;
-                        for (let i = 0; i < selectedClip.notes.length; i++) {
-                            const note = selectedClip.notes[i];
-                            if (note.note === clickedNote && clickedBeat >= selectedClip.offset + note.start && clickedBeat <= selectedClip.offset + note.start + note.duration) {
-                                selectedClip.notes.splice(i, 1);
-                                selectedClip.midi.linkedElement.updateGraphics();
-                                break;
-                            }
-                        }
-                    }
-                    else {
-                        this.midiDrawInfo.noteIndex = clickedNote;
-                        this.midiDrawInfo.noteStart = clickedBeat;
-                        this.midiDrawInfo.noteEnd = clickedBeat;
-                    }
-                }
-                else if (selectedTool === Tools.PENCIL) {
-                    if (event.buttons === 1) {
-                        const start = fixedSnap(clickedBeat, this.session.clipEditor.noteLength) - selectedClip.offset;
-                        selectedClip.notes.push({
-                            note: clickedNote,
-                            sensitivity: 0.75,
-                            start,
-                            duration: this.session.clipEditor.noteLength
-                        });
-                        selectedClip.notes.sort((a, b) => (a.start - b.start));
-                        selectedClip.midi.linkedElement.updateGraphics();
-                    }
-                }
+                let toolCasted = selectedTool;
+                const eventObj = {
+                    parent: event,
+                    beat: clickedBeat,
+                    clickedNoteNo: clickedNote,
+                    clip: selectedClip,
+                    clickedNote: selectedClip.getNoteAt(clickedNote, clickedBeat),
+                    editor: this
+                };
+                toolCasted.midiClipEditorMouseDown(eventObj);
             }
             else if (selectedClip instanceof AudioClip) {
                 if (selectedTool === Tools.MOVE) {
@@ -172,13 +158,35 @@ export class ClipEditorInterface {
             this.mouse.y = event.offsetY;
             if (this.mouse.down) {
                 const selectedTool = this.session.playlist.selectedTool;
-                const clickedBeat = snap((this.mouse.x - ClipEditorInterface.SIDEBAR_WIDTH + this.session.scrolledPixels) / this.session.pxPerBeat, ...this.session.clipEditor.availableLengths);
                 let selectedClip = this.session.playlist.selectedClip;
-                if (selectedTool === Tools.NOTHING) {
-                    if (selectedClip instanceof MIDIClip) {
-                        this.midiDrawInfo.noteEnd = clickedBeat;
+                const clickedBeat = snap((this.mouse.x - ClipEditorInterface.SIDEBAR_WIDTH + this.session.scrolledPixels) / this.session.pxPerBeat, ...this.session.clipEditor.availableLengths) - selectedClip.offset;
+                if (selectedClip instanceof MIDIClip) {
+                    if (clickedBeat < 0)
+                        return;
+                    const selectedTool = this.ui.selectedTool;
+                    if (!ToolComponents.instanceOf.MIDIClipTool(selectedTool))
+                        return;
+                    const clickedNote = NotesConfiguration.NOTE_TO - Math.floor((this.mouse.y + this.session.clipEditor.verticalScroll) / this.session.clipEditor.verticalZoom);
+                    let toolCasted = selectedTool;
+                    const eventObj = {
+                        parent: event,
+                        beat: clickedBeat,
+                        clickedNoteNo: clickedNote,
+                        clip: selectedClip,
+                        clickedNote: selectedClip.getNoteAt(clickedNote, clickedBeat),
+                        editor: this
+                    };
+                    toolCasted.midiClipEditorMouseMove(eventObj);
+                }
+                else if (selectedClip instanceof AudioClip) {
+                    if (selectedTool === Tools.MOVE) {
+                        if (oldOffset === -1)
+                            return;
+                        selectedClip.audioOffset = Math.max(snap(oldOffset - (event.offsetX - this.mouse.dragStartX) / this.session.pxPerBeat, ...this.session.clipEditor.availableLengths), 0);
                     }
-                    else if (selectedClip instanceof AutomationClip) {
+                }
+                else if (selectedClip instanceof AutomationClip) {
+                    if (selectedTool === Tools.NOTHING) {
                         const padding = 30;
                         const paddedHeight = this.canvas.height - padding * 2;
                         const rawClickedValue = 1 - Math.max(Math.min((event.offsetY - padding) / paddedHeight, 1.0), 0.0);
@@ -191,41 +199,6 @@ export class ClipEditorInterface {
                         this.clickedAutomationNode.value = event.shiftKey ? mappedClickedValue : event.ctrlKey ? fixedSnapCeil(mappedClickedValue, 0.05) : fixedSnap(mappedClickedValue, 0.05);
                     }
                 }
-                else if (selectedTool === Tools.PENCIL) {
-                    if (selectedClip instanceof MIDIClip) {
-                        const clickedNote = NotesConfiguration.NOTE_TO - Math.floor((this.mouse.y + this.session.clipEditor.verticalScroll) / this.session.clipEditor.verticalZoom);
-                        const start = fixedSnap(clickedBeat, this.session.clipEditor.noteLength) - selectedClip.offset;
-                        const startEnd = start + this.session.clipEditor.noteLength;
-                        for (let i = 0; i < selectedClip.notes.length; i++) {
-                            const note = selectedClip.notes[i];
-                            if (note.note === clickedNote && ((start >= note.start && start < note.start + note.duration) ||
-                                (start <= note.start && startEnd > note.start))) {
-                                if (event.buttons === 2)
-                                    selectedClip.notes.splice(i, 1);
-                                selectedClip.midi.linkedElement.updateGraphics();
-                                return;
-                            }
-                            ;
-                        }
-                        if (event.buttons === 1) {
-                            selectedClip.notes.push({
-                                note: clickedNote,
-                                sensitivity: 0.75,
-                                start,
-                                duration: this.session.clipEditor.noteLength
-                            });
-                            selectedClip.notes.sort((a, b) => (a.start - b.start));
-                            selectedClip.midi.linkedElement.updateGraphics();
-                        }
-                    }
-                }
-                else if (selectedTool === Tools.MOVE) {
-                    if (selectedClip instanceof AudioClip) {
-                        if (oldOffset === -1)
-                            return;
-                        selectedClip.audioOffset = Math.max(snap(oldOffset - (event.offsetX - this.mouse.dragStartX) / this.session.pxPerBeat, ...this.session.clipEditor.availableLengths), 0);
-                    }
-                }
             }
             this.ui.canvasRenderUpdate();
         });
@@ -234,22 +207,24 @@ export class ClipEditorInterface {
                 return;
             if (this.mouse.down) {
                 let selectedClip = this.session.playlist.selectedClip;
-                const selectedTool = this.session.playlist.selectedTool;
-                const clickedBeat = snap((this.mouse.x - ClipEditorInterface.SIDEBAR_WIDTH + this.session.scrolledPixels) / this.session.pxPerBeat, ...this.session.clipEditor.availableLengths);
+                const clickedBeat = snap((this.mouse.x - ClipEditorInterface.SIDEBAR_WIDTH + this.session.scrolledPixels) / this.session.pxPerBeat, ...this.session.clipEditor.availableLengths) - selectedClip.offset;
                 if (selectedClip instanceof MIDIClip) {
-                    if (selectedTool === Tools.NOTHING) {
-                        if (clickedBeat - this.midiDrawInfo.noteStart <= 0)
-                            return;
-                        selectedClip.notes.push({
-                            note: this.midiDrawInfo.noteIndex,
-                            sensitivity: 0.75,
-                            start: this.midiDrawInfo.noteStart - selectedClip.offset,
-                            duration: clickedBeat - this.midiDrawInfo.noteStart
-                        });
-                        this.session.clipEditor.noteLength = clickedBeat - this.midiDrawInfo.noteStart;
-                        selectedClip.notes.sort((a, b) => (a.start - b.start));
-                        selectedClip.midi.linkedElement.updateGraphics();
-                    }
+                    if (clickedBeat < 0)
+                        return;
+                    const selectedTool = this.ui.selectedTool;
+                    if (!ToolComponents.instanceOf.MIDIClipTool(selectedTool))
+                        return;
+                    const clickedNote = NotesConfiguration.NOTE_TO - Math.floor((this.mouse.y + this.session.clipEditor.verticalScroll) / this.session.clipEditor.verticalZoom);
+                    let toolCasted = selectedTool;
+                    const eventObj = {
+                        parent: event,
+                        beat: clickedBeat,
+                        clickedNoteNo: clickedNote,
+                        clip: selectedClip,
+                        clickedNote: selectedClip.getNoteAt(clickedNote, clickedBeat),
+                        editor: this
+                    };
+                    toolCasted.midiClipEditorMouseUp(eventObj);
                 }
                 else if (selectedClip instanceof AutomationClip) {
                     selectedClip.automation.rearrange();
@@ -410,6 +385,11 @@ export class ClipEditorInterface {
             ctx.globalAlpha = 1 - Math.min(Math.max(0, (ClipEditorInterface.SIDEBAR_WIDTH - drawX) / drawW), 1);
             ctx.fillStyle = clip.bgcolor;
             ctx.fillRect(drawX, drawY, drawW, zoom);
+            if (this.selectedNotes.includes(note)) {
+                ctx.strokeStyle = "rgb(255, 127, 0)";
+                ctx.lineWidth = 2;
+                ctx.strokeRect(drawX, drawY, drawW, zoom);
+            }
             ctx.fillStyle = clip.fgcolor;
             ctx.fillText(notesName[note.note], drawX + 5, drawY + 16);
             ctx.globalAlpha = 1;

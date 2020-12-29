@@ -1,4 +1,5 @@
 import { AppPlugins } from "../../mixeryapi/appplugins.js";
+import { ToolComponents } from "../../mixeryapi/toolcomponent.js";
 export var InternalAppPlugins;
 (function (InternalAppPlugins) {
     class Plugin extends AppPlugins.Plugin {
@@ -20,6 +21,10 @@ export var InternalAppPlugins;
             this.info = this.pluginModule.plugin;
             if (this.pluginModule.onLoad)
                 this.pluginModule.onLoad(this);
+            this.components.forEach(component => {
+                if (component instanceof ToolComponents.Tool)
+                    this.session.ui.registerTool(component);
+            });
         }
         enable() {
             if (this.enabled)
@@ -38,6 +43,7 @@ export var InternalAppPlugins;
             console.log("[apppl/" + this.name + "] Disabled.");
         }
         registerComponent(component) {
+            this.components.push(component);
             return this;
         }
     }

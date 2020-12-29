@@ -1,4 +1,3 @@
-import { Tools } from "../../mixerycore/tools.js";
 import { numberRounder } from "../../utils/numberround.js";
 import { EffectExplorerContent, GeneratorExplorerContent } from "../explorer.js";
 export class PlaylistBar {
@@ -59,29 +58,40 @@ export class PlaylistBar {
         this.element.querySelector("div.editorbarentry.clipedit").addEventListener("click", event => {
             this.ui.clipEditorTray = !this.ui.clipEditorTray;
         });
-        let toolsButtons = [];
-        let toolsButtonsActions = [];
-        function unselectTools(exclude) {
-            toolsButtons.forEach(button => { if (button !== exclude)
-                button.classList.remove("selected"); });
-        }
-        function addToolButton(element, tool) {
-            toolsButtons.push(element);
-            toolsButtonsActions.push(tool);
-        }
-        addToolButton(this.element.querySelector("div.tools.nothing"), Tools.NOTHING);
-        addToolButton(this.element.querySelector("div.tools.pencil"), Tools.PENCIL);
-        addToolButton(this.element.querySelector("div.tools.move"), Tools.MOVE);
-        toolsButtons.forEach((button, index) => {
-            button.addEventListener("click", event => {
-                unselectTools(button);
-                button.classList.add("selected");
-                this.session.playlist.selectedTool = toolsButtonsActions[index];
-            });
-        });
+        this.toolsRack = new ToolsRack(this.session, this.element.querySelector("div.editorbarentry.toolsrack"));
         this.element.querySelector("div.playbackbutton.play").addEventListener("click", () => {
             this.session.playToggle();
             this.ui.canvasRenderUpdate();
         });
+    }
+}
+export class ToolsRack {
+    constructor(session, element) {
+        this.session = session;
+        this.element = element;
+        this.toolsElement = [];
+        this.tools = [];
+    }
+    addToRack(tool) {
+        this.tools.push(tool);
+        let element = document.createElement("div");
+        element.className = "tools " + tool.id;
+        element.title = tool.name + ": " + tool.description;
+        this.element.append(element);
+        this.toolsElement.push(element);
+        element.addEventListener("click", event => {
+            this.unselectAll();
+            this.select(tool);
+            this.session.ui.selectedTool = tool;
+        });
+        return element;
+    }
+    unselectAll() {
+        this.toolsElement.forEach(tool => tool.classList.remove("selected"));
+    }
+    select(tool) {
+        this.unselectAll();
+        const element = this.toolsElement[this.tools.indexOf(tool)];
+        element.classList.add("selected");
     }
 }

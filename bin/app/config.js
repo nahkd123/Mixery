@@ -1,6 +1,6 @@
 export var MixeryConfigurations;
 (function (MixeryConfigurations) {
-    MixeryConfigurations.allowTestBox = false;
+    MixeryConfigurations.allowTestBox = true;
     MixeryConfigurations.exposeToGlobal = true;
     MixeryConfigurations.emulateElectronJS = false;
     MixeryConfigurations.showLogo = true;

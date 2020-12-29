@@ -44,6 +44,8 @@ setInterval(() => {
 export class UserInterface {
     constructor(session) {
         this.updateNextFrame = false;
+        this.tools = [];
+        this.selectedTool = undefined;
         this.session = session;
         this.playlist = new PlaylistInterface(this);
         this.plugins = new PluginsInterface(this);
@@ -133,5 +135,14 @@ export class UserInterface {
         this.element.classList.remove("leftbarresources");
         this.element.classList.remove("leftbarhide");
         this.element.classList.add("leftbar" + val);
+    }
+    registerTool(tool) {
+        this.tools.push(tool);
+        this.playlist.editorBar.toolsRack.addToRack(tool);
+        if (this.selectedTool === undefined) {
+            this.selectedTool = tool;
+            this.playlist.editorBar.toolsRack.select(tool);
+        }
+        console.log("[ui/main] Registered " + tool.name + " tool");
     }
 }
