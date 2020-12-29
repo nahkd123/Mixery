@@ -39,14 +39,15 @@ export class Session {
     midi: MIDIManager;
     encoders: AudioEncodersManager;
 
-    // General/Project metadata
+    //#region General/Project metadata
     projectName: string = "Untitled Project";
     projectDesc: string = "Write some text here...";
     projectCreationTime = Date.now();
     bpm: number = 120;
     resources: ResourcesStore;
+    //#endregion
 
-    // Views
+    //#region Views
     ui: UserInterface;
     statusBox: HTMLDivElement;
 
@@ -60,13 +61,15 @@ export class Session {
     realScrolledBeats: number = 0;
     get realScrolledPixels() {return this.pxPerBeat * this.realScrolledBeats;}
     set realScrolledPixels(value: number) {this.realScrolledBeats = value / this.pxPerBeat;}
+    //#endregion
 
-    // Player
+    //#region Player
     seeker: number = 0;
     playing: boolean = false;
     playTimestamp: number = 0;
     get playedLength() {return this.playing? (Date.now() - this.playTimestamp) : 0;}
     get playedBeats() {return msToBeats(this.playedLength, this.bpm);}
+    //#endregion
 
     // Dedicated to clip editor
     clipEditor = {
@@ -85,7 +88,7 @@ export class Session {
     }[] = [];
     automatingParams: RenderableAudioParam[] = [];
 
-    // Settings
+    //#region Settings
     settings = {
         _title: "Settings",
 
@@ -112,6 +115,7 @@ export class Session {
         code: string,
         action: () => void
     }[] = [];
+    //#endregion
 
     // Extras
     isElectron: boolean = false;

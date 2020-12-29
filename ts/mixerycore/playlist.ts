@@ -133,6 +133,22 @@ export class PlaylistTrack {
     removeBasedOnResource(res: Resources.Resource) {
         if (res instanceof Resources.MIDIResource) this.clips = this.clips.filter((val) => !(val instanceof MIDIClip && val.midi === res));
     }
+
+    /**
+     * Check if the area is blocked by a clip
+     * @param offset Start offset
+     * @param length Length (in beats)
+     */
+    isBlocked(offset: number, length: number) {
+        for (let i = 0; i < this.clips.length; i++) {
+            const clip = this.clips[i];
+            if (
+                (offset >= clip.offset && offset <= clip.offset + clip.length) ||
+                (offset + length >= clip.offset && offset + length <= clip.offset + clip.length)
+            ) return true;
+        }
+        return false;
+    }
 }
 
 export class Playlist {

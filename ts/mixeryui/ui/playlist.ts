@@ -1,4 +1,5 @@
 import MIDIFile from "../../mididev/midifile.js";
+import { ToolComponents } from "../../mixeryapi/toolcomponent.js";
 import { AudioClip, MIDIClip } from "../../mixerycore/clips.js";
 import { Resources } from "../../mixerycore/resources.js";
 import { Session } from "../../mixerycore/session.js";
@@ -73,6 +74,14 @@ export class PlaylistInterface {
             track.sidebarElement = ele;
             track.viewCanvas = canvas;
 
+            let getClipAt = (beat: number) => {
+                for (let i = 0; i < track.clips.length; i++) {
+                    const clip = track.clips[i];
+                    if (beat >= clip.offset && beat <= (clip.offset + clip.length)) return clip;
+                }
+                return undefined;
+            };
+
             volumeToggle.addEventListener("click", event => {
                 track.unmuted = !track.unmuted;
                 if (track.unmuted) ele.classList.add("on");
@@ -81,148 +90,75 @@ export class PlaylistInterface {
                 this.ui.canvasRenderUpdate();
             });
 
-            // Click to add clip wee
+            let canvasMousemove = (event: MouseEvent) => {
+                const selectedTool = this.ui.selectedTool;
+                if (!ToolComponents.instanceOf.PlaylistTool(selectedTool)) return;
+
+                let eventpkg = <ToolComponents.PlaylistToolEvent> {
+                    parent: event,
+                    playlist: this,
+                    mouseDown: false,
+                    beat: this.session.scrolledBeats + event.offsetX / this.session.pxPerBeat,
+
+                    clickedTrack: track
+                };
+                (<ToolComponents.PlaylistTool> (selectedTool as unknown)).playlistMouseMove(eventpkg);
+            };
+            canvas.addEventListener("mousemove", canvasMousemove);
             canvas.addEventListener("mousedown", event => {
-                globalCanvasMouseDown = true;
-                beginOffsetX = event.offsetX;
-                beginBeat = snap(event.offsetX / this.session.pxPerBeat + this.session.scrolledBeats, ...BeatSnapPreset);
-                tool = this.session.playlist.selectedTool;
-                // console.log(clickedBeat);
+                canvas.removeEventListener("mousemove", canvasMousemove);
 
-                let self = this;
-                function deleteClipAtCursor() {
-                    globalCanvasMouseDown = false;
-                    for (let i = 0; i < track.clips.length; i++) {
-                        const clip = track.clips[i];
-                        if (beginBeat >= clip.offset && beginBeat <= clip.offset + clip.length) {
-                            track.clips.splice(i, 1);
-                            if (self.session.playlist.selectedClip === clip) self.session.playlist.selectedClip = undefined;
-                            return;
-                        }
-                    }
-                }
+                const selectedTool = this.ui.selectedTool;
+                if (!ToolComponents.instanceOf.PlaylistTool(selectedTool)) return;
 
-                if (tool === Tools.NOTHING) {
-                    if (event.button === 2) {
-                        deleteClipAtCursor();
-                    } else {
-                        this.session.seeker = beginBeat;
-                        this.ui.canvasRenderUpdate();
-                    }
-                } else if (tool === Tools.PENCIL) {
-                    if (event.button === 2) {
-                        deleteClipAtCursor();
-                    } 
-                } else if (tool === Tools.MOVE) {
-                    this.session.scrollFriction = Math.round(this.session.scrollFriction * 0.2);
-                    this.session.playlist.selectedClip = undefined;
-                    for (let i = 0; i < track.clips.length; i++) {
-                        const clip = track.clips[i];
-                        const drawX = clip.offset * this.session.pxPerBeat - this.session.scrolledPixels;
-                        const drawW = clip.length * this.session.pxPerBeat;
-                        const drawXResize = drawX + drawW - 5;
-                        const drawXEnd = drawX + drawW;
-                        if (event.offsetX >= drawX && event.offsetX <= drawXEnd) {
-                            this.session.playlist.selectedClip = clip;
-                            movingClip = true;
-                            resizingClip = event.offsetX >= drawXResize;
-                            clipOldOffset = clip.offset;
-                            clipOldLength = clip.length;
-                            break;
-                        }
-                    }
-                    this.ui.canvasRenderUpdate();
-                }
+                let eventpkg = <ToolComponents.PlaylistToolEvent> {
+                    parent: event,
+                    playlist: this,
+                    mouseDown: true,
+                    beat: this.session.scrolledBeats + event.offsetX / this.session.pxPerBeat,
+
+                    clickedTrack: track,
+                    clickedClip: getClipAt(this.session.scrolledBeats + event.offsetX / this.session.pxPerBeat)
+                };
+                (<ToolComponents.PlaylistTool> (selectedTool as unknown)).playlistMouseDown(eventpkg);
+
+                let mousemove: (event: MouseEvent) => void;
+                let mouseup: (event: MouseEvent) => void;
+
+                document.addEventListener("mousemove", mousemove = event => {
+                    const canvasPx = event.pageX - canvas.getBoundingClientRect().left;
+
+                    let eventpkg = <ToolComponents.PlaylistToolEvent> {
+                        parent: event,
+                        playlist: this,
+                        mouseDown: true,
+                        beat: this.session.scrolledBeats + canvasPx / this.session.pxPerBeat,
+
+                        clickedTrack: track,
+                        clickedClip: getClipAt(this.session.scrolledBeats + event.offsetX / this.session.pxPerBeat)
+                    };
+                    (<ToolComponents.PlaylistTool> (selectedTool as unknown)).playlistMouseMove(eventpkg);
+                });
+                document.addEventListener("mouseup", mouseup = event => {
+                    const canvasPx = event.pageX - canvas.getBoundingClientRect().left;
+
+                    let eventpkg = <ToolComponents.PlaylistToolEvent> {
+                        parent: event,
+                        playlist: this,
+                        mouseDown: false,
+                        beat: this.session.scrolledBeats + canvasPx / this.session.pxPerBeat,
+
+                        clickedTrack: track,
+                        clickedClip: getClipAt(this.session.scrolledBeats + event.offsetX / this.session.pxPerBeat)
+                    };
+                    (<ToolComponents.PlaylistTool> (selectedTool as unknown)).playlistMouseUp(eventpkg);
+
+                    document.removeEventListener("mousemove", mousemove);
+                    document.removeEventListener("mouseup", mouseup);
+                    canvas.addEventListener("mousemove", canvasMousemove);
+                });
             });
-
-            let buildupFriction = false;
-            canvas.addEventListener("contextmenu", event => {
-                event.preventDefault();
-                this.ui.canvasRenderUpdate();
-            });
-            canvas.addEventListener("mousemove", event => {
-                if (buildupFriction) this.session.scrollFriction -= event.movementX;
-                if (!globalCanvasMouseDown) return;
-                const cursorBeat = snap(event.offsetX / this.session.pxPerBeat + this.session.scrolledBeats, ...BeatSnapPreset);
-                if (tool === Tools.NOTHING) {
-                    this.session.seeker = cursorBeat;
-                    if (this.session.playing) this.session.stopAndThenPlay();
-
-                    this.ui.canvasRenderUpdate();
-                } else if (tool === Tools.MOVE) {
-                    if (!movingClip) {
-                        this.session.scrolledPixels -= event.movementX;
-                        if (this.session.scrolledBeats < 0) this.session.scrolledBeats = 0;
-                    } else {
-                        let clip = this.session.playlist.selectedClip;
-                        if (!resizingClip) clip.offset = snap(clipOldOffset + ((event.offsetX - beginOffsetX) / this.session.pxPerBeat), ...BeatSnapPreset);
-                        else clip.length = snap(clipOldLength + ((event.offsetX - beginOffsetX) / this.session.pxPerBeat), ...BeatSnapPreset);
-                    }
-                    this.ui.canvasRenderUpdate();
-                }
-            });
-
-            canvas.addEventListener("mouseup", event => {
-                globalCanvasMouseDown = false;
-                const cursorBeat = snap(event.offsetX / this.session.pxPerBeat + this.session.scrolledBeats, ...BeatSnapPreset);
-                if (tool === Tools.PENCIL) {
-                    if (event.button === 2) {}
-                    else {
-                        if (this.session.plugins.selected === undefined) {
-                            if (this.session.notifications.hasTag("selectplugin")) return;
-                            this.session.notifications.push({
-                                desc: "You need to select a plugin to continue",
-                                tags: ["selectplugin"],
-                                duration: 3000
-                            });
-                            return;
-                        }
-                        let targetPlugin = this.session.plugins.selected;
-    
-                        let clipLength = cursorBeat - beginBeat || 1;
-                        if (clipLength <= 0) return;
-
-                        let midi = this.session.resources.selectedResource instanceof Resources.MIDIResource?
-                            this.session.resources.selectedResource :
-                            this.session.resources.newMIDIResource();
-                        let clip = new MIDIClip(midi, targetPlugin.generator);
-                        clip.name = targetPlugin.name;
-                        clip.offset = beginBeat;
-                        clip.length = clipLength;
-                        track.clips.push(clip);
-    
-                        this.session.playlist.selectedClip = clip;
-                        this.ui.canvasRenderUpdate();
-                    }
-                } else if (tool === Tools.MOVE) {
-                    if (movingClip) {
-                        movingClip = false;
-                        resizingClip = false;
-                        return;
-                    }
-
-                    buildupFriction = true;
-                    setTimeout(() => {
-                        buildupFriction = false;
-                    }, 30);
-                }
-            });
-
-            canvas.addEventListener("mouseenter", event => {
-                if (!globalCanvasMouseDown) return;
-
-                if (tool === Tools.MOVE && movingClip && !resizingClip) {
-                    track.clips.push(this.session.playlist.selectedClip);
-                }
-            });
-
-            canvas.addEventListener("mouseleave", event => {
-                if (!globalCanvasMouseDown) return;
-
-                if (tool === Tools.MOVE && movingClip && !resizingClip) {
-                    track.clips.splice(track.clips.indexOf(this.session.playlist.selectedClip), 1);
-                }
-            });
+            canvas.addEventListener("contextmenu", event => {event.preventDefault()});
             
             canvas.addEventListener("dragover", event => {
                 event.preventDefault();

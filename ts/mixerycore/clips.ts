@@ -36,6 +36,12 @@ export class MIDIClip extends Clip {
         this.bgcolor = color[0];
         this.fgcolor = color[1];
     }
+
+    getNoteAt(n: number, offset: number) {
+        const notes = this.notes;
+        for (let i = 0; i < notes.length; i++) if (n === notes[i].note && offset >= notes[i].start && offset < notes[i].start + notes[i].duration) return notes[i];
+        return undefined;
+    }
 }
 
 export class AudioClip extends Clip {

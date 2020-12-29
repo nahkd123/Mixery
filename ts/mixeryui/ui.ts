@@ -9,6 +9,7 @@ import { tbWindowsProcess } from "./ui/tbwindows.js";
 import { MixerInterface } from "./ui/mixer.js";
 import { LeftPaneSelector } from "./ui/leftpaneselector.js";
 import { ResourcesPane } from "./ui/resources.js";
+import { ToolComponents } from "../mixeryapi/toolcomponent.js";
 
 let canvasSizeDynamicUpdate: Map<HTMLCanvasElement, (canvas: HTMLCanvasElement) => void> = new Map();
 export function updateCanvasSize(canvas: HTMLCanvasElement, onResize?: (canvas: HTMLCanvasElement) => void) {
@@ -157,6 +158,21 @@ export class UserInterface {
         this.element.classList.remove("leftbarhide");
         this.element.classList.add("leftbar" + val);
     }
+
+    //#region Tools
+    tools: ToolComponents.Tool[] = [];
+    selectedTool: ToolComponents.Tool = undefined;
+    registerTool(tool: ToolComponents.Tool) {
+        this.tools.push(tool);
+        this.playlist.editorBar.toolsRack.addToRack(tool);
+        if (this.selectedTool === undefined) {
+            this.selectedTool = tool;
+            this.playlist.editorBar.toolsRack.select(tool);
+        }
+
+        console.log("[ui/main] Registered " + tool.name + " tool");
+    }
+    //#endregion
 }
 
 export type LeftBarMode = "hide" | "explorer" | "resources" | "settings";
