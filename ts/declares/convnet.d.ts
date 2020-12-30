@@ -2,7 +2,7 @@ declare namespace convnetjs {
     export const REVISION: string;
 
     export interface LayerDefinition {
-        type: "input" | "fc" | "softmax" | "svm" | "regression";
+        type: "input" | "fc" | "conv" | "pooling" | "softmax" | "svm" | "regression";
 
         out_sx?: number;
         out_sy?: number;
@@ -10,6 +10,10 @@ declare namespace convnetjs {
 
         num_neurons?: number;
         activation?: "sigmoid" | "tanh" | "relu" | "maxout";
+
+        sx?: number;
+        filters?: number;
+        stride?: number;
 
         num_classes?: number;
     }
@@ -40,7 +44,7 @@ declare namespace convnetjs {
             options: TrainerOptions
         );
         train(vol: Vol, clss: number);
-        train(vol: Vol, nr: number[]);
+        train(vol: Vol, nr: ArrayLike<number>);
     }
     export class Vol {
         constructor(
