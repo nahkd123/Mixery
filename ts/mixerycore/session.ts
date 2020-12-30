@@ -174,6 +174,11 @@ export class Session {
                         this.ui.playlist.editorBar.toolsRack.select(tool);
                     }
                     break;
+
+                    case "Alt + Digit1": event.preventDefault(); this.ui.leftBarMode = "hide"; break;
+                    case "Alt + Digit2": event.preventDefault(); this.ui.leftBarMode = "explorer"; break;
+                    case "Alt + Digit3": event.preventDefault(); this.ui.leftBarMode = "resources"; break;
+                    case "Alt + Digit4": event.preventDefault(); this.ui.leftBarMode = "settings"; break;
                 default: event.preventDefault(); break;
             }
             this.keyboardShortcuts.forEach(shortcut => {
