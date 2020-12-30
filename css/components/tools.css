@@ -14,7 +14,7 @@ div.tools.selected {
     background: var(--tools-selected);
 }
 
-div.tools.nothing {
+div.tools.cursor {
     -webkit-mask-image: url("../../assets/ionicons/ellipse-outline.svg");
     mask-image: url("../../assets/ionicons/ellipse-outline.svg");
 }

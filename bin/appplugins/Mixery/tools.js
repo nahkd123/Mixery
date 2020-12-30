@@ -168,14 +168,23 @@ export class MoveTool extends ToolComponents.Tool {
             this.selected = -1;
     }
     midiClipEditorMouseDown(event) {
-        if (event.clickedNote) {
-            if (event.editor.selectedNotes.includes(event.clickedNote))
-                event.editor.selectedNotes.splice(event.editor.selectedNotes.indexOf(event.clickedNote), 1);
+        const editor = event.editor;
+        if (event.parent.buttons === 1 && event.clickedNote) {
+            if (editor.selectedNotes.includes(event.clickedNote))
+                editor.selectedNotes.splice(editor.selectedNotes.indexOf(event.clickedNote), 1);
             else
-                event.editor.selectedNotes.push(event.clickedNote);
+                editor.selectedNotes.push(event.clickedNote);
+        }
+        else if (event.parent.buttons === 2) {
+            editor.selectedNotes.forEach(note => {
+                event.clip.notes.splice(event.clip.notes.indexOf(note), 1);
+            });
+            editor.selectedNotes = [];
+            event.clip.midi.linkedElement.updateGraphics();
         }
         this.oldNote = event.clickedNoteNo;
         this.oldNoteBeat = event.beat;
+        this.oldParentEvent = event.parent;
     }
     midiClipEditorMouseMove(event) {
         const editor = event.editor;
@@ -209,5 +218,10 @@ export class MoveTool extends ToolComponents.Tool {
         }
         event.editor.ui.canvasRenderUpdate();
     }
-    midiClipEditorMouseUp(event) { }
+    midiClipEditorMouseUp(event) {
+        if (this.oldParentEvent.pageX === event.parent.pageX && this.oldParentEvent.pageY === event.parent.pageY && event.clickedNote === undefined) {
+            event.editor.selectedNotes = [];
+            event.editor.ui.canvasRenderUpdate();
+        }
+    }
 }

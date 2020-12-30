@@ -47,7 +47,8 @@ document.addEventListener("resize", () => {
         name: "Scroll Backward",
         code: "Ctrl + ArrowLeft",
         action: () => {
-            session.scrollFriction -= 12;
+            session.scrolledPixels -= session.pxPerBeat / 10;
+            session.scrollFriction = -12;
             if (session.seeker < 0)
                 session.seeker = 0;
             ui.canvasRenderUpdate();
@@ -57,7 +58,8 @@ document.addEventListener("resize", () => {
         name: "Scroll Forward",
         code: "Ctrl + ArrowRight",
         action: () => {
-            session.scrollFriction += 12;
+            session.scrolledPixels += session.pxPerBeat / 10;
+            session.scrollFriction = 12;
             ui.canvasRenderUpdate();
         }
     });

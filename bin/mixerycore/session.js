@@ -95,6 +95,39 @@ export class Session {
                     break;
                 case "Ctrl + Shift + KeyR":
                 case "F12": break;
+                case "Ctrl + Digit1":
+                case "Ctrl + Digit2":
+                case "Ctrl + Digit3":
+                case "Ctrl + Digit4":
+                case "Ctrl + Digit5":
+                case "Ctrl + Digit6":
+                case "Ctrl + Digit7":
+                case "Ctrl + Digit8":
+                case "Ctrl + Digit9":
+                    event.preventDefault();
+                    const toolIndex = parseInt(event.code.slice(5)) - 1;
+                    const tool = this.ui.tools[toolIndex];
+                    if (tool !== undefined) {
+                        this.ui.selectedTool = tool;
+                        this.ui.playlist.editorBar.toolsRack.select(tool);
+                    }
+                    break;
+                case "Alt + Digit1":
+                    event.preventDefault();
+                    this.ui.leftBarMode = "hide";
+                    break;
+                case "Alt + Digit2":
+                    event.preventDefault();
+                    this.ui.leftBarMode = "explorer";
+                    break;
+                case "Alt + Digit3":
+                    event.preventDefault();
+                    this.ui.leftBarMode = "resources";
+                    break;
+                case "Alt + Digit4":
+                    event.preventDefault();
+                    this.ui.leftBarMode = "settings";
+                    break;
                 default:
                     event.preventDefault();
                     break;

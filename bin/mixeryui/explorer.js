@@ -13,19 +13,29 @@ export class ExplorerSection {
         ele.textContent = content.name;
         ele.style.setProperty("--color", content.color);
         this.element.append(ele);
+        ele.addEventListener("contextmenu", event => { event.preventDefault(); });
         ele.addEventListener("mousedown", event => {
-            if (this.pane.draggingContent)
-                return;
-            this.pane.ui.dragMode = true;
-            this.pane.draggingContent = content;
-            let self = this;
-            function mouseUp(event) {
-                self.pane.ui.dragMode = false;
-                self.pane.dragEnd(event);
-                document.removeEventListener("mouseup", mouseUp);
-                self.pane.draggingContent = undefined;
+            if (event.buttons === 1) {
+                if (this.pane.draggingContent)
+                    return;
+                this.pane.ui.dragMode = true;
+                this.pane.draggingContent = content;
+                let self = this;
+                function mouseUp(event) {
+                    self.pane.ui.dragMode = false;
+                    self.pane.dragEnd(event);
+                    document.removeEventListener("mouseup", mouseUp);
+                    self.pane.draggingContent = undefined;
+                }
+                document.addEventListener("mouseup", mouseUp);
             }
-            document.addEventListener("mouseup", mouseUp);
+            else if (event.buttons === 2) {
+                if (content instanceof GeneratorExplorerContent || content instanceof EffectExplorerContent) {
+                    let consumer = this.pane.contentsConsumers.get(this.pane.ui.playlist.editorBar.element.querySelector("div.editorbarentry.button.plugins > div.label"));
+                    if (consumer !== undefined)
+                        consumer(content);
+                }
+            }
         });
         ele.addEventListener("touchstart", event => {
             if (event.touches.length === 1) {
