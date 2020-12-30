@@ -31,50 +31,42 @@ export class MusicGenerator {
         this.network.makeLayers([
             {type: "input", out_sx: 1, out_sy: 1, out_depth: options.parameters.length + 1},
             ...this.options.hiddenLayers,
-            {type: "regression", num_neurons: this.notesCount}
+            //{type: "regression", num_neurons: this.notesCount}
+            {type: "softmax", num_classes: this.notesCount}
         ]);
     }
 
-    train(params: number[], midi: MIDINoteInfo[], count = 100) {
+    train(params: number[], midi: MIDINoteInfo[], batchSize = 100) {
         const trainer = new convnetjs.Trainer(this.network, {
-            method: "adadelta",
+            //method: "adadelta",
             l2_decay: 0.001,
-            batch_size: count
+            batch_size: batchSize,
+            learning_rate: 0.01
         });
-        const inputVolume = new convnetjs.Vol(this.options.parameters.length + 1, 1, 1);
-        params.forEach((p, i) => {inputVolume.w[i + 1] = p});
+        let inputVolume: convnetjs.Vol;
 
-        const outputData = new Float32Array(this.notesCount);
         const self = this;
-        function applyToOutput(beat: number) {
-            outputData.forEach((v, i) => {outputData[i] = 0;});
-
-            midi.forEach(note => {
-                if (
-                    (note.note >= self.startNote && note.note <= self.startNote + self.notesCount) &&
-                    (beat >= note.start && beat <= note.start + note.duration)
-                ) {
-                    outputData[note.note - self.startNote] = 1;
-                }
-            });
-        }
 
         for (let tick = 0; tick < this.ticksCount; tick++) {
             const beat = tick / this.ticksPerBeat;
             const t = tick / this.ticksCount;
 
-            applyToOutput(beat);
+            inputVolume = new convnetjs.Vol(this.options.parameters.length + 1, 1, 1);
+            params.forEach((p, i) => {inputVolume.w[i + 1] = p});
             inputVolume.w[0] = t;
 
-            trainer.train(inputVolume, outputData);
+            for (let i = 0; i < midi.length; i++) {
+                const note = midi[i];
+                if (note.note >= this.startNote && note.note <= this.startNote + this.notesCount && beat >= note.start && beat <= note.start + note.duration) {
+                    trainer.train(inputVolume, note.note - this.startNote);
+                }
+            }
+            //trainer.train(inputVolume, 1);
             //if (localIter === 0) console.log(t, outputData);
         }
-
-        this.vis?.visualize(params);
     }
 
-    linkVis() {
-        this.vis = new SubwindowVisualizer(this);
+    apply(params: number[], midi: MIDINoteInfo[]) {
     }
 }
 
@@ -83,9 +75,7 @@ export class SubwindowVisualizer {
     canvas: HTMLCanvasElement;
     ctx: CanvasRenderingContext2D;
 
-    constructor(
-        public link: MusicGenerator
-    ) {
+    constructor() {
         this.window = window.open("about:blank", "", "o");
         this.window.document.title = "Music Generator vis";
 
@@ -94,23 +84,5 @@ export class SubwindowVisualizer {
         this.ctx = this.canvas.getContext("2d");
 
         this.window.document.body.append(this.canvas);
-    }
-
-    visualize(params: number[]) {
-        this.ctx.clearRect(0, 0, 500, 500);
-
-        const noteHeight = 500 / this.link.notesCount;
-
-        const inputVolume = new convnetjs.Vol(this.link.options.parameters.length + 1, 1, 1);
-        params.forEach((p, i) => {inputVolume.w[i + 1] = p});
-
-        for (let i = 0; i < 100; i++) {
-            inputVolume.w[0] = i / 100;
-            const output = this.link.network.forward(inputVolume).w;
-            for (let j = 0; j < this.link.notesCount; j++) {
-                this.ctx.fillStyle = "rgba(255, 0, 0, " + output[j] + ")";
-                this.ctx.fillRect(i * 5, j * noteHeight, 5, noteHeight);
-            }
-        }
     }
 }

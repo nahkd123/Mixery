@@ -1,4 +1,3 @@
-import { MusicGenerator } from "../../ai/generator.js";
 import AudioMap from "../../audiomap/audiomap.js";
 import { ByteStream } from "../../fileformat/filestream.js";
 import { MixeryConfigurations } from "../config.js";

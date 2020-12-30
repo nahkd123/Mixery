@@ -30,7 +30,7 @@ declare namespace convnetjs {
     }
 
     export interface TrainerOptions {
-        method: "adadelta" | "adagrad" | "sgd";
+        method?: "adadelta" | "adagrad" | "sgd";
         
         learning_rate?: number;
         l1_decay?: number;
