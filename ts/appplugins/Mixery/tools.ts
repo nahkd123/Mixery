@@ -215,6 +215,7 @@ export class MoveTool extends ToolComponents.Tool implements ToolComponents.Play
 
             editor.selectedNotes.forEach(note => {
                 note.duration += beatMove;
+                note.sensitivity = Math.max(Math.min(note.sensitivity - event.parent.movementY / 100, 1), 0);
             });
             editor.session.clipEditor.noteLength = editor.selectedNotes[0]?.duration || 0.125;
             event.clip.midi.linkedElement.updateGraphics();

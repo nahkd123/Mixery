@@ -456,7 +456,7 @@ export class ClipEditorInterface {
             }
 
             ctx.fillStyle = clip.fgcolor;
-            ctx.fillText(notesName[note.note], drawX + 5, drawY + 16);
+            ctx.fillText(notesName[note.note], drawX + 5, drawY + 12);
             ctx.globalAlpha = 1;
         });
     }
