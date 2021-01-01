@@ -439,8 +439,16 @@ export class ClipEditorInterface {
             if (drawX + drawW - ClipEditorInterface.SIDEBAR_WIDTH < 0) return;
 
             ctx.globalAlpha = 1 - Math.min(Math.max(0, (ClipEditorInterface.SIDEBAR_WIDTH - drawX) / drawW), 1);
+
+            // Draw note rect
             ctx.fillStyle = clip.bgcolor;
             ctx.fillRect(drawX, drawY, drawW, zoom);
+
+            // Draw velocity indicator
+            ctx.fillStyle = "black";
+            ctx.fillRect(drawX + 3, drawY + zoom - 5, (drawW - 6) * note.sensitivity, 3);
+
+            // Draw selected boundary
             if (this.selectedNotes.includes(note)) {
                 ctx.strokeStyle = "rgb(255, 127, 0)";
                 ctx.lineWidth = 2;
