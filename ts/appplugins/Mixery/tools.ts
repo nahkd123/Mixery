@@ -1,6 +1,7 @@
 import { ToolComponents } from "../../mixeryapi/toolcomponent.js";
 import { AudioClip, MIDIClip } from "../../mixerycore/clips.js";
 import { MIDINoteInfo } from "../../mixerycore/midi.js";
+import { PlaylistTrack } from "../../mixerycore/playlist.js";
 import { Resources } from "../../mixerycore/resources.js";
 import { msToBeats } from "../../utils/msbeats.js";
 import { fixedSnap, snap } from "../../utils/snapper.js";
@@ -44,8 +45,7 @@ export class PencilTool extends ToolComponents.Tool implements ToolComponents.Pl
     name = "Pencil";
     description = "Place/remove clips/notes (hold left/right click to place/remove clip constantly)";
 
-    playlistMouseDown(event: ToolComponents.PlaylistToolEvent) {}
-    playlistMouseMove(event: ToolComponents.PlaylistToolEvent) {
+    placeAndRemoveClip(event: ToolComponents.PlaylistToolEvent) {
         if (event.mouseDown) {
             if (event.parent.buttons === 2 && event.clickedClip !== undefined) {
                 event.clickedTrack.clips.splice(event.clickedTrack.clips.indexOf(event.clickedClip), 1);
@@ -74,7 +74,7 @@ export class PencilTool extends ToolComponents.Tool implements ToolComponents.Pl
 
             const duration =
                 (event.playlist.session.resources.selectedResource !== undefined && event.playlist.session.resources.selectedResource instanceof Resources.MIDIResource)?
-                Math.min(event.playlist.session.resources.selectedResource.actualLength, 1) :
+                Math.max(event.playlist.session.resources.selectedResource.actualLength, 0.125) :
                 1;
 
             if (event.parent.buttons === 1 && !event.clickedTrack.isBlocked(event.beat, duration) && event.playlist.session.plugins.selected !== undefined) {
@@ -97,6 +97,8 @@ export class PencilTool extends ToolComponents.Tool implements ToolComponents.Pl
             event.playlist.ui.canvasRenderUpdate();
         }
     }
+    playlistMouseDown(event: ToolComponents.PlaylistToolEvent) {this.placeAndRemoveClip(event);}
+    playlistMouseMove(event: ToolComponents.PlaylistToolEvent) {this.placeAndRemoveClip(event);}
     playlistMouseUp(event: ToolComponents.PlaylistToolEvent) {}
     
     placeAndRemoveNote(event: ToolComponents.MIDIClipToolEvent) {
@@ -131,9 +133,12 @@ export class MoveTool extends ToolComponents.Tool implements ToolComponents.Play
 
     selected = -1;
     oldBeat = 0;
+    oldTrack: PlaylistTrack;
     edge: "none" | "left" | "right" = "none";
     playlistMouseDown(event: ToolComponents.PlaylistToolEvent) {
         if (event.clickedClip !== undefined) {
+            this.oldTrack = event.clickedTrack;
+
             event.playlist.session.playlist.selectedClip = event.clickedClip;
             event.playlist.ui.clipEditor.selectedNotes = [];
             event.playlist.ui.canvasRenderUpdate();
@@ -153,12 +158,20 @@ export class MoveTool extends ToolComponents.Tool implements ToolComponents.Play
         if (event.mouseDown) {
             if (this.selected !== -1) {
                 const clip = event.playlist.session.playlist.selectedClip;
+
+                if (this.oldTrack !== event.clickedTrack) {
+                    this.oldTrack.clips.splice(this.oldTrack.clips.indexOf(clip), 1);
+                    this.oldTrack = event.clickedTrack;
+                    event.clickedTrack.clips.push(clip);
+                }
+
                 if (this.edge === "none") clip.offset = fixedSnap(event.beat + this.selected, 0.125);
                 else if (this.edge === "left") {
                     const offset = clip.offset;
                     clip.offset = fixedSnap(event.beat + this.selected, 0.125);
                     clip.length += offset - clip.offset;
                 } else if (this.edge === "right") clip.length = fixedSnap(event.beat - clip.offset, 0.125);
+
                 event.playlist.ui.canvasRenderUpdate();
             } else {
                 event.playlist.session.scrolledPixels = Math.max(event.playlist.session.scrolledPixels -event.parent.movementX, 0);

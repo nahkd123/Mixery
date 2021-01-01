@@ -438,7 +438,7 @@ export class ClipEditorInterface {
             
             if (drawX + drawW - ClipEditorInterface.SIDEBAR_WIDTH < 0) return;
 
-            ctx.globalAlpha = 1 - Math.min(Math.max(0, (ClipEditorInterface.SIDEBAR_WIDTH - drawX) / drawW), 1);
+            ctx.globalAlpha = Math.max(Math.max(note.sensitivity, 0.5) - Math.min(Math.max(0, (ClipEditorInterface.SIDEBAR_WIDTH - drawX) / drawW), 1), 0);
 
             // Draw note rect
             ctx.fillStyle = clip.bgcolor;
@@ -455,8 +455,10 @@ export class ClipEditorInterface {
                 ctx.strokeRect(drawX, drawY, drawW, zoom);
             }
 
-            ctx.fillStyle = clip.fgcolor;
-            ctx.fillText(notesName[note.note], drawX + 5, drawY + 12);
+            if (zoom > 20 && drawW > ctx.measureText(notesName[note.note]).width + 6) {
+                ctx.fillStyle = clip.fgcolor;
+                ctx.fillText(notesName[note.note], drawX + 5, drawY + 12);
+            }
             ctx.globalAlpha = 1;
         });
     }
