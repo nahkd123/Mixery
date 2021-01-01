@@ -176,6 +176,8 @@ export class MoveTool extends ToolComponents.Tool implements ToolComponents.Play
     oldNote = 0;
     oldNoteBeat = 0;
     oldParentEvent: MouseEvent;
+
+    dragSelect = false;
     midiClipEditorMouseDown(event: ToolComponents.MIDIClipToolEvent) {
         const editor = event.editor;
 
@@ -192,39 +194,52 @@ export class MoveTool extends ToolComponents.Tool implements ToolComponents.Play
         this.oldNote = event.clickedNoteNo;
         this.oldNoteBeat = event.beat;
         this.oldParentEvent = event.parent;
+
+        if (event.parent.shiftKey) {
+            this.dragSelect = true;
+            if (!event.parent.ctrlKey) editor.selectedNotes = [];
+        } else this.dragSelect = false;
     }
     midiClipEditorMouseMove(event: ToolComponents.MIDIClipToolEvent) {
         const editor = event.editor;
-        if (event.parent.buttons === 1 && !event.parent.ctrlKey) {
-            const noteMove = event.clickedNoteNo - this.oldNote;
-            this.oldNote = event.clickedNoteNo;
-
-            const beatMove = event.beat - this.oldNoteBeat;
-            this.oldNoteBeat = event.beat;
-
-            editor.selectedNotes.forEach(note => {
-                note.note += noteMove;
-                note.start += beatMove;
-            });
-
-            event.clip.notes.sort((a, b) => a.start - b.start);
-            event.clip.midi.linkedElement.updateGraphics();
-        } else if (event.parent.buttons === 1 && event.parent.ctrlKey) {
-            const beatMove = event.beat - this.oldNoteBeat;
-            this.oldNoteBeat = event.beat;
-
-            editor.selectedNotes.forEach(note => {
-                note.duration += beatMove;
-                note.sensitivity = Math.max(Math.min(note.sensitivity - event.parent.movementY / 100, 1), 0);
-            });
-            editor.session.clipEditor.noteLength = editor.selectedNotes[0]?.duration || 0.125;
-            event.clip.midi.linkedElement.updateGraphics();
-        } else if (event.parent.buttons === 2) {
-            editor.selectedNotes.forEach(note => {
-                event.clip.notes.splice(event.clip.notes.indexOf(note), 1);
-            });
-            editor.selectedNotes = [];
-            event.clip.midi.linkedElement.updateGraphics();
+        
+        if (this.dragSelect) {
+            if (event.parent.buttons === 1 && event.clickedNote !== undefined && !editor.selectedNotes.includes(event.clickedNote)) {
+                editor.selectedNotes.push(event.clickedNote);
+                event.editor.ui.canvasRenderUpdate();
+            }
+        } else {
+            if (event.parent.buttons === 1 && !event.parent.ctrlKey) {
+                const noteMove = event.clickedNoteNo - this.oldNote;
+                this.oldNote = event.clickedNoteNo;
+    
+                const beatMove = event.beat - this.oldNoteBeat;
+                this.oldNoteBeat = event.beat;
+    
+                editor.selectedNotes.forEach(note => {
+                    note.note += noteMove;
+                    note.start += beatMove;
+                });
+    
+                event.clip.notes.sort((a, b) => a.start - b.start);
+                event.clip.midi.linkedElement.updateGraphics();
+            } else if (event.parent.buttons === 1 && event.parent.ctrlKey) {
+                const beatMove = event.beat - this.oldNoteBeat;
+                this.oldNoteBeat = event.beat;
+    
+                editor.selectedNotes.forEach(note => {
+                    note.duration += beatMove;
+                    note.sensitivity = Math.max(Math.min(note.sensitivity - event.parent.movementY / 100, 1), 0);
+                });
+                editor.session.clipEditor.noteLength = editor.selectedNotes[0]?.duration || 0.125;
+                event.clip.midi.linkedElement.updateGraphics();
+            } else if (event.parent.buttons === 2) {
+                editor.selectedNotes.forEach(note => {
+                    event.clip.notes.splice(event.clip.notes.indexOf(note), 1);
+                });
+                editor.selectedNotes = [];
+                event.clip.midi.linkedElement.updateGraphics();
+            }
         }
         
         event.editor.ui.canvasRenderUpdate();
