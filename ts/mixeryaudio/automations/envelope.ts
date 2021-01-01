@@ -46,7 +46,8 @@ export default class EnvelopeAutomation {
      */
     applyNoteInMS(param: RenderableAudioParam, noteLength: number, bpm: number = 120, mul = 1.0, offset: number = 0) {
         if (!this.enabled || noteLength === 0) {
-            param.setValueAtTime(offset / 1000, mul);
+            //param.setValueAtTime(offset / 1000, mul);
+            param.value = mul;
             return;
         }
 
