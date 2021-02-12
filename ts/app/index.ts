@@ -9,6 +9,7 @@ import { MixeryConfigurations } from "./config.js";
 import { ElectronJSApp } from "../utils/electronjs.js";
 import MemesBundle from "../bundles/memes/bundle.js";
 import { testbox } from "./dev/testbox.js";
+import { ContextMenuEntry } from "../contextmenus/menu.js";
 
 const config = MixeryConfigurations;
 
@@ -195,11 +196,30 @@ if ("serviceWorker" in navigator) {
     window.addEventListener("load", e => {
         navigator.serviceWorker.register("../service.js").then(reg => {
             console.log("[main] Service worker registered successful");
+            reg.update().then(() => {
+                console.log("[main] Service worker updated");
+            });
         }).catch((err) => {
             console.error("[main] Service worker registration failed", err);
         });
     });
 } else console.warn("[main] Service worker is not supported by your browser. You can't install Mixery for offline experience.");
+
+let installButtonShown = false;
+let installButtonEvent: BeforeInstallPromptEvent;
+
+window.addEventListener("beforeinstallprompt", e => {
+    e.preventDefault();
+    installButtonEvent = e;
+
+    if (!installButtonShown) {
+        installButtonShown = true;
+        console.log("[main] App is installable");
+        session.menus.file.entries.push(new ContextMenuEntry("Install Mixery", () => {
+            installButtonEvent.prompt();
+        }));
+    }
+});
 
 declare global {
     const app: undefined | {

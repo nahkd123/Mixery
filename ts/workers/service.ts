@@ -9,7 +9,8 @@ sw.addEventListener("install", e => {
         "/app",
         "/app/index.html",
         "/css/index.css",
-        "/bin/app/index.js"
+        "/bin/app/index.js",
+        "/assets/icon.svg"
     ));
 });
 sw.addEventListener("activate", e => {
@@ -44,6 +45,5 @@ async function getFromCache(req: Request) {
 }
 
 sw.addEventListener("fetch", e => {
-    console.log(e.request);
     e.respondWith(getFromCache(e.request));
 });
