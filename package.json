@@ -8,14 +8,15 @@
     "lib": "lib"
   },
   "scripts": {
-    "general.build": "tsc -p tsconfig.main.json -b",
-    "general.productionbuild": "tsc -p tsconfig.main.json -b && node ./bin/nodejs/productionbuild.js",
+    "project.build": "npm run general.build && npm run serviceworker.build",
+    "general.build": "tsc -b tsconfig.main.json",
+    "general.productionbuild": "npm run general.build && node ./bin/nodejs/productionbuild.js",
     "general.watch": "tsc -p tsconfig.main.json --watch",
     "general.clean": "rmdir -r ./bin && rm ./temp/tsbuild.json",
     "general.cleanWindows": "del .\\bin && del .\\temp\\tsbuild.json",
-    "serviceworker.build": "tsc -p tsconfig.workers.json -b",
+    "serviceworker.build": "tsc -b tsconfig.workers.json",
     "serviceworker.watch": "tsc -p tsconfig.workers.json --watch",
-    "github.deploypage": "tsc -b && node ./bin/nodejs/productionbuild.js && gh-pages --dist ./temp/production --message \"🦴 Auto-generated commit (deploy npm task)\"",
+    "github.deploypage": "npm run project.build && node ./bin/nodejs/productionbuild.js && gh-pages --dist ./temp/production --message \"🦴 Auto-generated commit (deploy npm task)\"",
     "server.start": "node ./bin/nodejs/server.js",
     "server.daw": "node ./bin/nodejs/server.js --daw",
     "server.live": "node ./bin/nodejs/server.js --live"
