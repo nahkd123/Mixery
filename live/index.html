@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset='utf-8'>
+    <meta http-equiv='X-UA-Compatible' content='IE=edge'>
+    <title>Mixery Live</title>
+    <meta name='viewport' content='width=1000, initial-scale=1'>
+    <link rel='stylesheet' type='text/css' media='screen' href='../css/index-live.css'>
+    <link rel='icon' href='../assets/icon-live.svg'>
+</head>
+<body class="usemode uselogo notlogged">
+    <div class="view">
+        <div class="loginview">
+            <div class="loginbox halfview fullpage">
+                <h1>Login</h1>
+                <h2>Login to Live server</h2>
+                <input class="forminput" type="text" id="login:host" placeholder="Host[:port] (optional)">
+                <input class="forminput" type="text" id="login:username" placeholder="Username">
+                <input class="forminput" type="password" id="login:pwd" placeholder="Password">
+                <button class="forminput" id="login:login">Login</button>
+            </div><!--
+            --><div class="discovery halfview fullpage">
+                <h1>Discovery</h1>
+                <h2>Connect to your running DAW. No internet needed.</h2>
+            </div>
+        </div>
+    </div>
+    <div class="bottombar">
+        <div class="logosect">
+            <span class="logo">Mixery Live</span>
+            <span class="name" contenteditable="true">Untitled Session</span>
+        </div>
+    </div>
+
+    <script type="module" src="../bin/app/live/index.js"></script>
+</body>
+</html>

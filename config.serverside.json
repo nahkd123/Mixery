@@ -1,0 +1,20 @@
+{
+    "general": {
+        "port": 8080
+    },
+    "https": {
+        "enable": false,
+        "key": "path/to/key.pem",
+        "cert": "path/to.cert.pem"
+    },
+    "daw": {
+        "enable": true,
+        "cacheResources": false
+    },
+    "live": {
+        "enable": true,
+        "logins": [
+            {"username": "USER", "password": "PASSWORD_HERE"}
+        ]
+    }
+}

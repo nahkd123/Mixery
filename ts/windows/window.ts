@@ -27,6 +27,8 @@ export default class MoveableWindow {
     innerElement: HTMLDivElement;
     menu: ContextMenu;
 
+    closeButton: HTMLDivElement;
+
     get x() {return this.outerElement.offsetLeft;}
     get y() {return this.outerElement.offsetTop;}
     set x(value: number) {this.outerElement.style.left = value + "px";}
@@ -115,6 +117,17 @@ export default class MoveableWindow {
             event.preventDefault();
             this.menu.openMenu(event.pageX, event.pageY);
         });
+
+        // Title buttons
+        if (this.config.buttons?.close) {
+            this.closeButton = document.createElement("div");
+            this.closeButton.className = "windowbutton close";
+            this.title.append(this.closeButton);
+
+            this.closeButton.addEventListener("click", event => {
+                this.close();
+            });
+        }
     }
 
     show() {

@@ -20,7 +20,7 @@ export abstract class AudioGenerator implements MIDIKeysListener {
     get displayName() {return this._displayName || this.name;}
     set displayName(val: string) {this._displayName = val;}
     
-    window = new MoveableWindow("name", 0, 0, 300, 250);
+    window: MoveableWindow;
     tabs: TabsContainer;
     pluginView: HTMLDivElement;
     settingsView: HTMLDivElement;
@@ -40,7 +40,10 @@ export abstract class AudioGenerator implements MIDIKeysListener {
     noteNamesOverride: Map<number, [string, string]>;
 
     beforeLoad(session: Session) {
-        this.window.title.textContent = this.name;
+        this.window = new MoveableWindow(this.name);
+        this.window.width = 300;
+        this.window.height = 250;
+
         this.tabs = new TabsContainer(this.window.innerElement);
         this.pluginView = this.tabs.addTab("Plugin");
         this.settingsView = this.tabs.addTab("Settings", false);

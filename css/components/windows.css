@@ -27,3 +27,24 @@ div.moveablewindow > div.moveablewindowcontainer {
     height: calc(100% - 29px);
     background-color: var(--windows-background);
 }
+
+div.moveablewindow > div.moveablewindowtitle > div.windowbutton {
+    float: right;
+    background-color: var(--icon-color);
+    width: 22px;
+    height: 22px;
+    margin-right: -8px;
+    cursor: url("../assets/cursor.cur"), auto;
+
+    -webkit-mask-size: cover;
+    -webkit-mask-position: center;
+    -webkit-mask-repeat: none;
+    mask-size: cover;
+    mask-position: center;
+    mask-repeat: none;
+}
+
+div.moveablewindow > div.moveablewindowtitle > div.windowbutton.close {
+    -webkit-mask-image: url("../../assets/ionicons/close-outline.svg");
+    mask-image: url("../../assets/ionicons/close-outline.svg");
+}
