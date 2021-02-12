@@ -6,6 +6,7 @@ console.log("[sw] Hello world!");
 let sw = <ServiceWorkerGlobalScope> (globalThis as unknown);
 sw.addEventListener("install", e => {
     e.waitUntil(cacheFiles(
+        "/app",
         "/app/index.html",
         "/css/index.css",
         "/bin/app/index.js"
