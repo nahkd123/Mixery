@@ -59,5 +59,7 @@ copy("./index.html", "./temp/production/index.html");
 console.log("[build/production] Removing test assets...");
 rmdir("./temp/production/assets/test-assets");
 copy("./LICENSE", "./temp/production/LICENSE");
+copy("./service.js", "./temp/production/service.js");
+copy("./manifest.webmanifest", "./temp/production/manifest.webmanifest");
 
 console.log("[build/production] Finished!");
