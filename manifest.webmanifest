@@ -2,7 +2,7 @@
     "name": "Mixery",
     "description": "An open source Digital Audio Workspace. Made with Typescript",
     "icons": [
-        {"src": "/assets/icon_144.png", "type": "image/png", "sizes": "144x144"}
+        {"src": "./assets/icon_144.png", "type": "image/png", "sizes": "144x144"}
     ],
     "start_url": "/app/index.html",
     "display": "standalone",
