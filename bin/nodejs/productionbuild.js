@@ -60,4 +60,5 @@ rmdir("./temp/production/assets/test-assets");
 copy("./LICENSE", "./temp/production/LICENSE");
 copy("./service.js", "./temp/production/service.js");
 copy("./manifest.webmanifest", "./temp/production/manifest.webmanifest");
+copy("./CNAME.txt", "./temp/production/CNAME");
 console.log("[build/production] Finished!");
