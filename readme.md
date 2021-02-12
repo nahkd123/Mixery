@@ -15,9 +15,10 @@ Other ways to try Mixery:
 ## How to build? (starting from 11/08/2020)
 0. Install [NodeJS](https://nodejs.org/en/) and npm. For Windows users, npm is already included in NodeJS installer. For Linux users, you'll need to install it via package manager (For Debian based, it's ``sudo apt install npm``)
 1. Clone this repository: ``git clone https://github.com/nahkd123/Mixery.git``
-2. Run ``npm run general.productionbuild`` for production build. It will also install missing packages.
+2. Run ``npm install`` to install missing packages (you only have to run this once)
+3. Run ``npm run general.productionbuild`` for production build.
 > If it doesn't work, try ``npm run general.clean`` first (if it doesn't work for Windows, try ``npm run general.cleanWindows`` instead)
-3. Start a HTTP server at ``./temp/production``
+4. Start a HTTP server at ``./temp/production``
 
 > You can also use ``npx tsc --watch`` while editing source codes so it will automagically compile files.
 
