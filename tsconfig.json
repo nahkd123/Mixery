@@ -3,18 +3,6 @@
         "module": "ES2020",
         "target": "ES2020",
         "lib": ["ES6", "DOM", "WebWorker"],
-        "moduleResolution": "Node",
-
-        "incremental": true,
-        "tsBuildInfoFile": "./temp/tsbuild.json",
-        "outDir": "./bin",
-
-        "sourceMap": true
-    },
-    "include": ["./ts/**/*"],
-    "exclude": [
-        "node_modules",
-        "lib",
-        "./ts/workers"
-    ]
+        "moduleResolution": "Node"
+    }
 }
