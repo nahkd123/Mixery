@@ -72,6 +72,14 @@ export default class MoveableWindow {
             event.preventDefault();
             this.menu.openMenu(event.pageX, event.pageY);
         });
+        if (this.config.buttons?.close) {
+            this.closeButton = document.createElement("div");
+            this.closeButton.className = "windowbutton close";
+            this.title.append(this.closeButton);
+            this.closeButton.addEventListener("click", event => {
+                this.close();
+            });
+        }
     }
     get x() { return this.outerElement.offsetLeft; }
     get y() { return this.outerElement.offsetTop; }

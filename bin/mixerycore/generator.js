@@ -5,7 +5,6 @@ import EnvelopeEditor from "../mixeryui/automations/envelope.js";
 import { updateCanvasSize } from "../mixeryui/ui.js";
 export class AudioGenerator {
     constructor() {
-        this.window = new MoveableWindow("name", 0, 0, 300, 250);
         this.envelopes = {
             gain: new EnvelopeAutomation(500, 250, 1, 500)
         };
@@ -13,7 +12,9 @@ export class AudioGenerator {
     get displayName() { return this._displayName || this.name; }
     set displayName(val) { this._displayName = val; }
     beforeLoad(session) {
-        this.window.title.textContent = this.name;
+        this.window = new MoveableWindow(this.name);
+        this.window.width = 300;
+        this.window.height = 250;
         this.tabs = new TabsContainer(this.window.innerElement);
         this.pluginView = this.tabs.addTab("Plugin");
         this.settingsView = this.tabs.addTab("Settings", false);

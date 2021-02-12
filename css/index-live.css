@@ -1,0 +1,53 @@
+@import url('https://fonts.googleapis.com/css2?family=Nunito+Sans:wght@300;400&display=swap');
+@import url('./themes/default.css');
+@import url('./live/bottombar.css');
+@import url('./live/view.css');
+
+body {
+    width: 100vw;
+    height: 100vh;
+    margin: 0;
+    overflow: hidden;
+    user-select: none;
+
+    font-family: var(--font);
+    font-size: 14px;
+
+    background-color: var(--background);
+    color: var(--color);
+}
+
+h1, h2, h3, h4, h5, h6 {
+    font-weight: lighter;
+    margin: 12px 24px;
+}
+h1 {
+    font-size: 30px;
+}
+h2 {
+    font-size: 18px;
+    font-weight: normal;
+}
+
+input, button {
+    font-family: var(--font);
+    font-size: 14px;
+    padding: 7px 12px;
+    border: 2px solid var(--dim-color);
+    border-radius: 5px;
+    outline: none;
+}
+button {
+    border-radius: 100px;
+}
+input.forminput, button.forminput {
+    display: block;
+    margin: 12px 24px;
+}
+div.halfview > input.forminput {
+    width: 300px;
+}
+
+::-webkit-scrollbar {
+    display: none;
+}

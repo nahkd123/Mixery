@@ -23,14 +23,7 @@ export class PlaylistInterface {
         this.timelineBar.ctx = this.timelineBar.canvas.getContext("2d");
         this.tracksList = this.element.querySelector("div.sidebar.tracks");
         this.tracksContainer = this.element.querySelector("div.trackscontainer");
-        let globalCanvasMouseDown = false;
-        let beginBeat;
-        let tool;
-        let beginOffsetX = 0;
-        let movingClip = false;
-        let resizingClip = false;
-        let clipOldOffset = 0;
-        let clipOldLength = 0;
+        let mouseDown = false;
         this.element.querySelector("div.bartrackadd").addEventListener("click", (event) => {
             let track = this.session.playlist.addTrack();
             let ele = document.createElement("div");
@@ -64,63 +57,46 @@ export class PlaylistInterface {
                     ele.classList.remove("on");
                 this.ui.canvasRenderUpdate();
             });
-            let canvasMousemove = (event) => {
+            canvas.addEventListener("mousemove", event => {
                 const selectedTool = this.ui.selectedTool;
                 if (!ToolComponents.instanceOf.PlaylistTool(selectedTool))
                     return;
                 let eventpkg = {
                     parent: event,
                     playlist: this,
-                    mouseDown: false,
+                    mouseDown,
                     beat: this.session.scrolledBeats + event.offsetX / this.session.pxPerBeat,
-                    clickedTrack: track
+                    clickedTrack: track,
+                    clickedClip: getClipAt(this.session.scrolledBeats + event.offsetX / this.session.pxPerBeat)
                 };
                 selectedTool.playlistMouseMove(eventpkg);
-            };
-            canvas.addEventListener("mousemove", canvasMousemove);
+            });
             canvas.addEventListener("mousedown", event => {
-                canvas.removeEventListener("mousemove", canvasMousemove);
                 const selectedTool = this.ui.selectedTool;
                 if (!ToolComponents.instanceOf.PlaylistTool(selectedTool))
                     return;
                 let eventpkg = {
                     parent: event,
                     playlist: this,
-                    mouseDown: true,
+                    mouseDown: mouseDown = true,
                     beat: this.session.scrolledBeats + event.offsetX / this.session.pxPerBeat,
                     clickedTrack: track,
                     clickedClip: getClipAt(this.session.scrolledBeats + event.offsetX / this.session.pxPerBeat)
                 };
                 selectedTool.playlistMouseDown(eventpkg);
-                let mousemove;
-                let mouseup;
-                document.addEventListener("mousemove", mousemove = event => {
-                    const canvasPx = event.pageX - canvas.getBoundingClientRect().left;
-                    let eventpkg = {
-                        parent: event,
-                        playlist: this,
-                        mouseDown: true,
-                        beat: this.session.scrolledBeats + canvasPx / this.session.pxPerBeat,
-                        clickedTrack: track,
-                        clickedClip: getClipAt(this.session.scrolledBeats + event.offsetX / this.session.pxPerBeat)
-                    };
-                    selectedTool.playlistMouseMove(eventpkg);
-                });
-                document.addEventListener("mouseup", mouseup = event => {
-                    const canvasPx = event.pageX - canvas.getBoundingClientRect().left;
-                    let eventpkg = {
-                        parent: event,
-                        playlist: this,
-                        mouseDown: false,
-                        beat: this.session.scrolledBeats + canvasPx / this.session.pxPerBeat,
-                        clickedTrack: track,
-                        clickedClip: getClipAt(this.session.scrolledBeats + event.offsetX / this.session.pxPerBeat)
-                    };
-                    selectedTool.playlistMouseUp(eventpkg);
-                    document.removeEventListener("mousemove", mousemove);
-                    document.removeEventListener("mouseup", mouseup);
-                    canvas.addEventListener("mousemove", canvasMousemove);
-                });
+            });
+            canvas.addEventListener("mouseup", event => {
+                const canvasPx = event.pageX - canvas.getBoundingClientRect().left;
+                const selectedTool = this.ui.selectedTool;
+                let eventpkg = {
+                    parent: event,
+                    playlist: this,
+                    mouseDown: mouseDown = false,
+                    beat: this.session.scrolledBeats + canvasPx / this.session.pxPerBeat,
+                    clickedTrack: track,
+                    clickedClip: getClipAt(this.session.scrolledBeats + event.offsetX / this.session.pxPerBeat)
+                };
+                selectedTool.playlistMouseUp(eventpkg);
             });
             canvas.addEventListener("contextmenu", event => { event.preventDefault(); });
             canvas.addEventListener("dragover", event => {

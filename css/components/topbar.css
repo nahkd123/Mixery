@@ -21,7 +21,7 @@ div.topbar > div.topbarbutton:hover {
 }
 
 div.topbar > div.topbarstatus {
-    background-color: var(--topbar-status);
+    /* background-color: var(--topbar-status); */
     position: absolute;
     top: 0; right: 0;
     width: 200px; height: 32px;

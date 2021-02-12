@@ -17,6 +17,7 @@ import { InternalAppPlugins } from "./appplugins/appplugins.js";
 import ResourcesStore from "./resources.js";
 import { upload } from "../utils/uploader.js";
 import { ByteStream } from "../fileformat/filestream.js";
+import MixeryLiveWindowView from "../live/reciever/windowview.js";
 export class Session {
     constructor() {
         this.appControls = new SessionControls();
@@ -308,6 +309,7 @@ export class SessionControls {
 }
 export class SessionMenus {
     constructor(session) {
+        this.session = session;
         this.file = new ContextMenu();
         this.tools = new ContextMenu();
         this.help = new ContextMenu();
@@ -316,7 +318,8 @@ export class SessionMenus {
                 export: new MoveableWindow("Export", 0, 0)
             },
             tools: {
-                bpmTapper: new MoveableWindow("BPM Tapper", 0, 0, 200, 250)
+                bpmTapper: new MoveableWindow("BPM Tapper", 0, 0, 200, 250),
+                live: new MixeryLiveWindowView(this.session)
             }
         };
         this.file.entries.push(new ContextMenuEntry("Open", () => {
@@ -329,30 +332,26 @@ export class SessionMenus {
             };
             asyncFunc();
         }));
-        this.file.entries.push(new ContextMenuEntry("Import", () => { }));
-        this.file.entries.push(new ContextMenuEntry("Export", () => {
+        this.file.entries.push(new ContextMenuEntry("Import", () => { }), new ContextMenuEntry("Export", () => {
             this.windows.file.export.show();
-        }));
-        this.file.entries.push(new ContextMenuEntry("Save", () => {
+        }), new ContextMenuEntry("Save", () => {
             let asyncFunc = async function () {
                 download((await MixeryFileFormat.convertToProjectFile(session)).convertToBlob(), session.projectName + ".mxyproj");
             };
             asyncFunc();
-        }));
-        this.file.entries.push(new ContextMenuEntry("Erase Everything!", () => {
+        }), new ContextMenuEntry("Erase Everything!", () => {
             session.resetSession();
         }));
         this.tools.entries.push(new ContextMenuEntry("BPM Tapping", () => {
             this.windows.tools.bpmTapper.show();
+        }), new ContextMenuEntry("Mixery Live", () => {
+            this.windows.tools.live.show();
         }));
         this.help.entries.push(new ContextMenuEntry("Documentation", () => {
             window.open("https://github.com/nahkd123/Mixery/wiki");
-        }));
-        this.help.entries.push(new ContextMenuEntry("About", () => { }));
-        this.help.entries.push(new ContextMenuEntry("License info (GPL v3.0)", () => {
+        }), new ContextMenuEntry("About", () => { }), new ContextMenuEntry("License info (GPL v3.0)", () => {
             window.open("https://www.gnu.org/licenses/gpl-3.0.html");
-        }));
-        this.help.entries.push(new ContextMenuEntry("Source Code!", () => {
+        }), new ContextMenuEntry("Source Code!", () => {
             window.open("https://github.com/nahkd123/Mixery");
         }));
     }

@@ -6,6 +6,7 @@ import MixeryDefaultBundle from "../bundles/mixerydefaults/bundle.js";
 import { MixeryConfigurations } from "./config.js";
 import MemesBundle from "../bundles/memes/bundle.js";
 import { testbox } from "./dev/testbox.js";
+import { ContextMenuEntry } from "../contextmenus/menu.js";
 const config = MixeryConfigurations;
 let session = new Session();
 session.processTopbar(document.querySelector("div.topbar"));
@@ -159,5 +160,32 @@ if (MixeryConfigurations.allowTestBox && MixeryConfigurations.exposeToGlobal) {
 }
 if (config.exposeToGlobal || globalThis.electronjs === undefined)
     session.appPlugins.loadFromRemoteList().then(() => {
-        console.log("[main] Loaded all plugins from remote list");
+        console.log("[main] Loaded and enabled all plugins from remote list");
     });
+if ("serviceWorker" in navigator) {
+    window.addEventListener("load", e => {
+        navigator.serviceWorker.register("../service.js").then(reg => {
+            console.log("[main] Service worker registered successful");
+            reg.update().then(() => {
+                console.log("[main] Service worker updated");
+            });
+        }).catch((err) => {
+            console.error("[main] Service worker registration failed", err);
+        });
+    });
+}
+else
+    console.warn("[main] Service worker is not supported by your browser. You can't install Mixery for offline experience.");
+let installButtonShown = false;
+let installButtonEvent;
+window.addEventListener("beforeinstallprompt", e => {
+    e.preventDefault();
+    installButtonEvent = e;
+    if (!installButtonShown) {
+        installButtonShown = true;
+        console.log("[main] App is installable");
+        session.menus.file.entries.push(new ContextMenuEntry("Install Mixery", () => {
+            installButtonEvent.prompt();
+        }));
+    }
+});

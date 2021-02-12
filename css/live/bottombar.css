@@ -1,0 +1,52 @@
+div.bottombar {
+    position: absolute;
+    display: block;
+    bottom: 0;
+    left: 0;
+    width: 100vw;
+    height: 43px;
+}
+
+div.bottombar > div.logosect {
+    display: inline-block;
+    font-size: 14px;
+    padding: 12px 24px;
+}
+
+div.bottombar > div.logosect > span.logo {
+    display: none;
+}
+body.uselogo > div.bottombar > div.logosect > span.logo {
+    display: unset;
+}
+body.uselogo > div.bottombar > div.logosect > span.logo {
+    color: var(--dim-color);
+    margin-right: 10px;
+    position: relative;
+    padding-left: 24px;
+}
+body.uselogo > div.bottombar > div.logosect > span.logo::before {
+    content: ' ';
+    display: inline-block;
+    position: absolute;
+    width: 18px;
+    height: 18px;
+    left: 0;
+    background-image: url(../../assets/icon-live.svg);
+    background-position: center;
+    background-size: cover;
+}
+body.uselogo > div.bottombar > div.logosect > span.logo::after {
+    content: ' ';
+    display: inline-block;
+    position: absolute;
+    width: 2px;
+    height: 20px;
+    right: -8px;
+    background-color: var(--border-color);
+}
+
+body.uselogo > div.bottombar > div.logosect > span.name {
+    padding-right: 1vw;
+    outline: none;
+}

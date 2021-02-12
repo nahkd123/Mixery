@@ -42,8 +42,7 @@ export class PencilTool extends ToolComponents.Tool {
         this.name = "Pencil";
         this.description = "Place/remove clips/notes (hold left/right click to place/remove clip constantly)";
     }
-    playlistMouseDown(event) { }
-    playlistMouseMove(event) {
+    placeAndRemoveClip(event) {
         if (event.mouseDown) {
             if (event.parent.buttons === 2 && event.clickedClip !== undefined) {
                 event.clickedTrack.clips.splice(event.clickedTrack.clips.indexOf(event.clickedClip), 1);
@@ -67,7 +66,7 @@ export class PencilTool extends ToolComponents.Tool {
                 }
             }
             const duration = (event.playlist.session.resources.selectedResource !== undefined && event.playlist.session.resources.selectedResource instanceof Resources.MIDIResource) ?
-                Math.min(event.playlist.session.resources.selectedResource.actualLength, 1) :
+                Math.max(event.playlist.session.resources.selectedResource.actualLength, 0.125) :
                 1;
             if (event.parent.buttons === 1 && !event.clickedTrack.isBlocked(event.beat, duration) && event.playlist.session.plugins.selected !== undefined) {
                 const midi = (event.playlist.session.resources.selectedResource !== undefined && event.playlist.session.resources.selectedResource instanceof Resources.MIDIResource) ?
@@ -83,6 +82,8 @@ export class PencilTool extends ToolComponents.Tool {
             event.playlist.ui.canvasRenderUpdate();
         }
     }
+    playlistMouseDown(event) { this.placeAndRemoveClip(event); }
+    playlistMouseMove(event) { this.placeAndRemoveClip(event); }
     playlistMouseUp(event) { }
     placeAndRemoveNote(event) {
         const session = event.editor.session;
@@ -119,9 +120,11 @@ export class MoveTool extends ToolComponents.Tool {
         this.edge = "none";
         this.oldNote = 0;
         this.oldNoteBeat = 0;
+        this.dragSelect = false;
     }
     playlistMouseDown(event) {
         if (event.clickedClip !== undefined) {
+            this.oldTrack = event.clickedTrack;
             event.playlist.session.playlist.selectedClip = event.clickedClip;
             event.playlist.ui.clipEditor.selectedNotes = [];
             event.playlist.ui.canvasRenderUpdate();
@@ -142,6 +145,11 @@ export class MoveTool extends ToolComponents.Tool {
         if (event.mouseDown) {
             if (this.selected !== -1) {
                 const clip = event.playlist.session.playlist.selectedClip;
+                if (this.oldTrack !== event.clickedTrack) {
+                    this.oldTrack.clips.splice(this.oldTrack.clips.indexOf(clip), 1);
+                    this.oldTrack = event.clickedTrack;
+                    event.clickedTrack.clips.push(clip);
+                }
                 if (this.edge === "none")
                     clip.offset = fixedSnap(event.beat + this.selected, 0.125);
                 else if (this.edge === "left") {
@@ -185,36 +193,52 @@ export class MoveTool extends ToolComponents.Tool {
         this.oldNote = event.clickedNoteNo;
         this.oldNoteBeat = event.beat;
         this.oldParentEvent = event.parent;
+        if (event.parent.shiftKey) {
+            this.dragSelect = true;
+            if (!event.parent.ctrlKey)
+                editor.selectedNotes = [];
+        }
+        else
+            this.dragSelect = false;
     }
     midiClipEditorMouseMove(event) {
         const editor = event.editor;
-        if (event.parent.buttons === 1 && !event.parent.ctrlKey) {
-            const noteMove = event.clickedNoteNo - this.oldNote;
-            this.oldNote = event.clickedNoteNo;
-            const beatMove = event.beat - this.oldNoteBeat;
-            this.oldNoteBeat = event.beat;
-            editor.selectedNotes.forEach(note => {
-                note.note += noteMove;
-                note.start += beatMove;
-            });
-            event.clip.notes.sort((a, b) => a.start - b.start);
-            event.clip.midi.linkedElement.updateGraphics();
+        if (this.dragSelect) {
+            if (event.parent.buttons === 1 && event.clickedNote !== undefined && !editor.selectedNotes.includes(event.clickedNote)) {
+                editor.selectedNotes.push(event.clickedNote);
+                event.editor.ui.canvasRenderUpdate();
+            }
         }
-        else if (event.parent.buttons === 1 && event.parent.ctrlKey) {
-            const beatMove = event.beat - this.oldNoteBeat;
-            this.oldNoteBeat = event.beat;
-            editor.selectedNotes.forEach(note => {
-                note.duration += beatMove;
-            });
-            editor.session.clipEditor.noteLength = editor.selectedNotes[0]?.duration || 0.125;
-            event.clip.midi.linkedElement.updateGraphics();
-        }
-        else if (event.parent.buttons === 2) {
-            editor.selectedNotes.forEach(note => {
-                event.clip.notes.splice(event.clip.notes.indexOf(note), 1);
-            });
-            editor.selectedNotes = [];
-            event.clip.midi.linkedElement.updateGraphics();
+        else {
+            if (event.parent.buttons === 1 && !event.parent.ctrlKey) {
+                const noteMove = event.clickedNoteNo - this.oldNote;
+                this.oldNote = event.clickedNoteNo;
+                const beatMove = event.beat - this.oldNoteBeat;
+                this.oldNoteBeat = event.beat;
+                editor.selectedNotes.forEach(note => {
+                    note.note += noteMove;
+                    note.start += beatMove;
+                });
+                event.clip.notes.sort((a, b) => a.start - b.start);
+                event.clip.midi.linkedElement.updateGraphics();
+            }
+            else if (event.parent.buttons === 1 && event.parent.ctrlKey) {
+                const beatMove = event.beat - this.oldNoteBeat;
+                this.oldNoteBeat = event.beat;
+                editor.selectedNotes.forEach(note => {
+                    note.duration += beatMove;
+                    note.sensitivity = Math.max(Math.min(note.sensitivity - event.parent.movementY / 100, 1), 0);
+                });
+                editor.session.clipEditor.noteLength = editor.selectedNotes[0]?.duration || 0.125;
+                event.clip.midi.linkedElement.updateGraphics();
+            }
+            else if (event.parent.buttons === 2) {
+                editor.selectedNotes.forEach(note => {
+                    event.clip.notes.splice(event.clip.notes.indexOf(note), 1);
+                });
+                editor.selectedNotes = [];
+                event.clip.midi.linkedElement.updateGraphics();
+            }
         }
         event.editor.ui.canvasRenderUpdate();
     }

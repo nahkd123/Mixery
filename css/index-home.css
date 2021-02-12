@@ -25,7 +25,7 @@ button {
     font-size: 5vw;*/
 @media only screen and (orientation: landscape) {
     div.section {
-        width: calc(100vw - 40mm);
+        width: calc(100% - 40mm);
         padding: 10mm 20mm;
     }
     div.section.full {
@@ -47,7 +47,7 @@ button {
 }
 @media only screen and (orientation: portrait) {
     div.section {
-        width: calc(100vw - 10mm);
+        width: calc(100% - 10mm);
         padding: 3mm 5mm;
     }
     div.section.full {

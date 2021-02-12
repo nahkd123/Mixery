@@ -35,8 +35,10 @@ export default class EnvelopeAutomation {
      * @param offset Start offset in ms
      */
     applyNoteInMS(param, noteLength, bpm = 120, mul = 1.0, offset = 0) {
-        if (!this.enabled || noteLength === 0)
+        if (!this.enabled || noteLength === 0) {
+            param.value = mul;
             return;
+        }
         let atk, decay, decayTo, release; // In ms
         if (this.unit === "seconds") {
             atk = this.attackTime;
