@@ -187,8 +187,19 @@ if (MixeryConfigurations.allowTestBox && MixeryConfigurations.exposeToGlobal) {
 
 // Finalize part
 if (config.exposeToGlobal || globalThis.electronjs === undefined) session.appPlugins.loadFromRemoteList().then(() => {
-    console.log("[main] Loaded all plugins from remote list");
+    console.log("[main] Loaded and enabled all plugins from remote list");
 });
+
+// Web app
+if ("serviceWorker" in navigator) {
+    window.addEventListener("load", e => {
+        navigator.serviceWorker.register("../service.js").then(reg => {
+            console.log("[main] Service worker registered successful");
+        }).catch((err) => {
+            console.error("[main] Service worker registration failed", err);
+        });
+    });
+} else console.warn("[main] Service worker is not supported by your browser. You can't install Mixery for offline experience.");
 
 declare global {
     const app: undefined | {

@@ -1,0 +1,10 @@
+{
+    "compilerOptions": {
+        "module": "ES2020",
+        "target": "ES2020",
+        "lib": ["ES6", "WebWorker", "WebWorker.ImportScripts"],
+        "outDir": "."
+    },
+    "include": ["./ts/workers/**/*"],
+    "exclude": ["node_modules", "lib"]
+}

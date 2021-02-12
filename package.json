@@ -8,11 +8,13 @@
     "lib": "lib"
   },
   "scripts": {
-    "general.build": "tsc -b",
-    "general.productionbuild": "tsc -b && node ./bin/nodejs/productionbuild.js",
-    "general.watch": "tsc --watch",
+    "general.build": "tsc -p tsconfig.main.json -b",
+    "general.productionbuild": "tsc -p tsconfig.main.json -b && node ./bin/nodejs/productionbuild.js",
+    "general.watch": "tsc -p tsconfig.main.json --watch",
     "general.clean": "rmdir -r ./bin && rm ./temp/tsbuild.json",
     "general.cleanWindows": "del .\\bin && del .\\temp\\tsbuild.json",
+    "serviceworker.build": "tsc -p tsconfig.workers.json -b",
+    "serviceworker.watch": "tsc -p tsconfig.workers.json --watch",
     "github.deploypage": "tsc -b && node ./bin/nodejs/productionbuild.js && gh-pages --dist ./temp/production --message \"🦴 Auto-generated commit (deploy npm task)\"",
     "server.start": "node ./bin/nodejs/server.js",
     "server.daw": "node ./bin/nodejs/server.js --daw",
@@ -38,6 +40,7 @@
     "@types/node": "^14.14.6",
     "@types/websocket": "^1.0.1",
     "gh-pages": "^3.1.0",
+    "shx": "^0.3.3",
     "typescript": "^4.1.3"
   },
   "dependencies": {
