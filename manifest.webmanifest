@@ -1,0 +1,11 @@
+{
+    "short_name": "Mixery",
+    "name": "Mixery DAW",
+    "description": "An open source Digital Audio Workspace. Made with Typescript",
+    "icons": [
+        {"src": "/assets/icon.svg", "type": "image/svg", "sizes": "512x512"}
+    ],
+    "start_url": "/app?pwa=true",
+    "display": "standalone",
+    "theme_color": "#211b37"
+}
