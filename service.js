@@ -21,10 +21,17 @@ async function cacheFiles(...path) {
         cache.addAll(path);
     });
 }
-async function getFromCache(req) {
-    let res = await caches.match(req);
-    if (res)
-        return res;
+async function getResource(req) {
+    if (!navigator.onLine) {
+        let res = await caches.match(req);
+        if (res)
+            return res;
+        else
+            return new Response("", {
+                status: 404,
+                statusText: "Not found"
+            });
+    }
     let externRes = await fetch(req);
     if (!externRes || externRes.status !== 200 || externRes.type !== "basic")
         return externRes;
@@ -35,5 +42,5 @@ async function getFromCache(req) {
     return externRes;
 }
 sw.addEventListener("fetch", e => {
-    e.respondWith(getFromCache(e.request));
+    e.respondWith(getResource(e.request));
 });
